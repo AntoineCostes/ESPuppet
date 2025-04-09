@@ -1,0 +1,53 @@
+{
+    "name":"dev",
+    "wifi":
+    {
+        "serialDebug":true,
+        "name":"Amazing Name",
+        "osc":
+        {
+            "serialDebug":true,
+            "targetPort":12345,
+            "listeningPort":12345,
+            "targetIP":"127.0.0.1"
+        }
+    },
+    "leds":
+    {
+        "led1":
+        {
+            "serialDebug":true,
+            "pin":10,
+            "numPixels":8, 
+            "brightness":0.1,
+            "wifiDebug":true
+        },
+        "led2":
+        {
+            "pin":9
+        }
+    },
+    "servos":
+    {
+        "arm":
+        {
+            "pin":4
+        },
+        "leg":
+        {
+            "pin":5
+        }
+    },
+    "buttons":
+    {
+        "btn1":
+        {
+            "pin":8
+        },
+        "btn2":
+        {
+            "pin":7
+        }
+    }
+
+}

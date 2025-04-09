@@ -1,18 +1,26 @@
 #include <Arduino.h>
+#include "../lib/ESPuppet/src/ESPuppet.h"
 
-// put function declarations here:
-int myFunction(int, int);
+ESPuppet puppet;
 
-void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+// check memory diff Preferences / LittleFS: LittleFS max size ?
+
+void WifiCallback(WiFiEvent_t event, arduino_event_info_t info);
+
+void setup()
+{
+  Serial.begin(115200);
+  delay(3000);
+#ifdef LED_BUILTIN
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, HIGH);
+#endif
+
+  puppet.init();
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-}
-
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+void loop()
+{
+  puppet.update();
+  delay(1);
 }

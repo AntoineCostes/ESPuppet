@@ -1,0 +1,28 @@
+{
+    "name":"default",
+    "wifi":
+    {
+        "serialDebug":true,
+        "name":"default",
+        "osc":
+        {
+            "serialDebug":true,
+            "targetPort":12345,
+            "listeningPort":12345,
+            "targetIP":"192.168.0.27",
+            "oscReceiveDebug":true
+        }
+    },
+    "leds":
+    {
+        "led1":
+        {
+            "serialDebug":true,
+            "pin":9,
+            "numPixels":4, 
+            "brightness":0.1,
+            "wifiDebug":true
+        }
+    }
+
+}

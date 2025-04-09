@@ -1,0 +1,28 @@
+{
+    "name": "ESPuppet",
+    "version": "1.0.0",
+    "description": "ESP32 firmware for animatronics and connected stage props",
+    "keywords": "esp32, animatronics, sfx, magic",
+    "repository":
+    {
+      "type": "git",
+      "url": "https://github.com/antoinecostes/ESPuppet.git"
+    },
+    "authors":
+    [
+      {
+        "name": "Antoine Costes",
+        "email": "antoine.costes@gmail.com",
+        "url": "https://www.antoinecostes.net"
+      }
+    ],
+    "license": "MIT",
+    "dependencies": {
+      "adafruit/Adafruit NeoPixel": "^1.12.5",
+      "tzapu/WiFiManager": "^2.0.17",   
+      "bblanchon/ArduinoJson": "^7.3.1",
+      "external-repo": "https://github.com/CNMAT/OSC.git#3.5.8"
+    },
+    "frameworks": "arduino",
+    "platforms": "espressif32"
+}
