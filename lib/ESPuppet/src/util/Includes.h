@@ -2,6 +2,8 @@
 
 #include <Arduino.h>
 
+#include "var.h"
+
 #include <vector>
 #include <set>
 // #include <map>

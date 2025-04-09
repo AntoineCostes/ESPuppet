@@ -1,5 +1,5 @@
 #pragma once
-#include "common/Includes.h"
+#include "util/Includes.h"
 #include "files/FileManager.h"
 #include "wifi/WifiModule.h"
 #include "outputs/ledstrip/LedModule.h"
@@ -23,4 +23,6 @@ public:
 
 protected:
     void WiFiEvent(WiFiEvent_t event, arduino_event_info_t info);
+    void gotOSCCommand(const Command &command);
+
 };

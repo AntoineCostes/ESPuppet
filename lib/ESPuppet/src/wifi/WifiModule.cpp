@@ -42,7 +42,7 @@ void WifiModule::loadConfig(JsonObject const &config)
 {
   serialDebug = config["serialDebug"] | serialDebug;
   connectionTimeoutMs = config["connectionTimeoutMs"] | connectionTimeoutMs;
-  
+
   String configFileName = "default";
   boardName = config["boardName"] | configFileName;
 
@@ -57,6 +57,7 @@ void WifiModule::loadConfig(JsonObject const &config)
     bool oscReceiveDebug = config["osc"]["oscReceiveDebug"] | false;
 
     osc = new OSCManager(listeningPort, targetPort, targetIP, boardName, oscPingTimeoutMs, oscSendDebug, oscReceiveDebug);
+    osc->addListener(std::bind(&WifiModule::gotOSCCommand, this, std::placeholders::_1));
   }
 
   initSTA();
@@ -68,7 +69,7 @@ String WifiModule::getDefaultBoardName()
   prefs.begin("ESPuppet");
   String configFileName = prefs.getString("config", "default");
   prefs.end();
-  return "ESPuppet-"+configFileName;
+  return "ESPuppet-" + configFileName;
 }
 
 void WifiModule::update()
@@ -138,7 +139,7 @@ void WifiModule::initSTA()
   dbg("START STA");
   if (WiFi.isConnected())
     WiFi.disconnect();
-  
+
   Preferences prefs;
   prefs.begin("wifi");
   String ssid = prefs.getString("ssid", "");
@@ -149,7 +150,9 @@ void WifiModule::initSTA()
   {
     dbg("no ssid stored => start config portal");
     initAP();
-  } else {
+  }
+  else
+  {
     WiFi.mode(WIFI_STA);
     dbg("Connecting to " + ssid + " (" + pwd + ")...");
     WiFi.begin(ssid.c_str(), pwd.c_str());
@@ -162,10 +165,19 @@ void WifiModule::initMDNS()
   dbg("creating mDNS instance: " + boardName);
   if (MDNS.begin(boardName.c_str()))
   {
-      MDNS.addService("_osc", "_udp", osc->listeningPort);
-      MDNS.addService("_http", "_tcp", 80);
-      dbg("OSC Zeroconf service added sucessfully !");
-  } else err("could not setup MDNS");
+    MDNS.addService("_osc", "_udp", osc->listeningPort);
+    MDNS.addServiceTxt("osc", "udp", "boardName", boardName.c_str());
+
+    MDNS.addService("_http", "_tcp", 80);
+    dbg("OSC Zeroconf service added sucessfully !");
+  }
+  else
+    err("could not setup MDNS");
+}
+
+void WifiModule::gotOSCCommand(const Command &command)
+{
+  sendEvent(command);
 }
 
 void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
@@ -180,7 +192,8 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
 
   case ARDUINO_EVENT_WIFI_STA_CONNECTED:
     dbg("Event: Connected to access point");
-    if (osc) osc->open();
+    if (osc)
+      osc->open();
     initMDNS();
     break;
 
@@ -191,7 +204,8 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     if (info.wifi_sta_disconnected.reason == 0)
     {
       lastDisconnectTime = millis();
-      if (osc) osc->close();
+      if (osc)
+        osc->close();
       MDNS.end();
     }
     break;

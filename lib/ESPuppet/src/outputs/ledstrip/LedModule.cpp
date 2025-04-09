@@ -70,3 +70,10 @@ void LedModule::setBlink(uint8_t index, uint8_t r, uint8_t g, uint8_t b, float f
     strips[index]->setBlink(r, g, b, frequency);
 
 }
+
+void LedModule::handleCommand(const Command& command)
+{
+    dbg("handle command");
+    dbg(command.target);
+    dbg(command.command);
+}

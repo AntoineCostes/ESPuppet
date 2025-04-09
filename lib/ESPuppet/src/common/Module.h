@@ -1,5 +1,5 @@
 #pragma once
-#include "common/Includes.h"
+#include "util/Includes.h"
 #include "Component.h"
 
 // A module deals with a specific specific kind of hardware, 
@@ -18,6 +18,8 @@ public:
 
     bool reservePin(int pin);
     static std::set<int> reservedPins;
+
+    virtual void handleCommand(const Command& command);
 
 protected:
     std::vector<std::unique_ptr<Component>> props;

@@ -1,5 +1,5 @@
 #pragma once
-#include "common/Includes.h"
+#include "util/Includes.h"
 #include "common/Module.h"
 #include "LedStrip.h"
 
@@ -8,7 +8,7 @@ class LedModule : public Module
 public:
     LedModule();
 
-    void init();
+    void init() override;
     void update();
 
     void loadConfig(JsonObject const &config) override;
@@ -18,6 +18,8 @@ public:
     void setSolid(uint8_t index, uint8_t r, uint8_t g, uint8_t b);
     void setWave(uint8_t index, uint8_t r, uint8_t g, uint8_t b, float frequency = 1.0f);
     void setBlink(uint8_t index, uint8_t r, uint8_t g, uint8_t b, float frequency = 1.0f);
+
+    void handleCommand(const Command& command) override;
 
 protected:
     std::vector<LedStrip *> strips;

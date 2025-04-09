@@ -1,23 +1,23 @@
 #include "ESPuppet.h"
 
 // ROADMAP
-// OSC led control
-// led wifidebug
-// events in main.cpp
+// OSC led control => OSCCommand + dispatch to modules
+// led wifidebug => ledModule advertise/notify
+// events in main.cpp => buttonEvent
 // Configportal
 // pick possible configs in portal
 
 // Gestion des pin
-// Wifi set power
-// Button events, Wifi Events
+// Wifi set power ?
 // clarifier où est le serialDebug
 
 // IDEAS
 // Component checkRange
 
 // COSMETICS
-// variadic reservePins
+// OSCMessage getAddress();
 // char * name
+// variadic reservePins
 
 
 ESPuppet::ESPuppet()
@@ -32,6 +32,7 @@ void ESPuppet::init()
     fileModule.init();
     WiFi.onEvent(std::bind(&ESPuppet::WiFiEvent,this,std::placeholders::_1,std::placeholders::_2));
     wifiModule.init();
+    wifiModule.addListener(std::bind(&ESPuppet::gotOSCCommand, this, std::placeholders::_1));
     ledModule.init();
 
     // load config file
@@ -70,6 +71,14 @@ void ESPuppet::update()
 {
     ledModule.update();
     wifiModule.update();
+}
+
+void ESPuppet::gotOSCCommand(const Command &command)
+{ 
+  // TODO loop over modules
+  Serial.println("command for: "+command.target);
+  if (command.target.equals("led")) Serial.println("yes");
+  if (command.target.equals("led")) ledModule.handleCommand(command);
 }
 
 // TODO make ledModule Status + notify

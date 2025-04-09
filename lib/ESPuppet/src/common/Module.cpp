@@ -7,6 +7,11 @@ Module::Module(const String &name, bool serialDebug) : Component(name, serialDeb
 
 std::set<int> Module::reservedPins = {};
 
+void Module::handleCommand(const Command& command)
+{
+    log("OSC command handler not overloaded");
+}
+
 bool Module::reservePin(int pin)
 {
     // for (int pin : pins)

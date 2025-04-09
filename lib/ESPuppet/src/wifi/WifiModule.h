@@ -1,9 +1,9 @@
 #pragma once
-#include "common/Includes.h"
+#include "util/Includes.h"
 #include "common/Module.h"
 #include "OSCManager.h"
 
-class WifiModule : public Module
+class WifiModule : public Module, public EventBroadcaster<Command>
 {
 public:
     WifiModule();
@@ -30,6 +30,7 @@ protected:
     String boardName;
     DNSServer dnsServer;
     void WiFiEvent(WiFiEvent_t event, arduino_event_info_t info);
+    void gotOSCCommand(const Command &command);
     long connectionTimeoutMs;
     
     long lastDisconnectTime;

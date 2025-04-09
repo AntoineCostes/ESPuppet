@@ -1,5 +1,5 @@
 #pragma once
-#include "common/Includes.h"
+#include "util/Includes.h"
 
 class Component
 {
@@ -15,4 +15,14 @@ protected:
     void dbg(String message);
     void log(String message);
     void err(String message);
+};
+
+class Command
+{
+public:
+    String target;
+    String command;
+    var *data;
+    int numData;
+    Command(String target, String command, var *data, int numData) : target(target), command(command), data(data), numData(numData){}
 };

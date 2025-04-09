@@ -5,8 +5,6 @@ ESPuppet puppet;
 
 // check memory diff Preferences / LittleFS: LittleFS max size ?
 
-void WifiCallback(WiFiEvent_t event, arduino_event_info_t info);
-
 void setup()
 {
   Serial.begin(115200);
