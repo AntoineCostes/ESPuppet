@@ -19,7 +19,7 @@ public:
     bool reservePin(int pin);
     static std::set<int> reservedPins;
 
-    virtual void handleCommand(const Command& command);
+    virtual void handleOSCCommand(OSCMessage* command);
 
 protected:
     std::vector<std::unique_ptr<Component>> props;

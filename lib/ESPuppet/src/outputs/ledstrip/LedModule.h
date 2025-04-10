@@ -15,11 +15,14 @@ public:
     void clear(uint8_t index);
     void clearAll();
 
+    void setSolidAll(uint8_t r, uint8_t g, uint8_t b);
     void setSolid(uint8_t index, uint8_t r, uint8_t g, uint8_t b);
+    void setWaveAll(uint8_t r, uint8_t g, uint8_t b, float frequency = 1.0f);
     void setWave(uint8_t index, uint8_t r, uint8_t g, uint8_t b, float frequency = 1.0f);
+    void setBlinkAll(uint8_t r, uint8_t g, uint8_t b, float frequency = 1.0f);
     void setBlink(uint8_t index, uint8_t r, uint8_t g, uint8_t b, float frequency = 1.0f);
 
-    void handleCommand(const Command& command) override;
+    void handleOSCCommand(OSCMessage* command) override;
 
 protected:
     std::vector<LedStrip *> strips;

@@ -15,9 +15,9 @@
     },
     "leds":
     {
+        "serialDebug":true,
         "led1":
         {
-            "serialDebug":true,
             "pin":9,
             "numPixels":4, 
             "brightness":0.1,

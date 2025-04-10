@@ -20,9 +20,13 @@ protected:
 class Command
 {
 public:
-    String target;
-    String command;
-    var *data;
-    int numData;
-    Command(String target, String command, var *data, int numData) : target(target), command(command), data(data), numData(numData){}
+    OSCMessage* command;
+    Command(OSCMessage* command) : command(command){
+      String address = String(command->getAddress()).substring(1);
+      int separatorIndex = address.indexOf('/');
+      targetModule = separatorIndex == -1 ? "root" : address.substring(0, separatorIndex); 
+      targetComponent = address.substring(separatorIndex + 1);
+    }
+    String targetModule;
+    String targetComponent;
 };

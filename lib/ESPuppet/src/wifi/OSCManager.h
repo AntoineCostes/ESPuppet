@@ -28,10 +28,8 @@ protected:
     WiFiUDP udp;
 
     void sendOSC(String address);
+    // TODO make variadic function sendOSC(String address, OSCArgument args...)
     void sendMessage(OSCMessage &msg);
-    void sendMessage(const String &source, const String &command, var *data, int numData);
-    OSCMessage createMessage(const String &source, const String &command, const var *data, int numData, bool addID);
-    var OSCArgumentToVar(OSCMessage &m, int index);
 
     String boardName;
     long oscPingTimeoutMs;

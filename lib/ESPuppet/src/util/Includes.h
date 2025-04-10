@@ -2,15 +2,8 @@
 
 #include <Arduino.h>
 
-#include "var.h"
-
 #include <vector>
 #include <set>
-// #include <map>
-// #include <memory>
-// #include <string.h>
-// #include <iterator>
-// #include <functional>
 
 // Files
 #include <Preferences.h>

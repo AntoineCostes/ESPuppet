@@ -63,8 +63,15 @@ void LedStrip::fill(uint32_t color, float multiplier)
 
 void LedStrip::fill(uint8_t r, uint8_t g, uint8_t b)
 {
+    // TODO checkrange ?
     strip.fill(strip.Color(brightness*r, brightness*g, brightness*b));
     strip.show(); 
+}
+
+void LedStrip::setBrightness(float value)
+{
+    // TODO checkrange
+    brightness = min(1.0f, max(0.0f, value));
 }
 
 void LedStrip::setSolid(uint8_t r, uint8_t g, uint8_t b)

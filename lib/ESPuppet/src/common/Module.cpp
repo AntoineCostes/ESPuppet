@@ -7,7 +7,7 @@ Module::Module(const String &name, bool serialDebug) : Component(name, serialDeb
 
 std::set<int> Module::reservedPins = {};
 
-void Module::handleCommand(const Command& command)
+void Module::handleOSCCommand(OSCMessage* command)
 {
     log("OSC command handler not overloaded");
 }

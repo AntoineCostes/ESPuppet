@@ -22,6 +22,7 @@ class LedStrip : public Component
         void fill(uint32_t color, float multiplier);
         void fill(uint8_t r, uint8_t g, uint8_t b);
 
+        void setBrightness(float value);
 
         void setSolid(uint8_t r, uint8_t g, uint8_t b);
         void setWave(uint8_t r, uint8_t g, uint8_t b, float frequency = 1.0f);

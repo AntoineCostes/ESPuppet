@@ -1,13 +1,16 @@
 #include "ESPuppet.h"
 
 // ROADMAP
-// OSC led control => OSCCommand + dispatch to modules
 // led wifidebug => ledModule advertise/notify
 // events in main.cpp => buttonEvent
 // Configportal
 // pick possible configs in portal
-
 // Gestion des pin
+
+// NOT PRIORITY
+// inclure ma propre lib OSC ?
+// variadic sendOSC
+// Parameters: l'intérêt serait d'avoir une API OSC qui découle des paramètres
 // Wifi set power ?
 // clarifier où est le serialDebug
 
@@ -15,9 +18,10 @@
 // Component checkRange
 
 // COSMETICS
-// OSCMessage getAddress();
 // char * name
 // variadic reservePins
+// debug instead of serialdebug
+// color instead of r, g, b in LedModule
 
 
 ESPuppet::ESPuppet()
@@ -75,10 +79,8 @@ void ESPuppet::update()
 
 void ESPuppet::gotOSCCommand(const Command &command)
 { 
-  // TODO loop over modules
-  Serial.println("command for: "+command.target);
-  if (command.target.equals("led")) Serial.println("yes");
-  if (command.target.equals("led")) ledModule.handleCommand(command);
+  Serial.println("command for: "+command.targetModule);
+  if (command.targetModule.equals("led")) ledModule.handleOSCCommand(command.command);
 }
 
 // TODO make ledModule Status + notify
