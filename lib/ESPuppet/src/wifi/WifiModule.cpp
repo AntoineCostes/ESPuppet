@@ -59,6 +59,9 @@ void WifiModule::loadConfig(JsonObject const &config)
     osc = new OSCManager(listeningPort, targetPort, targetIP, boardName, oscPingTimeoutMs, oscSendDebug, oscReceiveDebug);
     osc->addListener(std::bind(&WifiModule::gotOSCCommand, this, std::placeholders::_1));
   }
+  
+  bool serverDebug = config["webserver"]["serialDebug"] | false;
+  configServer = new ConfigWebserver(serverDebug);
 
   initSTA();
 }
@@ -77,8 +80,8 @@ void WifiModule::update()
   if (osc)
     osc->update(); // TODO add OscMgr to props
 
-  // if (millis() % 1000 < 1)
-  //   dbg(String(WiFi.status()));
+  if (millis() % 3000 < 1)
+    dbg(String(WiFi.status()));
 
   switch (WiFi.status())
   {
@@ -87,10 +90,9 @@ void WifiModule::update()
       initAP();
     break;
 
-  case WL_NO_SHIELD: // AP on
-    // webserver?
+  case WL_NO_SHIELD: // AP on ?
     // ArduinoOTA.handle();
-    dnsServer.processNextRequest();
+    configServer->update();
     break;
 
   case WL_IDLE_STATUS: // connected but no IP yet
@@ -109,7 +111,9 @@ void WifiModule::update()
   case WL_CONNECTION_LOST:
     break;
 
-  case WL_STOPPED:
+  case WL_STOPPED:// AP on ?
+    // ArduinoOTA.handle();
+    configServer->update();
     break;
 
   default:
@@ -124,14 +128,19 @@ void WifiModule::initAP()
   dbg("START AP");
 
   WiFi.mode(WIFI_AP);
+  WiFi.setSleep(false); // can improve ap stability
 
+  // startAP();
   String apName = "CONFIG-" + String(ARDUINO_BOARD);
   WiFi.softAP(apName.c_str());
 
-  dnsServer.setErrorReplyCode(DNSReplyCode::NoError);
-  dnsServer.start(53, "*", WiFi.softAPIP());
+  // delay(500); 
+  // WiFi.softAPsetHostname(boardName.c_str()); // after we get IP
+  // server-> start();
 
-  // TODO start webserver
+  // setupHTTPServer();
+  // setupDNSD(); 
+  // server-> start
 }
 
 void WifiModule::initSTA()
@@ -156,12 +165,15 @@ void WifiModule::initSTA()
     WiFi.mode(WIFI_STA);
     dbg("Connecting to " + ssid + " (" + pwd + ")...");
     WiFi.begin(ssid.c_str(), pwd.c_str());
-    status = CONNECTING;
+    
+    initMDNS(); 
   }
 }
 
 void WifiModule::initMDNS()
 {
+  WiFi.setHostname(boardName.c_str());
+
   dbg("creating mDNS instance: " + boardName);
   if (MDNS.begin(boardName.c_str()))
   {
@@ -194,7 +206,6 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     dbg("Event: Connected to access point");
     if (osc)
       osc->open();
-    initMDNS();
     break;
 
   case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
@@ -206,17 +217,24 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
       lastDisconnectTime = millis();
       if (osc)
         osc->close();
+      dbg("END MDNS & server");
       MDNS.end();
+      configServer->stop();
     }
     break;
 
   case ARDUINO_EVENT_WIFI_AP_START:
     dbg("Event: WiFi access point started");
+    dbg(String(info.wifi_sta_disconnected.reason));
+    WiFi.softAPsetHostname(boardName.c_str()); // after we get IP
+    configServer-> start();
     break;
 
   case ARDUINO_EVENT_WIFI_STA_GOT_IP:
     Serial.print("Event: Obtained IP address: ");
     Serial.println(WiFi.localIP());
+    dbg(String(info.wifi_sta_disconnected.reason));
+    // server->start();
     break;
 
   case ARDUINO_EVENT_WIFI_READY:

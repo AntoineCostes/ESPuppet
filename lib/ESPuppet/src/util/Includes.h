@@ -12,9 +12,12 @@
 #include <ArduinoJson.h>       
 
 // Wifi
-#include <WiFiManager.h>
+//#include <WiFi.h>
 #include <ESPmDNS.h>
+#include <ESPAsyncWebServer.h>
+// #include <AsyncTCP.h>
 #include <DNSServer.h>
+#include <WiFiUdp.h> 
 #include <OSCMessage.h>
 
 #include <Adafruit_NeoPixel.h>
