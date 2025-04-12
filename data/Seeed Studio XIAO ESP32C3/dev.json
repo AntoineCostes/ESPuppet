@@ -3,7 +3,7 @@
     "wifi":
     {
         "serialDebug":true,
-        "name":"Amazing Name",
+        "boardName":"Amazing Name",
         "osc":
         {
             "serialDebug":true,

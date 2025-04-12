@@ -3,12 +3,11 @@
 
 ESPuppet puppet;
 
-// check memory diff Preferences / LittleFS: LittleFS max size ?
-
 void setup()
 {
   Serial.begin(115200);
-  delay(3000);
+  delay(2000);
+  
 #ifdef LED_BUILTIN
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);

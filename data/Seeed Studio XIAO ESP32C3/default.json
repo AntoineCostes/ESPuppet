@@ -3,7 +3,8 @@
     "wifi":
     {
         "serialDebug":true,
-        "name":"default",
+        "connectionTimeoutMs": 1000,
+        "boardName":"default",
         "osc":
         {
             "serialDebug":true,
@@ -11,6 +12,10 @@
             "listeningPort":12345,
             "targetIP":"192.168.0.27",
             "oscReceiveDebug":true
+        },
+        "webserver":
+        {
+            "serialDebug":true
         }
     },
     "leds":

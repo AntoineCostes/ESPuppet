@@ -1,29 +1,5 @@
 #include "ESPuppet.h"
 
-// ROADMAP
-// led wifidebug => ledModule advertise/notify
-// events in main.cpp => buttonEvent
-// Configportal
-// pick possible configs in portal
-// Gestion des pin
-
-// NOT PRIORITY
-// inclure ma propre lib OSC ?
-// variadic sendOSC
-// Parameters: l'intérêt serait d'avoir une API OSC qui découle des paramètres
-// Wifi set power ?
-// clarifier où est le serialDebug
-
-// IDEAS
-// Component checkRange
-
-// COSMETICS
-// char * name
-// variadic reservePins
-// debug instead of serialdebug
-// color instead of r, g, b in LedModule
-
-
 ESPuppet::ESPuppet()
 {
 }
@@ -46,6 +22,7 @@ void ESPuppet::init()
     if (prefs.isKey("config")) configFileName = prefs.getString("config");
     else prefs.putString("config", "default");
     prefs.end();
+    Serial.println("loading config: "+configFileName);
 
     configFileName += ".json";
     String filePath = String(ARDUINO_BOARD) + "/"+ configFileName;

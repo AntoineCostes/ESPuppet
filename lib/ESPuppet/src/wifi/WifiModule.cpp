@@ -42,7 +42,6 @@ void WifiModule::loadConfig(JsonObject const &config)
 {
   serialDebug = config["serialDebug"] | serialDebug;
   connectionTimeoutMs = config["connectionTimeoutMs"] | connectionTimeoutMs;
-
   String configFileName = "default";
   boardName = config["boardName"] | configFileName;
 
@@ -123,29 +122,22 @@ void WifiModule::update()
 
 void WifiModule::initAP()
 {
+  dbg("START AP");
+
   if (WiFi.isConnected())
     WiFi.disconnect();
-  dbg("START AP");
 
   WiFi.mode(WIFI_AP);
   WiFi.setSleep(false); // can improve ap stability
 
-  // startAP();
   String apName = "CONFIG-" + String(ARDUINO_BOARD);
   WiFi.softAP(apName.c_str());
-
-  // delay(500); 
-  // WiFi.softAPsetHostname(boardName.c_str()); // after we get IP
-  // server-> start();
-
-  // setupHTTPServer();
-  // setupDNSD(); 
-  // server-> start
 }
 
 void WifiModule::initSTA()
 {
   dbg("START STA");
+
   if (WiFi.isConnected())
     WiFi.disconnect();
 
