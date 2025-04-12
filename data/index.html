@@ -5,7 +5,7 @@
   <meta name='format-detection' content='telephone=no'>
   <meta charset='UTF-8'>
   <meta name='viewport' content='width=device-width,initial-scale=1,user-scalable=no' />
-  <title>WiFiManager</title>
+  <title>ESPuppet Config</title>
   <script>function c(l) { document.getElementById('s').value = l.getAttribute('data-ssid') || l.innerText || l.textContent; p = l.nextElementSibling.classList.contains('l'); document.getElementById('p').disabled = !p; if (p) document.getElementById('p').focus(); }; function f() { var x = document.getElementById('p'); x.type === 'password' ? x.type = 'text' : x.type = 'password'; }</script>
   <style>
     .c,
@@ -45,7 +45,6 @@
       color: #fff;
       line-height: 2.4rem;
       font-size: 1.2rem;
-      width: 100%
     }
 
     input[type='file'] {
@@ -196,7 +195,6 @@
     }
 
     button:active {
-      opacity: 50% !important;
       cursor: wait;
       transition-delay: 0s
     }
@@ -229,14 +227,11 @@
 
 <body class='invert'>
   <div class='wrap'>
-    <h1>WiFiManager</h1>
-    <h3>WM_AutoConnectAP</h3>
+    <h1>%TITLE%</h1>
+    <h3>%CONFIG%</h3>
     <form action='/wifi' method='get'><button>Configure WiFi</button></form><br />
+    <form action='/config' method='get'><button>Config</button></form><br />
     <form action='/info' method='get'><button>Info</button></form><br />
-    <form action='/exit' method='get'><button>Exit</button></form><br />
-    <hr><br />
-    <form action='/update' method='get'><button>Update</button></form><br />
-    <div class='msg D'><strong>Not connected</strong> to akindofmagic<br />AP not found</div>
   </div>
 </body>
 

@@ -2,7 +2,44 @@
 
 String processor(const String &var)
 {
-  return "[unknown template processor]";
+
+  if (var == "TITLE") return "ESPuppet Config";
+  if (var == "CONFIG") {
+    Preferences prefs;
+    prefs.begin("ESPuppet");
+    String configFileName = prefs.getString("config", "notfound");
+    prefs.end();
+    return configFileName;
+  }
+  return "[???]";
+}
+
+String infoProcessor(const String &var)
+{
+  if (var.equals("uptime")) return (String)(millis() / 1000 / 60) + " mn " + (String)((millis() / 1000) % 60) + "s";
+  if (var.equals("chipid")) return String((uint32_t)ESP.getEfuseMac(),HEX);
+  if (var.equals("chiprev")) return (String)ESP.getChipRevision();
+  if (var.equals("idesize")) return (String)ESP.getFlashChipSize();
+  if (var.equals("flashsize")) return (String)ESP.getPsramSize();
+  if (var.equals("cpufreq")) return (String)ESP.getCpuFreqMHz();
+  if (var.equals("freeheap")) return (String)ESP.getFreeHeap();
+  if (var.equals("memsketch")) return (String)(ESP.getSketchSize())+" / "+ (String)(ESP.getFreeSketchSpace());
+  if (var.equals("memsketch_used")) return (String)(ESP.getSketchSize());
+  if (var.equals("memsketch_free")) return (String)(ESP.getFreeSketchSpace());
+  if (var.equals("memsmeter_max")) return (String)(ESP.getSketchSize()+ESP.getFreeSketchSpace());
+  if (var.equals("temp")) return (String)temperatureRead();
+  if (var.equals("conx")) return WiFi.isConnected() ?"Yes":"No";
+  if (var.equals("staip")) return WiFi.localIP().toString();
+  if (var.equals("stagw")) return WiFi.gatewayIP().toString();
+  if (var.equals("stasub")) return WiFi.subnetMask().toString();
+  if (var.equals("dnss")) return WiFi.dnsIP().toString();
+  if (var.equals("host")) return WiFi.getHostname();
+  if (var.equals("stamac")) return WiFi.macAddress();
+  if (var.equals("apip")) return WiFi.softAPIP().toString();
+  if (var.equals("apmac")) return (String)WiFi.softAPmacAddress();
+  if (var.equals("aphost")) return WiFi.softAPgetHostname();
+  if (var.equals("apbssid")) return (String)WiFi.BSSIDstr() ;
+  return "[???]";
 }
 
 ConfigWebserver::ConfigWebserver(bool serialDebug) : Component("webserver", serialDebug)
@@ -21,17 +58,42 @@ void ConfigWebserver::start()
   // does not work ?
   server->addHandler(new CaptiveRequestHandler()).setFilter(ON_AP_FILTER); // only when requested from AP
 
+  // TODO CSS in separate file or change placeholder
+  // TODO test wifi change
   server->on("/", HTTP_GET, std::bind(&ConfigWebserver::serveIndex, this, std::placeholders::_1));
+  server->on("/info", HTTP_GET, std::bind(&ConfigWebserver::serveInfo, this, std::placeholders::_1));
+  server->on("/wifi", HTTP_GET, std::bind(&ConfigWebserver::serveWifi, this, std::placeholders::_1));
+  server->on("/custom", HTTP_GET, std::bind(&ConfigWebserver::serveCustomIndex, this, std::placeholders::_1));
   // server->onNotFound(std::bind(&ConfigWebserver::serveIndex, this, std::placeholders::_1));
   server->onNotFound([](AsyncWebServerRequest *request)
-                     { request->send(LittleFS, "/index.html", String(), false, processor); });
+                     {
+                      Serial.println("NOT FOUND"); 
+                      // TODO not found page
+                      request->send(LittleFS, "/info.html", String(), false, processor); });
   server->begin();
+}
+
+void ConfigWebserver::serveInfo(AsyncWebServerRequest *request)
+{
+  dbg("serve info");
+  request->send(LittleFS, "/info.html", String(), false, infoProcessor);
+}
+
+void ConfigWebserver::serveWifi(AsyncWebServerRequest *request)
+{
+  dbg("serve wifi");
+  request->send(LittleFS, "/wifi.html", String(), false, infoProcessor);
 }
 
 void ConfigWebserver::serveIndex(AsyncWebServerRequest *request)
 {
-  Serial.println("========== SERVE INDEX");
-  // request->send(LittleFS, "/index.html", String(), false, processor);
+  dbg("SERVE INDEX");
+  request->send(LittleFS, "/index.html", String(), false, infoProcessor);
+}
+
+  void ConfigWebserver::serveCustomIndex(AsyncWebServerRequest *request)
+  {
+  dbg("SERVE CUSTOM INDEX");
 
   // TODO handleRoot()
   // getHTTPHead(_title);
@@ -87,15 +149,15 @@ void ConfigWebserver::serveIndex(AsyncWebServerRequest *request)
 
   page += str;
 
-  String menuWifi= "<form action='/0wifi'   method='get'><button>Configure WiFi (No scan)</button></form><br/>\n";
+  String menuWifi= "<form action='/wifi'   method='get'><button>Configure WiFi (No scan)</button></form><br/>\n";
 String menuInfo = "<form action='/info'    method='get'><button>Info</button></form><br/>\n";
 String menuParam = "<form action='/param'   method='get'><button>Setup</button></form><br/>\n"; 
 String menuSep = "<hr><br/>";
 String menuUpdate = "<form action='/update'  method='get'><button>Update</button></form><br/>\n";
   
   page += menuWifi;
-  page += menuParam;
-  page += menuWifi;
+  page += menuInfo;
+  // page += menuParam;
   page += menuSep;
   page += menuUpdate;
 
