@@ -16,9 +16,12 @@ protected:
     DNSServer* dnsServer;
     AsyncWebServer* server;
   void serveIndex(AsyncWebServerRequest *request);
-  void serveCustomIndex(AsyncWebServerRequest *request);
+  // void redirect();
   void serveInfo(AsyncWebServerRequest *request);
+  void serveCSS(AsyncWebServerRequest *request);
   void serveWifi(AsyncWebServerRequest *request);
+  void serveWifiSaved(AsyncWebServerRequest *request);
+  void handleWifiSave(AsyncWebServerRequest *request);
 
 
 };
