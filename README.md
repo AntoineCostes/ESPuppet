@@ -14,6 +14,7 @@ TO DIG
 - https://github.com/ayushsharma82/WebSerial
 
 IDEAS
+- print not found host/url on webserver
 - variadic sendOSC + include OSC lib
 - clarify serialDebug implementation
 - Component checkRange

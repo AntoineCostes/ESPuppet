@@ -18,24 +18,6 @@ void WifiModule::init()
   WiFi.setAutoReconnect(true);
   // WiFi.setSleep(false);
   // WiFi.setTxPower(WIFI_POWER_19dBm); TODO parameter
-
-  // char test[8] = "1234678";
-  // WiFiManagerParameter testParam("server", "mqtt server", test, 8);
-  // wm.addParameter(&testParam);
-  // WiFiManagerParameter custom_field("customfieldid", "Custom Field Label", "Custom Field Value", 40,"placeholder=\"Custom Field Placeholder\"");
-  // wm.addParameter(&custom_field);
-  // int customFieldLength = 40;
-  // new (&custom_field) WiFiManagerParameter("customfieldid", "Custom Field Label", "Custom Field Value", customFieldLength,"placeholder=\"Custom Field Placeholder\"");
-  // wm.addParameter(&custom_field);
-  // wm.setSaveParamsCallback(std::bind(&WifiModule::saveParamCallback, this, std::placeholders::_1));
-
-  // wm.setConfigPortalBlocking(false);
-  // std::vector<const char *> menu = {"wifinoscan", "info", "param", "restart"};
-  // wm.setMenu(menu);
-  // wm.setClass("invert");
-  // wm.setConnectTimeout(5);       // how long to try to connect for before continuing
-  // wm.setConfigPortalTimeout(30); // auto close configportal after n seconds
-  // wm.setAPClientCheck(true);     // avoid timeout if client connected to softap
 }
 
 void WifiModule::loadConfig(JsonObject const &config)
@@ -77,24 +59,26 @@ String WifiModule::getDefaultBoardName()
 void WifiModule::update()
 {
   if (osc)
-    osc->update(); // TODO add OscMgr to props
+    osc->update(); 
 
-  if (millis() % 3000 < 1)
-    dbg(String(WiFi.status()));
+  if (millis() % 5000 < 1)
+    dbg(String("status: "+String(WiFi.status())));
 
   switch (WiFi.status())
   {
-  case WL_NO_SSID_AVAIL: // after disconnection
+  case WL_NO_SSID_AVAIL: // 1: after disconnection
     if (millis() - lastDisconnectTime > connectionTimeoutMs)
       initAP();
     break;
 
-  case WL_NO_SHIELD: // AP on ?
+  case WL_STOPPED:// 254
+  case WL_NO_SHIELD: // 255 
+  // AP running
     // ArduinoOTA.handle();
     configServer->update();
     break;
 
-  case WL_IDLE_STATUS: // connected but no IP yet
+  case WL_IDLE_STATUS: // 0: connected but no IP yet
     break;
 
   case WL_DISCONNECTED:
@@ -108,11 +92,6 @@ void WifiModule::update()
     break;
 
   case WL_CONNECTION_LOST:
-    break;
-
-  case WL_STOPPED:// AP on ?
-    // ArduinoOTA.handle();
-    configServer->update();
     break;
 
   default:
@@ -143,7 +122,7 @@ void WifiModule::initSTA()
 
   Preferences prefs;
   prefs.begin("wifi");
-  String ssid = prefs.getString("ssid", "");
+  String ssid = "";//prefs.getString("ssid", "");
   String pwd = prefs.getString("pwd", "");
   prefs.end();
 

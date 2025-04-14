@@ -4,7 +4,8 @@ String indexProcessor(const String &var)
 {
 
   if (var == "TITLE") return "ESPuppet Config";
-  if (var == "CONFIG") {
+  if (var == "CONFIG")
+  {
     Preferences prefs;
     prefs.begin("ESPuppet");
     String configFileName = prefs.getString("config", "notfound");
@@ -16,29 +17,52 @@ String indexProcessor(const String &var)
 
 String infoProcessor(const String &var)
 {
-  if (var.equals("uptime")) return (String)(millis() / 1000 / 60) + " mn " + (String)((millis() / 1000) % 60) + "s";
-  if (var.equals("chipid")) return String((uint32_t)ESP.getEfuseMac(),HEX);
-  if (var.equals("chiprev")) return (String)ESP.getChipRevision();
-  if (var.equals("idesize")) return (String)ESP.getFlashChipSize();
-  if (var.equals("flashsize")) return (String)ESP.getPsramSize();
-  if (var.equals("cpufreq")) return (String)ESP.getCpuFreqMHz();
-  if (var.equals("freeheap")) return (String)ESP.getFreeHeap();
-  if (var.equals("memsketch")) return (String)(ESP.getSketchSize())+" / "+ (String)(ESP.getFreeSketchSpace());
-  if (var.equals("memsketch_used")) return (String)(ESP.getSketchSize());
-  if (var.equals("memsketch_free")) return (String)(ESP.getFreeSketchSpace());
-  if (var.equals("memsmeter_max")) return (String)(ESP.getSketchSize()+ESP.getFreeSketchSpace());
-  if (var.equals("temp")) return (String)temperatureRead();
-  if (var.equals("conx")) return WiFi.isConnected() ?"Yes":"No";
-  if (var.equals("staip")) return WiFi.localIP().toString();
-  if (var.equals("stagw")) return WiFi.gatewayIP().toString();
-  if (var.equals("stasub")) return WiFi.subnetMask().toString();
-  if (var.equals("dnss")) return WiFi.dnsIP().toString();
-  if (var.equals("host")) return WiFi.getHostname();
-  if (var.equals("stamac")) return WiFi.macAddress();
-  if (var.equals("apip")) return WiFi.softAPIP().toString();
-  if (var.equals("apmac")) return (String)WiFi.softAPmacAddress();
-  if (var.equals("aphost")) return WiFi.softAPgetHostname();
-  if (var.equals("apbssid")) return (String)WiFi.BSSIDstr() ;
+  if (var.equals("uptime"))
+    return (String)(millis() / 1000 / 60) + " mn " + (String)((millis() / 1000) % 60) + "s";
+  if (var.equals("chipid"))
+    return String((uint32_t)ESP.getEfuseMac(), HEX);
+  if (var.equals("chiprev"))
+    return (String)ESP.getChipRevision();
+  if (var.equals("idesize"))
+    return (String)ESP.getFlashChipSize();
+  if (var.equals("flashsize"))
+    return (String)ESP.getPsramSize();
+  if (var.equals("cpufreq"))
+    return (String)ESP.getCpuFreqMHz();
+  if (var.equals("freeheap"))
+    return (String)ESP.getFreeHeap();
+  if (var.equals("memsketch"))
+    return (String)(ESP.getSketchSize()) + " / " + (String)(ESP.getFreeSketchSpace());
+  if (var.equals("memsketch_used"))
+    return (String)(ESP.getSketchSize());
+  if (var.equals("memsketch_free"))
+    return (String)(ESP.getFreeSketchSpace());
+  if (var.equals("memsmeter_max"))
+    return (String)(ESP.getSketchSize() + ESP.getFreeSketchSpace());
+  if (var.equals("temp"))
+    return (String)temperatureRead();
+  if (var.equals("conx"))
+    return WiFi.isConnected() ? "Yes" : "No";
+  if (var.equals("staip"))
+    return WiFi.localIP().toString();
+  if (var.equals("stagw"))
+    return WiFi.gatewayIP().toString();
+  if (var.equals("stasub"))
+    return WiFi.subnetMask().toString();
+  if (var.equals("dnss"))
+    return WiFi.dnsIP().toString();
+  if (var.equals("host"))
+    return WiFi.getHostname();
+  if (var.equals("stamac"))
+    return WiFi.macAddress();
+  if (var.equals("apip"))
+    return WiFi.softAPIP().toString();
+  if (var.equals("apmac"))
+    return (String)WiFi.softAPmacAddress();
+  if (var.equals("aphost"))
+    return WiFi.softAPgetHostname();
+  if (var.equals("apbssid"))
+    return (String)WiFi.BSSIDstr();
   return "[???]";
 }
 
@@ -67,24 +91,73 @@ void ConfigWebserver::start()
   // server->onNotFound(std::bind(&ConfigWebserver::redirect, this, std::placeholders::_1));
   server->onNotFound([](AsyncWebServerRequest *request)
                      {
-                      Serial.println("NOT FOUND"); 
-                      request->redirect("http://" + WiFi.softAPIP().toString());
-                      
-                     });
+                      Serial.println("NOT FOUND, host: "+ request->host()+", url:"+request->url()); 
+                      request->send(404, "text/plain", "Not found"); });
+
+  server->on("/success.txt", [](AsyncWebServerRequest *request)
+             { 
+              Serial.println("SUCCESS");
+              request->send(200); });
+
+  server->on("/canonical.html", [](AsyncWebServerRequest *request)
+             { 
+              // firefox captive portal call home
+              Serial.println("canonical");
+              request->redirect("http://" + WiFi.softAPIP().toString()); });
+
+  server->on("/favicon.ico", [](AsyncWebServerRequest *request)
+             { request->send(404); }); // webpage icon
+
+  // handlers from https://wokwi.com/projects/394747420094281729
+  server->on("/connecttest.txt", [](AsyncWebServerRequest *request)
+             { 
+              // windows 11 captive portal workaround
+              Serial.println("connecttest");
+              request->redirect("http://logout.net"); });
+
+  server->on("/wpad.dat", [](AsyncWebServerRequest *request)
+             { 
+              // Honestly don't understand what this is but a 404 stops win 10 keep calling this repeatedly and panicking the esp32 :)
+              Serial.println("WPAD");
+              request->redirect("http://" + WiFi.softAPIP().toString()); });
+
+  server->on("/generate_204", [](AsyncWebServerRequest *request)
+             { 
+               // android captive portal redirect
+              Serial.println("204");
+              request->redirect("http://" + WiFi.softAPIP().toString()); });
+
+  server->on("/redirect", [](AsyncWebServerRequest *request)
+             { 
+              // microsoft redirect
+              Serial.println("redrect");
+              request->redirect("http://" + WiFi.softAPIP().toString()); });
+
+  server->on("/hotspot-detect.html", [](AsyncWebServerRequest *request)
+             { 
+              // apple call home
+              Serial.println("hotspot");
+              request->redirect("http://" + WiFi.softAPIP().toString()); });
+
+  server->on("/ncsi.txt", [](AsyncWebServerRequest *request)
+             { 
+              // windows call home
+              Serial.println("ncsi");
+              request->redirect("http://" + WiFi.softAPIP().toString()); });
+
   server->begin();
 }
 
-// void ConfigWebserver::redirect()
-// {
-  // server->addHeader("Location", "/",true); //Redirect to our html web page 
-  // server->_send(302, "text/plane",""); 
+void ConfigWebserver::redirect(AsyncWebServerRequest *request)
+{
+
+  // server->addHeader("Location", "/",true); //Redirect to our html web page
+  // server->_send(302, "text/plane","");
 
   // server->sendHeader("Location","http://" + WiFi.softAPIP().toString(), true); // @HTTPHEAD send redirect
   // server->send ( 302, "text/plain", ""); // Empty content inhibits Content-length header so we have to close the socket ourselves.
   // server->client().stop();
-
-// }
-
+}
 
 void ConfigWebserver::serveIndex(AsyncWebServerRequest *request)
 {
@@ -110,34 +183,23 @@ void ConfigWebserver::serveWifiSaved(AsyncWebServerRequest *request)
   request->send(LittleFS, "/wifisaved.html", "text/html");
 }
 
-
 void ConfigWebserver::handleWifiSave(AsyncWebServerRequest *request)
 {
   dbg("SAVE WIFI");
-  
-  // String ssid = "";
-  // String pwd = "";
-  
-  int params = request->params();
-  for (int i = 0; i < params; i++) {
-    const AsyncWebParameter* p = request->getParam(i);
-    // Serial.println("POST[%s]: %s\n", p->name(), p->value());
-    dbg(p->name());
-    if (p->name().equals("ssid")) Serial.println("EQUALS");
-  }
-  dbg(String(request->hasParam("ssid")));
 
-  if (request->hasParam("ssid") && request->hasParam("pwd"))
+  if (request->hasParam("ssid", true) && request->hasParam("pwd", true))
   {
-    dbg("OK");
-    const String ssid = request->getParam("ssid")->value();
-    const String pwd = request->getParam("pwd")->value();
-    dbg(ssid);
-    dbg(pwd);
-  }
-  // String ssid = request->getParam("s")->value();
-  // String pwd = request->getParam("p")->value();
+    const String ssid = request->getParam("ssid", true)->value();
+    const String pwd = request->getParam("pwd", true)->value();
 
+    Preferences prefs;
+    prefs.begin("wifi");
+    prefs.putString("ssid", ssid.c_str());
+    prefs.putString("pwd", pwd.c_str());
+    prefs.end();
+
+    dbg("new credentials: " + ssid + " / " + pwd);
+  }
 
   request->redirect("http://" + WiFi.softAPIP().toString());
 }
@@ -157,7 +219,5 @@ void ConfigWebserver::stop()
 
 void ConfigWebserver::update()
 {
-  if (millis() % 500 < 1)
-    Serial.print(".");
   dnsServer->processNextRequest();
 }
