@@ -43,6 +43,7 @@ String infoProcessor(const String &var)
     return (String)temperatureRead();
   if (var.equals("conx"))
     return WiFi.isConnected() ? "Yes" : "No";
+    // TODO add stassid
   if (var.equals("staip"))
     return WiFi.localIP().toString();
   if (var.equals("stagw"))
@@ -58,11 +59,11 @@ String infoProcessor(const String &var)
   if (var.equals("apip"))
     return WiFi.softAPIP().toString();
   if (var.equals("apmac"))
-    return (String)WiFi.softAPmacAddress();
+    return WiFi.softAPmacAddress();
   if (var.equals("aphost"))
     return WiFi.softAPgetHostname();
   if (var.equals("apbssid"))
-    return (String)WiFi.BSSIDstr();
+    return WiFi.BSSIDstr();
   return "[???]";
 }
 
@@ -74,7 +75,7 @@ void ConfigWebserver::start()
 {
   dnsServer = new DNSServer();
   dnsServer->setErrorReplyCode(DNSReplyCode::NoError);
-  // dnsServer->setTTL(300); TODO what is this for ?
+  dnsServer->setTTL(6000); // default is 60, not sure what value is best
   dnsServer->start(53, "*", WiFi.softAPIP());
   dbg("started on :" + WiFi.softAPIP().toString());
 
