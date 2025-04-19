@@ -21,9 +21,7 @@ void OSCManager::update()
 {
   if (millis() > lastSentPingMs + oscPingTimeoutMs)
   {
-    String addr = (boardName=="")?"":"/" + boardName + "/ping";
-    OSCMessage pingMsg(addr.c_str());
-    sendMessage(pingMsg);
+    sendOSC("/ping");
     lastSentPingMs = millis();
   }
 

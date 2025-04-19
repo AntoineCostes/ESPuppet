@@ -9,7 +9,9 @@
             "serialDebug":true,
             "targetPort":12345,
             "listeningPort":12345,
-            "targetIP":"127.0.0.1"
+            "targetIP":"192.168.137.255",
+            "oscReceiveDebug":true,
+            "oscSendDebug":false
         }
     },
     "leds":
