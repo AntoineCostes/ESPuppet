@@ -1,6 +1,6 @@
 #include "LedModule.h"
 
-LedModule::LedModule() : Module("leds")
+LedModule::LedModule() : Module("ledstrip")
 {
 }
 
@@ -62,93 +62,58 @@ void LedModule::clearAll()
         strip->clear();
 }
 
-void LedModule::setSolidAll(uint8_t r, uint8_t g, uint8_t b)
+void LedModule::setPattern(LedPattern pattern, uint8_t r, uint8_t g, uint8_t b, float parameter)
 {
     for (int i = 0; i < strips.size(); i++)
-        setSolid(i, r, g, b);
+        setPattern(i, pattern, r, g, b, parameter);
 }
 
-void LedModule::setSolid(uint8_t index, uint8_t r, uint8_t g, uint8_t b)
+void LedModule::setPattern(uint8_t index,LedPattern pattern, uint8_t r, uint8_t g, uint8_t b, float parameter)
 {
     if (index < 0 || index >= strips.size())
     {
         err("invalid ledstrip index: "+String(index)+ "while it should be between 0 and "+String(strips.size()));
         return;
     }
-    strips[index]->setSolid(r, g, b);
-}
-
-void LedModule::setWaveAll(uint8_t r, uint8_t g, uint8_t b, float frequency)
-{
-    for (int i = 0; i < strips.size(); i++)
-        setWave(i, r, g, b, frequency);
-}
-
-void LedModule::setWave(uint8_t index, uint8_t r, uint8_t g, uint8_t b, float frequency)
-{
-    if (index < 0 || index >= strips.size())
-    {
-        err("invalid ledstrip index: "+String(index)+ "while it should be between 0 and "+String(strips.size()));
-        return;
-    }
-    strips[index]->setWave(r, g, b, frequency);
-}
-
-void LedModule::setBlinkAll(uint8_t r, uint8_t g, uint8_t b, float frequency)
-{
-    for (int i = 0; i < strips.size(); i++)
-        setBlink(i, r, g, b, frequency);
-}
-
-void LedModule::setBlink(uint8_t index, uint8_t r, uint8_t g, uint8_t b, float frequency)
-{
-    if (index < 0 || index >= strips.size())
-    {
-        err("invalid ledstrip index: "+String(index)+ "while it should be between 0 and "+String(strips.size()));
-        return;
-    }
-    strips[index]->setBlink(r, g, b, frequency);
+    dbg("set pattern "+String(pattern) +" for strip #"+String(index)+" with param = "+String(parameter));
+    uint32_t color = ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;
+    strips[index]->setPattern(pattern, color, parameter);
 }
 
 void LedModule::handleOSCCommand(OSCMessage *command)
 {
-    if (command->match("/led/color"))
+    if (command->match("/ledstrip/set"))
     {
-        if (command->size() == 3)
+        if (command->size() == 5 || command->size() == 6) // index, mode, r, g, b, (parameter)
         {
-            if (command->isInt(0) && command->isInt(1) && command->isInt(2))
+            if (command->isInt(0) && command->getInt(0) >= 0)
             {
-                uint8_t r = command->getInt(0);
-                uint8_t g = command->getInt(1);
-                uint8_t b = command->getInt(2);
-                setSolidAll(r, g, b);
-            }
-            else if (command->isFloat(0) && command->isFloat(1) && command->isFloat(2))
-            {
-                uint8_t r = command->getFloat(0)*255;
-                uint8_t g = command->getFloat(1)*255;
-                uint8_t b = command->getFloat(2)*255;
-                setSolidAll(r, g, b);
-            }
-        }
-        else if (command->size() == 4)
-        {
-            if (command->isInt(0) && command->isInt(1) && command->isInt(2) && command->isInt(3))
-            {
-                uint8_t index = command->getInt(0);
-                uint8_t r = command->getInt(1);
-                uint8_t g = command->getInt(2);
-                uint8_t b = command->getInt(3);
-                setSolid(index, r, g, b);
-            }
-            else if (command->isInt(0) && command->isFloat(1) && command->isFloat(2) && command->isFloat(3))
-            {
-                uint8_t index = command->getInt(0);
-                uint8_t r = command->getFloat(1)*255;
-                uint8_t g = command->getFloat(2)*255;
-                uint8_t b = command->getFloat(3)*255;
-                setSolid(index, r, g, b);
-            }
+                int index = command->getInt(0);
+                if (command->isInt(1) && command->getInt(1) >= 0)
+                {
+                    LedPattern pattern = static_cast<LedPattern>(command->getInt(1));
+                    float parameter = 1.0f;
+                    if (command->size() == 6 && command->isFloat(5)) parameter = command->getFloat(5);
+                    if (pattern == LedPattern::BLINK || pattern == LedPattern::OSCILLATOR) parameter /= 10.0f;
+
+                    if (command->isInt(2) && command->isInt(3) && command->isInt(4))
+                    {
+                        uint8_t r = command->getInt(2);
+                        uint8_t g = command->getInt(3);
+                        uint8_t b = command->getInt(4);
+                        setPattern(index, pattern, r, g, b, parameter);
+                    }
+                    else if (command->isFloat(2) && command->isFloat(3) && command->isFloat(4))
+                    {
+                        uint8_t r = command->getFloat(2)*255;
+                        uint8_t g = command->getFloat(3)*255;
+                        uint8_t b = command->getFloat(4)*255;
+                        setPattern(index, pattern, r, g, b, parameter);
+                    }
+                    else if (command->isDouble(2)) dbg("DOUBLE");
+                    else err("args 2, 3, 4 should be int or float");
+                } else err("arg 1 should be positive int for mode");
+            } else err("arg 0 should be positive int for index");
         }
         else
         {

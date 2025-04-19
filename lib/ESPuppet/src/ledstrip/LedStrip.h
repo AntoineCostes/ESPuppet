@@ -6,9 +6,11 @@
 
 enum LedPattern
 {
-    STEADY,
-    OSCILLATE,
-    BLINK
+    SOLID,
+    BLINK,
+    OSCILLATOR,
+    CHASE,
+    RAINBOW
 };
 
 class LedStrip : public Component
@@ -24,11 +26,7 @@ class LedStrip : public Component
 
         void setBrightness(float value);
 
-        void setSolid(uint8_t r, uint8_t g, uint8_t b);
-        void setWave(uint8_t r, uint8_t g, uint8_t b, float frequency = 1.0f);
-        void notifyWave(uint8_t r, uint8_t g, uint8_t b, float frequency = 1.0f);
-        void setBlink(uint8_t r, uint8_t g, uint8_t b, float frequency = 1.0f);
-        void notifyBlink(uint8_t r, uint8_t g, uint8_t b, float frequency = 1.0f);
+        void setPattern(LedPattern pattern, uint32_t patternColor, float parameter);
 
     protected:
         Adafruit_NeoPixel strip;
@@ -36,6 +34,7 @@ class LedStrip : public Component
         float brightness;
         uint32_t patternColor;
         LedPattern pattern;
-        float frequency;
+        float parameter;
         long lastLedChangeMs;
+        long increment;
 };

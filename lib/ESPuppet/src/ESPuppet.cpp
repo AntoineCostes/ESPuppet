@@ -60,7 +60,7 @@ void ESPuppet::update()
 
 void ESPuppet::gotOSCCommand(const Command &command)
 { 
-  if (command.targetModule.equals("led")) ledModule.handleOSCCommand(command.command);
+  if (command.targetModule.equals("ledstrip")) ledModule.handleOSCCommand(command.command);
   else if (command.targetModule.equals("gpio")) gpioModule.handleOSCCommand(command.command);
   else Serial.println("command not delivered to module: "+command.targetModule);
 }
@@ -68,25 +68,27 @@ void ESPuppet::gotOSCCommand(const Command &command)
 // TODO make ledModule Status + notify
 void ESPuppet::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
 {
+  Serial.println("EVENT "+String(event));
+
   switch (event)
   {
   case ARDUINO_EVENT_WIFI_STA_START:
-    ledModule.setWave(0, 0, 0, 100);
+    ledModule.setPattern(LedPattern::OSCILLATOR, 0, 0, 100);
     break;
   case ARDUINO_EVENT_WIFI_STA_STOP:
-    ledModule.setBlink(0, 100, 0, 0);
+    ledModule.setPattern(LedPattern::BLINK, 100, 0, 0);
     break;
   case ARDUINO_EVENT_WIFI_STA_CONNECTED:
-    ledModule.setSolid(0, 0, 100, 0);
+    ledModule.setPattern(LedPattern::SOLID, 0, 100, 0);
     break;
   case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
-    ledModule.setSolid(0, 100, 0, 0);
+    ledModule.setPattern(LedPattern::SOLID, 100, 0, 0);
     break;
   case ARDUINO_EVENT_WIFI_AP_START:
-    ledModule.setWave(0, 0, 100, 100);
+    ledModule.setPattern(LedPattern::OSCILLATOR, 0, 100, 100);
     break;
   case ARDUINO_EVENT_WIFI_AP_STACONNECTED:
-    // ledModule.setSolid(0, 100, 0, 0);
+  // ledModule.setPattern(LedPattern::SOLID, 100, 0, 0);
     // notify client connected
     break;
   default:
