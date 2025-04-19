@@ -14,6 +14,8 @@ TO DIG
 - https://github.com/ayushsharma82/WebSerial
 
 IDEAS
+- inputComponent génère des évènement, outputComponent est contrôlable par OSC ?
+- FileManager Component
 - print not found host/url on webserver
 - variadic sendOSC + include OSC lib
 - clarify serialDebug implementation

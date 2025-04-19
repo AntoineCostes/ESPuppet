@@ -71,7 +71,10 @@ void LedModule::setSolidAll(uint8_t r, uint8_t g, uint8_t b)
 void LedModule::setSolid(uint8_t index, uint8_t r, uint8_t g, uint8_t b)
 {
     if (index < 0 || index >= strips.size())
+    {
+        err("invalid ledstrip index: "+String(index)+ "while it should be between 0 and "+String(strips.size()));
         return;
+    }
     strips[index]->setSolid(r, g, b);
 }
 
@@ -84,7 +87,10 @@ void LedModule::setWaveAll(uint8_t r, uint8_t g, uint8_t b, float frequency)
 void LedModule::setWave(uint8_t index, uint8_t r, uint8_t g, uint8_t b, float frequency)
 {
     if (index < 0 || index >= strips.size())
+    {
+        err("invalid ledstrip index: "+String(index)+ "while it should be between 0 and "+String(strips.size()));
         return;
+    }
     strips[index]->setWave(r, g, b, frequency);
 }
 
@@ -97,7 +103,10 @@ void LedModule::setBlinkAll(uint8_t r, uint8_t g, uint8_t b, float frequency)
 void LedModule::setBlink(uint8_t index, uint8_t r, uint8_t g, uint8_t b, float frequency)
 {
     if (index < 0 || index >= strips.size())
+    {
+        err("invalid ledstrip index: "+String(index)+ "while it should be between 0 and "+String(strips.size()));
         return;
+    }
     strips[index]->setBlink(r, g, b, frequency);
 }
 
@@ -141,5 +150,13 @@ void LedModule::handleOSCCommand(OSCMessage *command)
                 setSolid(index, r, g, b);
             }
         }
+        else
+        {
+            err("invalid number arguments for "+String(command->getAddress()));
+        }
     } 
+    else
+    {
+        err("unkown OSC command: "+String(command->getAddress()));
+    }
 }

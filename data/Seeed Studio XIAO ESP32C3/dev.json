@@ -17,39 +17,34 @@
     "leds":
     {
         "serialDebug":true,
-        "led1":
+        "neon":
         {
             "pin":10,
-            "numPixels":8, 
-            "brightness":0.1,
+            "numPixels":100, 
+            "brightness":0.5,
             "wifiDebug":true
         },
-        "led2":
+        "face":
         {
-            "pin":9
+            "pin":9,
+            "numPixels":50, 
+            "brightness":0.5,
+            "wifiDebug":true
+        },
+        "baie":
+        {
+            "pin":8,
+            "numPixels":40, 
+            "brightness":0.5,
+            "wifiDebug":true
         }
     },
-    "servos":
+    "gpio":
     {
-        "arm":
+        "serialDebug":true,
+        "dout":
         {
-            "pin":4
-        },
-        "leg":
-        {
-            "pin":5
-        }
-    },
-    "buttons":
-    {
-        "btn1":
-        {
-            "pin":8
-        },
-        "btn2":
-        {
-            "pin":7
+            "pins":[0, 1, 2, 3, 4, 5, 6]
         }
     }
-
 }

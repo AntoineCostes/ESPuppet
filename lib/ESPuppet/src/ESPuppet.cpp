@@ -14,6 +14,7 @@ void ESPuppet::init()
     wifiModule.init();
     wifiModule.addListener(std::bind(&ESPuppet::gotOSCCommand, this, std::placeholders::_1));
     ledModule.init();
+    gpioModule.init();
 
     // load config file
     String configFileName = "default";
@@ -43,6 +44,7 @@ void ESPuppet::init()
         {
           ledModule.loadConfig(json["leds"].as<JsonObject>());
           wifiModule.loadConfig(json["wifi"].as<JsonObject>());
+          gpioModule.loadConfig(json["gpio"].as<JsonObject>());
         }
     } else Serial.println("no config file ! Please upload LittleFS image");
 
@@ -53,12 +55,14 @@ void ESPuppet::update()
 {
     ledModule.update();
     wifiModule.update();
+    gpioModule.update();
 }
 
 void ESPuppet::gotOSCCommand(const Command &command)
 { 
-  Serial.println("command for: "+command.targetModule);
   if (command.targetModule.equals("led")) ledModule.handleOSCCommand(command.command);
+  else if (command.targetModule.equals("gpio")) gpioModule.handleOSCCommand(command.command);
+  else Serial.println("command not delivered to module: "+command.targetModule);
 }
 
 // TODO make ledModule Status + notify
