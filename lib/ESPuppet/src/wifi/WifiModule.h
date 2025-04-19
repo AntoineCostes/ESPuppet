@@ -12,7 +12,6 @@ public:
     void init() override;
     void update() override;
     void loadConfig(JsonObject const &config) override;
-    String getDefaultBoardName();
 
     void initAP();
     void initSTA();

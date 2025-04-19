@@ -24,8 +24,8 @@ void WifiModule::loadConfig(JsonObject const &config)
 {
   serialDebug = config["serialDebug"] | serialDebug;
   connectionTimeoutMs = config["connectionTimeoutMs"] | connectionTimeoutMs;
-  String configFileName = "default";
-  boardName = config["boardName"] | configFileName;
+  boardName = config["boardName"] | "default";
+  boardName.replace(" ", "_");
 
   if (config["osc"])
   {
@@ -45,15 +45,6 @@ void WifiModule::loadConfig(JsonObject const &config)
   configServer = new ConfigWebserver(serverDebug);
 
   initSTA();
-}
-
-String WifiModule::getDefaultBoardName()
-{
-  Preferences prefs;
-  prefs.begin("ESPuppet");
-  String configFileName = prefs.getString("config", "default");
-  prefs.end();
-  return "ESPuppet-" + configFileName;
 }
 
 void WifiModule::update()
@@ -109,7 +100,7 @@ void WifiModule::initAP()
   WiFi.mode(WIFI_AP);
   WiFi.setSleep(false); // can improve ap stability
 
-  String apName = "CONFIG-" + String(ARDUINO_BOARD);
+  String apName = "CONFIG " + boardName;
   WiFi.softAP(apName.c_str());
 }
 

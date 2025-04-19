@@ -3,7 +3,7 @@
     "wifi":
     {
         "serialDebug":true,
-        "boardName":"default",
+        "boardName":"ESPuppet_Default",
         "osc":
         {
             "serialDebug":true,

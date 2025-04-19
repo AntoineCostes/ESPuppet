@@ -4,11 +4,15 @@ String indexProcessor(const String &var)
 {
 
   if (var == "TITLE") return "ESPuppet Config";
+  if (var == "BOARD")
+  {
+    return String(ARDUINO_BOARD);
+  }
   if (var == "CONFIG")
   {
     Preferences prefs;
     prefs.begin("ESPuppet");
-    String configFileName = prefs.getString("config", "notfound");
+    String configFileName = prefs.getString("config", "config file name not found");
     prefs.end();
     return configFileName;
   }
@@ -85,10 +89,11 @@ void ConfigWebserver::start()
   server->addHandler(new CaptiveRequestHandler()).setFilter(ON_AP_FILTER); // only when requested from AP
 
   server->on("/", HTTP_GET, std::bind(&ConfigWebserver::serveIndex, this, std::placeholders::_1));
+  server->on("/portal.css", HTTP_GET, std::bind(&ConfigWebserver::serveCSS, this, std::placeholders::_1));
   server->on("/info", HTTP_GET, std::bind(&ConfigWebserver::serveInfo, this, std::placeholders::_1));
   server->on("/wifi", HTTP_GET, std::bind(&ConfigWebserver::serveWifi, this, std::placeholders::_1));
   server->on("/wifisave", HTTP_POST, std::bind(&ConfigWebserver::handleWifiSave, this, std::placeholders::_1));
-  server->on("/portal.css", HTTP_GET, std::bind(&ConfigWebserver::serveCSS, this, std::placeholders::_1));
+  server->on("/restart", [](AsyncWebServerRequest *request) { request->send(200); ESP.restart(); }); 
   // server->onNotFound(std::bind(&ConfigWebserver::redirect, this, std::placeholders::_1));
   server->onNotFound([](AsyncWebServerRequest *request)
                      {

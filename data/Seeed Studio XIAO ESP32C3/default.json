@@ -4,7 +4,7 @@
     {
         "serialDebug":true,
         "connectionTimeoutMs": 1000,
-        "boardName":"default",
+        "boardName":"ESPuppet_Default",
         "osc":
         {
             "serialDebug":true,
