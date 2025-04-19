@@ -24,7 +24,7 @@ bool Module::reservePin(int pin)
     // }
     // for (int pin : pins)
     // {
-        dbg("-------------- registered pin #"+String(pin));
+        dbg("----- registered pin #"+String(pin));
         Module::reservedPins.insert(pin);
     // }
     return true;

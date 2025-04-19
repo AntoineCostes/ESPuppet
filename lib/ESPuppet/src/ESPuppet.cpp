@@ -19,6 +19,7 @@ void ESPuppet::init()
     String configFileName = "default";
     Preferences prefs;
     prefs.begin("ESPuppet");
+    // prefs.putString("config", "dev");
     if (prefs.isKey("config")) configFileName = prefs.getString("config");
     else prefs.putString("config", "default");
     prefs.end();

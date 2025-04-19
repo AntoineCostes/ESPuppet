@@ -17,7 +17,6 @@ void LedModule::update()
 void LedModule::loadConfig(JsonObject const &config)
 {
     serialDebug = config["serialDebug"] | false;
-    dbg("load config");
 
     for (JsonPair kv : config)
     {
@@ -36,13 +35,16 @@ void LedModule::registerLedStrip(JsonObject const &config)
     if (pin > 0 && numPixels > 0)
         registerLedStrip(pin, numPixels, brightness);
     else
-        err("cannot register ledstrip, pin & numPixels should be positive !");
+        err("cannot register ledstrip, pin ("+ String(pin)+") & numPixels ("+String(numPixels)+") should be positive !");
 }
 
 void LedModule::registerLedStrip(int pin, int numPixels, float brightness, neoPixelType type)
 {
     if (Module::reservePin(pin))
+    {
+        dbg("Register strip with "+String(numPixels)+ " leds on pin #"+ String(pin));
         strips.emplace_back(new LedStrip(pin, numPixels, brightness, type));
+    }
     else
         err("cannot register ledstrip, pin" + String(pin) + " is reserved");
 }

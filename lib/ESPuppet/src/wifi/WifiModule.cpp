@@ -122,7 +122,7 @@ void WifiModule::initSTA()
 
   Preferences prefs;
   prefs.begin("wifi");
-  String ssid = "";//prefs.getString("ssid", "");
+  String ssid = prefs.getString("ssid", "");
   String pwd = prefs.getString("pwd", "");
   prefs.end();
 
