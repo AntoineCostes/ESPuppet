@@ -1,9 +1,9 @@
 #pragma once
 #include "util/Includes.h"
-#include "files/FileManager.h"
+#include "common/FileManager.h"
 #include "wifi/WifiModule.h"
-#include "outputs/ledstrip/LedModule.h"
-#include "outputs/gpio/GPIOModule.h"
+#include "ledstrip/LedModule.h"
+#include "gpio/GPIOModule.h"
 
 class ESPuppet
 {
