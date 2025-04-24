@@ -41,19 +41,17 @@ void OSCManager::update()
       {
         targetIP = udp.remoteIP();
         dbg("new target: " + String(targetPort) + "@" + targetIP.toString());
-    }
+      }
 
-    if (msg.match("/yo"))
-    {
-      // sendEvent(Command(Command::Type::HANDSHAKE));
+      if (msg.match("/yo"))
+      {
+        dbg("yo TODO");
+      }
+      else
+      {
+        sendEvent(Command(&msg));
+      }
     }
-    else
-    {
-      sendEvent(Command(&msg));
-
-    }
-  }
-
   }
 }
 

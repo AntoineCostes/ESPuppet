@@ -20,9 +20,9 @@ void ESPuppet::init()
     String configFileName = "default";
     Preferences prefs;
     prefs.begin("ESPuppet");
-    // prefs.putString("config", "dev");
     if (prefs.isKey("config")) configFileName = prefs.getString("config");
     else prefs.putString("config", "default");
+    // configFileName = prefs.getString("config", "default") same ?
     prefs.end();
     Serial.println("loading config: "+configFileName);
 

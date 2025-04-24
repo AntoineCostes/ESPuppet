@@ -31,9 +31,10 @@ void LedModule::registerLedStrip(JsonObject const &config)
     int numPixels = config["numPixels"] | -1;
     float brightness = config["brightness"] | 0.5f;
     bool wifiDebug = config["wifiDebug"] | false;
-
+    bool grb = config["grb"] | true;
+    
     if (pin > 0 && numPixels > 0)
-        registerLedStrip(pin, numPixels, brightness);
+        registerLedStrip(pin, numPixels, brightness, grb?NEO_GRB:NEO_RGB + NEO_KHZ800);
     else
         err("cannot register ledstrip, pin ("+ String(pin)+") & numPixels ("+String(numPixels)+") should be positive !");
 }
@@ -52,7 +53,11 @@ void LedModule::registerLedStrip(int pin, int numPixels, float brightness, neoPi
 void LedModule::clear(uint8_t index)
 {
     if (index < 0 || index >= strips.size())
+    {
+        // TODO Module::checkIndex ?
+        err("invalid ledstrip index: "+String(index)+ "while it should be between 0 and "+String(strips.size()));
         return;
+    }
     strips[index]->clear();
 }
 

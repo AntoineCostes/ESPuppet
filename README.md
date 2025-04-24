@@ -2,11 +2,16 @@
 ESP32 firmware for animatronics and connected stage props
 
 ROADMAP
+- liste des config files
+- fix crash if no littleFS
+- ServoPWMShield separate class + servo start
+- neopixel gamma
 - ledModule advertise/notify -> wifi debug
 - button events in main.cpp
 - Parameters -> automated loadConfig + no handleOSCCommand
 - config portal html -> setup wifi + pick config file
 - pin management -> config errors
+- niceName from config ? est-ce qu'on peut avoir des entrées identiques ?
 
 TO DIG
 - wifi set power
@@ -14,6 +19,7 @@ TO DIG
 - https://github.com/ayushsharma82/WebSerial
 
 IDEAS
+- lastUpdateMs in component ?
 - inputComponent génère des évènement, outputComponent est contrôlable par OSC ?
 - FileManager Component
 - print not found host/url on webserver

@@ -9,7 +9,7 @@ public:
     LedModule();
 
     void init() override;
-    void update();
+    void update() override;
 
     void loadConfig(JsonObject const &config) override;
     void clear(uint8_t index);

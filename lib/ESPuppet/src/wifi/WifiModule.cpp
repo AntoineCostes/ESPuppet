@@ -193,8 +193,7 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     break;
 
   case ARDUINO_EVENT_WIFI_STA_GOT_IP:
-    Serial.print("Event: Obtained IP address: ");
-    Serial.println(WiFi.localIP());
+  dbg("Event: Obtained IP address: "+WiFi.localIP().toString());
     dbg(String(info.wifi_sta_disconnected.reason));
     // server->start();
     break;

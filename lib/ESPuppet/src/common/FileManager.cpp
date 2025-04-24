@@ -15,6 +15,10 @@ void FileManager::init()
     printFilesInDirectory("/", 1);
 }
 
+bool FileManager::exists(String filePath)
+{
+    return LittleFS.exists(filePath);
+}
 
 File FileManager::openFile(String filePath)
 {

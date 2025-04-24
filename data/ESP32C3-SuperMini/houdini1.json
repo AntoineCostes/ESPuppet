@@ -1,9 +1,8 @@
 {
-    "name":"dev",
     "wifi":
     {
         "serialDebug":true,
-        "boardName":"ESPuppet_Dev",
+        "boardName":"Houdini-1",
         "osc":
         {
             "serialDebug":true,
@@ -19,7 +18,7 @@
         "serialDebug":true,
         "neon":
         {
-            "pin":1,
+            "pin":21,
             "numPixels":100, 
             "brightness":0.5,
             "wifiDebug":true,
@@ -27,17 +26,49 @@
         },
         "face":
         {
-            "pin":3,
+            "pin":20,
             "numPixels":50, 
             "brightness":0.5,
             "wifiDebug":true
         },
         "baie":
         {
-            "pin":4,
+            "pin":10,
             "numPixels":40, 
             "brightness":0.5,
             "wifiDebug":true
+        },
+        "extra1":
+        {
+            "pin":9,
+            "numPixels":40, 
+            "brightness":0.5,
+            "wifiDebug":true
+        },
+        "extra2":
+        {
+            "pin":8,
+            "numPixels":40, 
+            "brightness":0.5,
+            "wifiDebug":true
+        }
+    },
+    "servo":
+    {
+        "serialDebug":true,
+        "gauche":
+        {
+            "pin":6,
+            "min":0, 
+            "max":180,
+            "inverse":false
+        },
+        "droite":
+        {
+            "pin":5,
+            "min":0, 
+            "max":90,
+            "inverse":false
         }
     },
     "gpio":
@@ -45,7 +76,7 @@
         "serialDebug":true,
         "dout":
         {
-            "pins":[5,6,7]
+            "pins":[0,1,2,3]
         }
     }
 }

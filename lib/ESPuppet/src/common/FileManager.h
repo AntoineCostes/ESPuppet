@@ -9,4 +9,5 @@ class FileManager
         std::vector<String> getFileNameList(const char *extension);
         void printFilesInDirectory(const char *dirname, uint8_t levels);
         File openFile(String fileName);
+        bool exists(String fileName);
 };

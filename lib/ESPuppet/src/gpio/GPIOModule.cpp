@@ -20,6 +20,7 @@ void GPIOModule::loadConfig(JsonObject const &config)
 
 }
 
+// TODO start & inverse parameters
 void GPIOModule::registerDigitalOutPins(JsonArray const &pins)
 {
     for(JsonVariant pin : pins)
@@ -28,6 +29,7 @@ void GPIOModule::registerDigitalOutPins(JsonArray const &pins)
         {
             digOutPins.emplace_back(pin);
             pinMode(pin, OUTPUT);
+            digitalWrite(pin, HIGH); // FIXME add inverse parameter
         } else
         err("cannot register digital out on pin #:"+String(pin));
     }
@@ -42,9 +44,7 @@ void GPIOModule::setDigitalOut(int index, bool value)
     }
     // dbg("set pin "+String(digOutPins[index])+value?"HIGH":"LOW");
     dbg("set dout #"+String(digOutPins[index]));
-    if (value) dbg("HIGH");
-    else dbg("LOW");
-    digitalWrite(digOutPins[index], value);
+    digitalWrite(digOutPins[index], !value); // FIXME add inverse parameter
 }
 
 void GPIOModule::handleOSCCommand(OSCMessage *command)
