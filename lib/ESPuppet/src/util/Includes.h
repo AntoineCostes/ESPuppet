@@ -12,7 +12,7 @@
 #include <ArduinoJson.h>       
 
 // Wifi
-//#include <WiFi.h>
+#include <WiFi.h>
 #include <ESPmDNS.h>
 #include <ESPAsyncWebServer.h>
 // #include <AsyncTCP.h>
@@ -21,3 +21,5 @@
 #include <OSCMessage.h>
 
 #include <Adafruit_NeoPixel.h>
+#include <ESP32Servo.h>
+#include <Adafruit_MotorShield.h> 

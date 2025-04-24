@@ -3,6 +3,7 @@
 #include "common/FileManager.h"
 #include "wifi/WifiModule.h"
 #include "ledstrip/LedModule.h"
+#include "servo/ServoModule.h"
 #include "gpio/GPIOModule.h"
 
 class ESPuppet
@@ -19,9 +20,10 @@ public:
     void initWifi();
 
     FileManager fileModule;
-    LedModule ledModule;
     WifiModule wifiModule;
     GPIOModule gpioModule;
+    LedModule ledModule;
+    ServoModule servoModule;
 
 protected:
     void WiFiEvent(WiFiEvent_t event, arduino_event_info_t info);
