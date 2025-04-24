@@ -40,7 +40,7 @@ void WifiModule::loadConfig(JsonObject const &config)
     osc = new OSCManager(listeningPort, targetPort, targetIP, boardName, oscPingTimeoutMs, oscSendDebug, oscReceiveDebug);
     osc->addListener(std::bind(&WifiModule::gotOSCCommand, this, std::placeholders::_1));
   }
-  
+
   bool serverDebug = config["webserver"]["serialDebug"] | false;
   configServer = new ConfigWebserver(serverDebug);
 
@@ -50,10 +50,10 @@ void WifiModule::loadConfig(JsonObject const &config)
 void WifiModule::update()
 {
   if (osc)
-    osc->update(); 
+    osc->update();
 
   if (millis() % 5000 < 1)
-    dbg(String("status: "+String(WiFi.status())));
+    dbg(String("status: " + String(WiFi.status())));
 
   switch (WiFi.status())
   {
@@ -62,10 +62,10 @@ void WifiModule::update()
       initAP();
     break;
 
-  case WL_STOPPED:// 254
-  case WL_NO_SHIELD: // 255 
-  // AP running
-    // ArduinoOTA.handle();
+  case WL_STOPPED:   // 254
+  case WL_NO_SHIELD: // 255
+                     // AP running
+    ArduinoOTA.handle();
     configServer->update();
     break;
 
@@ -76,7 +76,7 @@ void WifiModule::update()
     break;
 
   case WL_CONNECTED:
-    // ArduinoOTA.handle();
+    ArduinoOTA.handle();
     break;
 
   case WL_CONNECT_FAILED:
@@ -113,6 +113,7 @@ void WifiModule::initSTA()
 
   Preferences prefs;
   prefs.begin("wifi");
+
   String ssid = prefs.getString("ssid", "");
   String pwd = prefs.getString("pwd", "");
   prefs.end();
@@ -127,8 +128,7 @@ void WifiModule::initSTA()
     WiFi.mode(WIFI_STA);
     dbg("Connecting to " + ssid + " (" + pwd + ")...");
     WiFi.begin(ssid.c_str(), pwd.c_str());
-    
-    initMDNS(); 
+    initMDNS();
   }
 }
 
@@ -149,6 +149,42 @@ void WifiModule::initMDNS()
     err("could not setup MDNS");
 }
 
+void WifiModule::initOTA()
+{
+  dbg("init OTA");
+  ArduinoOTA.setHostname(boardName.c_str());
+  ArduinoOTA.onStart([]()
+                     {
+    String type;
+    if (ArduinoOTA.getCommand() == U_FLASH) {
+      type = "sketch";
+    } else { // U_FS
+      type = "filesystem";
+    }
+
+    // NOTE: if updating FS this would be the place to unmount FS using FS.end()
+    Serial.println("[OTA] Start updating " + type); });
+  ArduinoOTA.onEnd([]()
+                   { Serial.println("\nEnd"); });
+  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total)
+                        { Serial.printf("Progress: %u%%\r", (progress / (total / 100))); });
+  ArduinoOTA.onError([](ota_error_t error)
+                     {
+    Serial.printf("[OTA] Error[%u]: ", error);
+    if (error == OTA_AUTH_ERROR) {
+      Serial.println("Auth Failed");
+    } else if (error == OTA_BEGIN_ERROR) {
+      Serial.println("Begin Failed");
+    } else if (error == OTA_CONNECT_ERROR) {
+      Serial.println("Connect Failed");
+    } else if (error == OTA_RECEIVE_ERROR) {
+      Serial.println("Receive Failed");
+    } else if (error == OTA_END_ERROR) {
+      Serial.println("End Failed");
+    } });
+  ArduinoOTA.begin();
+}
+
 void WifiModule::gotOSCCommand(const Command &command)
 {
   sendEvent(command);
@@ -166,6 +202,7 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
 
   case ARDUINO_EVENT_WIFI_STA_CONNECTED:
     dbg("Event: Connected to access point");
+    initOTA();
     if (osc)
       osc->open();
     break;
@@ -182,6 +219,7 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
       dbg("END MDNS & server");
       MDNS.end();
       configServer->stop();
+      ArduinoOTA.end();
     }
     break;
 
@@ -189,11 +227,12 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     dbg("Event: WiFi access point started");
     dbg(String(info.wifi_sta_disconnected.reason));
     WiFi.softAPsetHostname(boardName.c_str()); // after we get IP
-    configServer-> start();
+    configServer->start();
+    initOTA();
     break;
 
   case ARDUINO_EVENT_WIFI_STA_GOT_IP:
-  dbg("Event: Obtained IP address: "+WiFi.localIP().toString());
+    dbg("Event: Obtained IP address: " + WiFi.localIP().toString());
     dbg(String(info.wifi_sta_disconnected.reason));
     // server->start();
     break;

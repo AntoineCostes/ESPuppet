@@ -15,8 +15,8 @@
 #include <WiFi.h>
 #include <ESPmDNS.h>
 #include <ESPAsyncWebServer.h>
-// #include <AsyncTCP.h>
 #include <DNSServer.h>
+#include <ArduinoOTA.h> 
 #include <WiFiUdp.h> 
 #include <OSCMessage.h>
 

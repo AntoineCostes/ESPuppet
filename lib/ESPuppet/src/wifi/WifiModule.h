@@ -16,6 +16,7 @@ public:
     void initAP();
     void initSTA();
     void initMDNS();
+    void initOTA();
 
     OSCManager *osc;
     ConfigWebserver *configServer;

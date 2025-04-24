@@ -26,7 +26,6 @@ void ESPuppet::init()
     // configFileName = prefs.getString("config", "default") same ?
     prefs.end();
     Serial.println("loading config: "+configFileName);
-
     configFileName += ".json";
     String filePath = String(ARDUINO_BOARD) + "/"+ configFileName;
 
