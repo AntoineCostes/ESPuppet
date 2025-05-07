@@ -14,9 +14,11 @@ GPIOModule();
     void handleOSCCommand(OSCMessage* command) override;
 
     void setDigitalOut(int index, bool value);
+    void toggleDigitalOut(int index);
 
 protected:
     std::vector<int> digOutPins;
+    std::vector<bool> digOutValues;
     void registerDigitalOutPins(JsonArray const &pins);
     void registerDigitalOutPins(std::set<int> pin);
 };

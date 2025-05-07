@@ -29,10 +29,23 @@ void GPIOModule::registerDigitalOutPins(JsonArray const &pins)
         {
             digOutPins.emplace_back(pin);
             pinMode(pin, OUTPUT);
+            digOutValues.emplace_back(HIGH);
             digitalWrite(pin, HIGH); // FIXME add inverse parameter
         } else
         err("cannot register digital out on pin #:"+String(pin));
     }
+}
+
+void GPIOModule::toggleDigitalOut(int index)
+{
+    if (index < 0 || index >= digOutPins.size())
+    {
+        err("invalid dout index: "+String(index)+ " while it should be between 0 and "+String(digOutPins.size()));
+        return;
+    }
+    digOutValues[index] = !digOutValues[index];  // FIXME add inverse parameter
+    dbg("toggle dout #"+String(digOutPins[index])+ " to "+(digOutValues[index]?"HIGH":"LOW"));
+    digitalWrite(digOutPins[index], digOutValues[index]);
 }
 
 void GPIOModule::setDigitalOut(int index, bool value)
@@ -42,15 +55,20 @@ void GPIOModule::setDigitalOut(int index, bool value)
         err("invalid dout index: "+String(index)+ " while it should be between 0 and "+String(digOutPins.size()));
         return;
     }
-    // dbg("set pin "+String(digOutPins[index])+value?"HIGH":"LOW");
-    dbg("set dout #"+String(digOutPins[index]));
-    digitalWrite(digOutPins[index], !value); // FIXME add inverse parameter
+    digOutValues[index] = !value;  // FIXME add inverse parameter
+    dbg("set dout #"+String(digOutPins[index])+ " to "+(digOutValues[index]?"HIGH":"LOW"));
+    digitalWrite(digOutPins[index], digOutValues[index]);
 }
 
 void GPIOModule::handleOSCCommand(OSCMessage *command)
 {
     if (command->match("/gpio/dout"))
     {
+        
+        if (command->size() == 1 && command->isInt(0))
+        {
+            toggleDigitalOut(command->getInt(0));
+        }
         if (command->size() == 2)
         {
             if (command->isInt(0) && command->isInt(1))

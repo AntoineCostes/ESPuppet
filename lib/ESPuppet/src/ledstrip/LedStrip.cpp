@@ -49,6 +49,13 @@ void LedStrip::update()
         case RAINBOW:
             // long firstPixelHue = (increment*256)%5*65536;
             value = (int)(increment*256*parameter);
+            strip.rainbow(value%(5*65536), 1, 255, brightness*255, true);
+            strip.show();
+            break;
+        
+        case RANDOM:
+            // long firstPixelHue = (increment*256)%5*65536;
+            value = (int)(increment*256*parameter);
             strip.rainbow(value%(5*65536), 1, 255, 255, true);
             strip.show();
             break;
@@ -82,7 +89,11 @@ void LedStrip::fill(uint32_t color, float multiplier)
 void LedStrip::fill(uint8_t r, uint8_t g, uint8_t b)
 {
     // TODO checkrange ?
-    strip.fill(strip.Color(brightness*r, brightness*g, brightness*b));
+    strip.fill(strip.Color(
+        brightness*pgm_read_byte(&gamma8[r]), 
+        brightness*pgm_read_byte(&gamma8[g]), 
+        brightness*pgm_read_byte(&gamma8[b])
+        ));
     strip.show(); 
 }
 
@@ -98,8 +109,8 @@ void LedStrip::setPattern(LedPattern pattern, uint32_t patternColor, float param
     switch (pattern)
     {
     case SOLID:
-        fill(patternColor);
         setBrightness(parameter);
+        fill(patternColor);
         break;
         
     case BLINK:

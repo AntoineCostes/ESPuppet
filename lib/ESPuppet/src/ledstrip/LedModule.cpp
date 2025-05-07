@@ -55,7 +55,7 @@ void LedModule::clear(uint8_t index)
     if (index < 0 || index >= strips.size())
     {
         // TODO Module::checkIndex ?
-        err("invalid ledstrip index: "+String(index)+ "while it should be between 0 and "+String(strips.size()));
+        err("invalid ledstrip index: "+String(index)+ " while it should be between 0 and "+String(strips.size()));
         return;
     }
     strips[index]->clear();
@@ -77,7 +77,7 @@ void LedModule::setPattern(uint8_t index,LedPattern pattern, uint8_t r, uint8_t 
 {
     if (index < 0 || index >= strips.size())
     {
-        err("invalid ledstrip index: "+String(index)+ "while it should be between 0 and "+String(strips.size()));
+        err("invalid ledstrip index: "+String(index)+ " while it should be between 0 and "+String(strips.size()));
         return;
     }
     dbg("set pattern "+String(pattern) +" for strip #"+String(index)+" with param = "+String(parameter));
@@ -97,9 +97,10 @@ void LedModule::handleOSCCommand(OSCMessage *command)
                 if (command->isInt(1) && command->getInt(1) >= 0)
                 {
                     LedPattern pattern = static_cast<LedPattern>(command->getInt(1));
-                    float parameter = 1.0f;
+                    float parameter = 1.0f; // 
                     if (command->size() == 6 && command->isFloat(5)) parameter = command->getFloat(5);
-                    if (pattern == LedPattern::BLINK || pattern == LedPattern::OSCILLATOR) parameter /= 10.0f;
+                    if (command->size() == 6 && command->isInt(5) && command->getInt(5) == 0) parameter = 0.0f;
+                    if (pattern == LedPattern::BLINK || pattern == LedPattern::OSCILLATOR) parameter *= 10.0f;
 
                     if (command->isInt(2) && command->isInt(3) && command->isInt(4))
                     {

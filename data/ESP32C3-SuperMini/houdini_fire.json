@@ -2,11 +2,11 @@
     "wifi":
     {
         "serialDebug":true,
-        "boardName":"Houdini-2",
+        "boardName":"Houdini_fire",
         "osc":
         {
             "serialDebug":true,
-            "targetPort":12345,
+            "targetPort":12346,
             "listeningPort":12345,
             "targetIP":"192.168.137.255",
             "oscReceiveDebug":true,
@@ -19,6 +19,18 @@
         "dout":
         {
             "pins":[0,1,2,3, 5, 6, 7, 8, 9, 10, 20, 21]
+        }
+    },
+    "leds":
+    {
+        "serialDebug":true,
+        "debug":
+        {
+            "pin":4,
+            "numPixels":10, 
+            "brightness":0.5,
+            "wifiDebug":true,
+            "grb":true
         }
     }
 }

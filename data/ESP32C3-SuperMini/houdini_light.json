@@ -2,7 +2,7 @@
     "wifi":
     {
         "serialDebug":true,
-        "boardName":"Houdini-1",
+        "boardName":"Houdini_light",
         "osc":
         {
             "serialDebug":true,
@@ -10,7 +10,7 @@
             "listeningPort":12345,
             "targetIP":"192.168.137.255",
             "oscReceiveDebug":true,
-            "oscSendDebug":false
+            "oscSendDebug":true
         }
     },
     "leds":
@@ -22,7 +22,7 @@
             "numPixels":100, 
             "brightness":0.5,
             "wifiDebug":true,
-            "grb":true
+            "grb":false
         },
         "face":
         {
@@ -34,23 +34,23 @@
         "baie":
         {
             "pin":10,
-            "numPixels":40, 
+            "numPixels":100, 
             "brightness":0.5,
-            "wifiDebug":true
+            "wifiDebug":false
         },
         "extra1":
         {
             "pin":9,
             "numPixels":40, 
             "brightness":0.5,
-            "wifiDebug":true
+            "wifiDebug":false
         },
         "extra2":
         {
             "pin":8,
             "numPixels":40, 
             "brightness":0.5,
-            "wifiDebug":true
+            "wifiDebug":false
         }
     },
     "servo":

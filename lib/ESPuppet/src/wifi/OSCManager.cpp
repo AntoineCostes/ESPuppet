@@ -45,7 +45,9 @@ void OSCManager::update()
 
       if (msg.match("/yo"))
       {
-        dbg("yo TODO");
+        OSCMessage m("/yo");
+        m.add(WiFi.localIP().toString());
+        sendMessage(m);
       }
       else
       {

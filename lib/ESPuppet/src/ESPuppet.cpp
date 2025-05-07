@@ -21,6 +21,7 @@ void ESPuppet::init()
     String configFileName = "default";
     Preferences prefs;
     prefs.begin("ESPuppet");
+    // prefs.putString("config", "houdini_fire");
     if (prefs.isKey("config")) configFileName = prefs.getString("config");
     else prefs.putString("config", "default");
     // configFileName = prefs.getString("config", "default") same ?
@@ -76,7 +77,7 @@ void ESPuppet::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
   switch (event)
   {
   case ARDUINO_EVENT_WIFI_STA_START:
-    ledModule.setPattern(LedPattern::OSCILLATOR, 0, 0, 100);
+    ledModule.setPattern(LedPattern::OSCILLATOR, 0, 50, 100);
     break;
   case ARDUINO_EVENT_WIFI_STA_STOP:
     ledModule.setPattern(LedPattern::BLINK, 100, 0, 0);
