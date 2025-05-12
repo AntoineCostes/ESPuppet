@@ -17,7 +17,7 @@ ServoMotor::ServoMotor(uint8_t pin,
 {
     if (pwm) 
     {
-        goTo(0.0f);
+        // goTo(0.0f);
     }
     else 
     {

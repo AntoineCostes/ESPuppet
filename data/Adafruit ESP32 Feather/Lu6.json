@@ -2,7 +2,7 @@
     "wifi":
     {
         "serialDebug":true,
-        "boardName":"Lu7",
+        "boardName":"Lu6",
         "osc":
         {
             "serialDebug":true,
@@ -11,6 +11,17 @@
             "targetIP":"192.168.137.255",
             "oscReceiveDebug":true,
             "oscSendDebug":false
+        }
+    },
+    "leds":
+    {
+        "serialDebug":true,
+        "led1":
+        {
+            "pin":16,
+            "numPixels":20, 
+            "brightness":0.1,
+            "wifiDebug":true
         }
     },
     "servo":
@@ -30,7 +41,7 @@
             "pin":1,
             "min":0.0, 
             "max":1.0,
-            "start":0.8,
+            "start":0.0,
             "inverse":false,
             "multi":true
         },
@@ -39,6 +50,7 @@
             "pin":2,
             "min":0.0, 
             "max":1.0,
+            "start":0.0,
             "inverse":false,
             "multi":true
         },
@@ -47,6 +59,7 @@
             "pin":3,
             "min":0.0, 
             "max":1.0,
+            "start":1.0,
             "inverse":false,
             "multi":true
         },
@@ -55,30 +68,7 @@
             "pin":4,
             "min":0.0, 
             "max":1.0,
-            "inverse":false,
-            "multi":true
-        },
-        "servo5":
-        {
-            "pin":5,
-            "min":0.0, 
-            "max":1.0,
-            "inverse":false,
-            "multi":true
-        },
-        "servo6":
-        {
-            "pin":6,
-            "min":0.0, 
-            "max":1.0,
-            "inverse":false,
-            "multi":true
-        },
-        "servo7":
-        {
-            "pin":7,
-            "min":0.0, 
-            "max":1.0,
+            "start":0.5,
             "inverse":false,
             "multi":true
         }

@@ -43,14 +43,17 @@ void ServoModule::registerServo(JsonObject const &config)
     float min = config["min"];
     float max = config["max"]; // FIXME how to set default value ?
     float start = config["start"];
+    dbg(String(start)); // why start is not defined without this ?
     bool inverse = config["inverse"] | false;
     bool multi = config["multi"] | false;
 
     if (pin >= 0 && min >= 0 && max >= 0)
     {
         registerServo(pin, min, max, inverse, multi);
-        if (start)
+        if (start >= 0.0f)
             goTo(servos.size() - 1, start);
+        else 
+            goTo(servos.size() - 1, 0.5f);
     }
     else
         err("cannot register servo, pin (" + String(pin) + "), min (" + String(min) + ") and max (" + String(max) + ") should be positive !");
