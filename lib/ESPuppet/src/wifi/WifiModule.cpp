@@ -8,7 +8,7 @@ void WifiModule::init()
 {
   // TODO declare parameters
   serialDebug = true;
-  connectionTimeoutMs = 10000;
+  connectionTimeoutMs = 5000;
 
   lastConnectTime = millis();
   lastDisconnectTime = millis();
@@ -16,7 +16,7 @@ void WifiModule::init()
   WiFi.onEvent(std::bind(&WifiModule::WiFiEvent, this, std::placeholders::_1, std::placeholders::_2));
 
   WiFi.setAutoReconnect(true);
-  // WiFi.setSleep(false);
+  WiFi.setSleep(false);
   // WiFi.setTxPower(WIFI_POWER_19dBm); TODO parameter
 }
 
@@ -33,11 +33,12 @@ void WifiModule::loadConfig(JsonObject const &config)
     uint16_t targetPort = config["osc"]["targetPort"] | -1;
     String ip = config["osc"]["targetIP"];
     IPAddress targetIP = IPAddress((char *)ip.c_str()) | IPAddress();
+    bool broadcast = targetIP == IPAddress();
     long oscPingTimeoutMs = config["osc"]["oscPingTimeoutMs"] | 3000;
     bool oscSendDebug = config["osc"]["oscSendDebug"] | false;
     bool oscReceiveDebug = config["osc"]["oscReceiveDebug"] | false;
 
-    osc = new OSCManager(listeningPort, targetPort, targetIP, boardName, oscPingTimeoutMs, oscSendDebug, oscReceiveDebug);
+    osc = new OSCManager(listeningPort, targetPort, targetIP, broadcast, boardName, oscPingTimeoutMs, oscSendDebug, oscReceiveDebug);
     osc->addListener(std::bind(&WifiModule::gotOSCCommand, this, std::placeholders::_1));
   }
 
@@ -49,8 +50,6 @@ void WifiModule::loadConfig(JsonObject const &config)
 
 void WifiModule::update()
 {
-  if (osc)
-    osc->update();
 
   if (millis() % 5000 < 1)
     dbg(String("status: " + String(WiFi.status())));
@@ -65,18 +64,19 @@ void WifiModule::update()
   case WL_STOPPED:   // 254
   case WL_NO_SHIELD: // 255
                      // AP running
-    ArduinoOTA.handle();
     configServer->update();
-    break;
-
-  case WL_IDLE_STATUS: // 0: connected but no IP yet
-    break;
-
-  case WL_DISCONNECTED:
-    break;
 
   case WL_CONNECTED:
     ArduinoOTA.handle();
+    if (osc)
+      osc->update();
+    break;
+
+  case WL_IDLE_STATUS: // 0: connected but no IP yet
+    dbg(".");
+    break;
+
+  case WL_DISCONNECTED:
     break;
 
   case WL_CONNECT_FAILED:
@@ -102,6 +102,7 @@ void WifiModule::initAP()
 
   String apName = "CONFIG " + boardName;
   WiFi.softAP(apName.c_str());
+  initMDNS();
 }
 
 void WifiModule::initSTA()
@@ -202,26 +203,37 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
 
   case ARDUINO_EVENT_WIFI_STA_CONNECTED:
     dbg("Event: Connected to access point");
-    initOTA();
-    if (osc)
-      osc->open();
     break;
 
   case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
-    dbg("Event: Disconnected from WiFi access point");
+    dbg("Event: Disconnected from WiFi access point with reason:");
+    dbg(String(info.wifi_sta_disconnected.reason));
     // For some reason when unable to connect this event is triggered
     // once with reason 0 then every second with reason 201 WIFI_REASON_NO_AP_FOUND
-    if (info.wifi_sta_disconnected.reason == 0)
+    // or every second with reason 15 WIFI_REASON_4WAY_HANDSHAKE_TIMEOUT
+    switch (info.wifi_sta_disconnected.reason)
     {
-      lastDisconnectTime = millis();
-      if (osc)
-        osc->close();
-      dbg("END MDNS & server");
-      MDNS.end();
-      configServer->stop();
-      ArduinoOTA.end();
+      case 15:
+        err("incorrect Wifi credentials, closing and start AP...");
+        lastDisconnectTime = millis();
+        if (osc)
+          osc->close();
+        MDNS.end();
+        initAP();
+        // ArduinoOTA.end();
+        break;
+
+      case 0:
+        dbg("closing...");
+        lastDisconnectTime = millis();
+        if (osc)
+          osc->close();
+        MDNS.end();
+        ArduinoOTA.end(); // FIXME only if started already
+        break; 
     }
     break;
+
 
   case ARDUINO_EVENT_WIFI_AP_START:
     dbg("Event: WiFi access point started");
@@ -229,12 +241,23 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     WiFi.softAPsetHostname(boardName.c_str()); // after we get IP
     configServer->start();
     initOTA();
+    if (osc)
+    {
+      osc->open();
+      osc->broadcast = true;
+      osc->setBroadcastIPs(WiFi.softAPBroadcastIP(), WiFi.softAPIP());
+    }
     break;
 
   case ARDUINO_EVENT_WIFI_STA_GOT_IP:
     dbg("Event: Obtained IP address: " + WiFi.localIP().toString());
-    dbg(String(info.wifi_sta_disconnected.reason));
-    // server->start();
+    initOTA();
+    if (osc)
+    {
+      osc->open();
+      osc->setBroadcastIPs(WiFi.broadcastIP(), WiFi.gatewayIP());
+    }
+    // server->start(); TODO ADD WEBSERVER
     break;
 
   case ARDUINO_EVENT_WIFI_READY:

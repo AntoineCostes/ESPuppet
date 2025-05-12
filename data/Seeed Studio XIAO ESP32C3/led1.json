@@ -1,27 +1,26 @@
 {
-    "name":"default",
     "wifi":
     {
         "serialDebug":true,
-        "boardName":"ESPuppet_Default",
+        "boardName":"Led1",
         "osc":
         {
             "serialDebug":true,
             "targetPort":12345,
             "listeningPort":12345,
-            "oscReceiveDebug":true
+            "oscReceiveDebug":true,
+            "oscSendDebug":true
         }
     },
     "leds":
     {
         "serialDebug":true,
-        "led1":
+        "toron":
         {
-            "pin":9,
-            "numPixels":4, 
-            "brightness":0.1,
+            "pin":10,
+            "numPixels":50, 
+            "brightness":0.2,
             "wifiDebug":true
         }
     }
-
 }

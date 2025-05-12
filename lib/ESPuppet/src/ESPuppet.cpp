@@ -21,7 +21,7 @@ void ESPuppet::init()
     String configFileName = "default";
     Preferences prefs;
     prefs.begin("ESPuppet");
-    // prefs.putString("config", "houdini_fire");
+    prefs.putString("config", "led1");
     if (prefs.isKey("config")) configFileName = prefs.getString("config");
     else prefs.putString("config", "default");
     // configFileName = prefs.getString("config", "default") same ?
@@ -72,7 +72,7 @@ void ESPuppet::gotOSCCommand(const Command &command)
 // TODO make ledModule Status + notify
 void ESPuppet::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
 {
-  Serial.println("EVENT "+String(event));
+  Serial.println("WIFI EVENT "+String(event));
 
   switch (event)
   {

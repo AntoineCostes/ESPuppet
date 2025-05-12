@@ -3,6 +3,7 @@
 OSCManager::OSCManager(uint16_t listeningPort,
                        uint16_t targetPort,
                        IPAddress targetIP,
+                       bool broadcast,
                        String boardName,
                        long oscPingTimeoutMs,
                        bool oscSendDebug,
@@ -13,7 +14,10 @@ OSCManager::OSCManager(uint16_t listeningPort,
                                                boardName(boardName),
                                                oscPingTimeoutMs(oscPingTimeoutMs), 
                                                oscSendDebug(oscSendDebug), 
-                                               oscReceiveDebug(oscReceiveDebug)
+                                               oscReceiveDebug(oscReceiveDebug),
+                                               broadcast(broadcast),
+                                               broadcastIP(IPAddress()),
+                                               gatewayIP(IPAddress())
 {
 }
 
@@ -40,6 +44,7 @@ void OSCManager::update()
       if (targetIP != udp.remoteIP())
       {
         targetIP = udp.remoteIP();
+        broadcast = false;
         dbg("new target: " + String(targetPort) + "@" + targetIP.toString());
       }
 
@@ -71,6 +76,12 @@ void OSCManager::close()
   udp.stop();
 }
 
+void OSCManager::setBroadcastIPs(IPAddress broadcastIP, IPAddress gatewayIP)
+{
+  this->broadcastIP = broadcastIP;
+  this->gatewayIP = gatewayIP;
+}
+
 void OSCManager::sendOSC(String address)
 {
   OSCMessage m(address.c_str());
@@ -81,10 +92,27 @@ void OSCManager::sendMessage(OSCMessage &msg)
 {
   String fullAddress = "/"+boardName+String(msg.getAddress());
   msg.setAddress(fullAddress.c_str());
-  if (oscSendDebug)
-    log("Send message to " + targetIP.toString() + "@" + String(targetPort) + " : " + fullAddress);
-  udp.beginPacket(targetIP, targetPort);
-  msg.send(udp);
-  udp.endPacket();
-  msg.empty();
-}
+
+  if (broadcast)
+  {
+    if (oscSendDebug)
+      log("Bradcast message to " + broadcastIP.toString() + " and "+ gatewayIP.toString() + "@" + String(targetPort) + " : " + fullAddress);
+    udp.beginPacket(broadcastIP, targetPort);
+    msg.send(udp);
+    udp.endPacket();
+    
+    udp.beginPacket(gatewayIP, targetPort);
+    msg.send(udp);
+    udp.endPacket();
+    msg.empty();
+  } else
+  {
+    if (oscSendDebug)
+      log("Send message to " + targetIP.toString() + "@" + String(targetPort) + " : " + fullAddress);
+    udp.beginPacket(targetIP, targetPort);
+    msg.send(udp);
+    udp.endPacket();
+    msg.empty();
+  }
+
+  }

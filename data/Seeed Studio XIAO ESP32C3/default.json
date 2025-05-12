@@ -10,7 +10,6 @@
             "serialDebug":true,
             "targetPort":12345,
             "listeningPort":12345,
-            "targetIP":"192.168.0.27",
             "oscReceiveDebug":true
         },
         "webserver":

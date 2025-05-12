@@ -11,6 +11,7 @@ public:
     OSCManager(uint16_t listeningPort,
                uint16_t targetPort,
                IPAddress targetIP,
+               bool broadcast,
                String boardName,
                long oscPingTimeoutMs,
                bool oscSendDebug,
@@ -23,9 +24,15 @@ public:
     uint16_t listeningPort;
     uint16_t targetPort;
     IPAddress targetIP;
+    
+    bool broadcast;
+
+    void setBroadcastIPs(IPAddress broadcastIP, IPAddress gatewayIP);
 
 protected:
     WiFiUDP udp;
+    IPAddress broadcastIP;
+    IPAddress gatewayIP;
 
     void sendOSC(String address);
     // TODO make variadic function sendOSC(String address, OSCArgument args...)
