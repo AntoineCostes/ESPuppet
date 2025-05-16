@@ -9,7 +9,8 @@
             "targetPort":12346,
             "listeningPort":12345,
             "oscReceiveDebug":true,
-            "oscSendDebug":false
+            "oscSendDebug":false,
+            "oscPingTimeoutMs":1000
         }
     },
     "gpio":

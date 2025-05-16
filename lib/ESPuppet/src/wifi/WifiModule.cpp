@@ -9,6 +9,7 @@ void WifiModule::init()
   // TODO declare parameters
   serialDebug = true;
   connectionTimeoutMs = 5000;
+  configPortalTimeoutMs = 2*60*1000;
 
   lastConnectTime = millis();
   lastDisconnectTime = millis();
@@ -61,10 +62,10 @@ void WifiModule::update()
       initAP();
     break;
 
-  // case WL_STOPPED:   // 254
   case WL_NO_SHIELD: // 255
                      // AP running
     configServer->update();
+    if (millis() - configPortalStartTimeMs > configPortalTimeoutMs) ESP.restart();
 
   case WL_CONNECTED:
     ArduinoOTA.handle();
@@ -93,6 +94,7 @@ void WifiModule::update()
 void WifiModule::initAP()
 {
   dbg("START AP");
+  configPortalStartTimeMs = millis();
 
   if (WiFi.isConnected())
     WiFi.disconnect();
@@ -129,7 +131,6 @@ void WifiModule::initSTA()
     WiFi.mode(WIFI_STA);
     dbg("Connecting to " + ssid + " (" + pwd + ")...");
     WiFi.begin(ssid.c_str(), pwd.c_str());
-    initMDNS();
   }
 }
 
@@ -239,6 +240,7 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     dbg(String(info.wifi_sta_disconnected.reason));
     WiFi.softAPsetHostname(boardName.c_str()); // after we get IP
     configServer->start();
+    initMDNS();
     initOTA();
     if (osc)
     {
@@ -250,6 +252,7 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
 
   case ARDUINO_EVENT_WIFI_STA_GOT_IP:
     dbg("Event: Obtained IP address: " + WiFi.localIP().toString());
+    initMDNS();
     initOTA();
     if (osc)
     {

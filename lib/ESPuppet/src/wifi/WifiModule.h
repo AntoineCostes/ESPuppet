@@ -26,6 +26,9 @@ protected:
     void WiFiEvent(WiFiEvent_t event, arduino_event_info_t info);
     void gotOSCCommand(const Command &command);
     long connectionTimeoutMs;
+    long configPortalTimeoutMs;
+    long configPortalStartTimeMs;
+    
     
     long lastDisconnectTime;
     long lastConnectTime;

@@ -70,7 +70,7 @@ void FileManager::printFilesInDirectory(const char *dirname, uint8_t levels)
         {
             if (file.isDirectory())
             {
-                Serial.println("[DIR] " + String(file.name()));
+                Serial.println("\t [DIR] " + String(file.name()));
                 if (levels)
                 {
                     printFilesInDirectory(file.path(), levels - 1);
@@ -79,7 +79,9 @@ void FileManager::printFilesInDirectory(const char *dirname, uint8_t levels)
             else
             {
                 String fileName = String(file.name());
-                Serial.println("\t" + fileName + " (" + String(file.size()) + " bytes)");
+                if (strcmp(dirname, "/")) Serial.print("\t"); // indent if file is in dir
+                Serial.print("\t");
+                Serial.println(fileName + " (" + String(file.size()) + " bytes)");
             }
             file = root.openNextFile();
         }

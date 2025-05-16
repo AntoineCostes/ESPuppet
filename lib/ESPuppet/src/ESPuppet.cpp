@@ -21,15 +21,16 @@ void ESPuppet::init()
     String configFileName = "default";
     Preferences prefs;
     prefs.begin("ESPuppet");
-    prefs.putString("config", "frigo");
-    if (prefs.isKey("config")) configFileName = prefs.getString("config");
-    else prefs.putString("config", "default");
-    // configFileName = prefs.getString("config", "default") same ?
+
+    prefs.putString("config", "frigo"); // force config
+
+    configFileName = prefs.getString("config", "default"); // TODO test default config
     prefs.end();
-    Serial.println("loading config: "+configFileName);
     configFileName += ".json";
     String filePath = String(ARDUINO_BOARD) + "/"+ configFileName;
 
+    Serial.println("");
+    Serial.println("");
     Serial.println("loading config file: " +filePath);
 
     File config = fileModule.openFile(filePath);
@@ -51,6 +52,8 @@ void ESPuppet::init()
     } else Serial.println("no config file ! Please upload LittleFS image");
 
     Serial.println("INIT OK");
+    Serial.println("");
+    Serial.println("");
 }
 
 void ESPuppet::update()
@@ -72,7 +75,7 @@ void ESPuppet::gotOSCCommand(const Command &command)
 // TODO make ledModule Status + notify
 void ESPuppet::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
 {
-  Serial.println("WIFI EVENT "+String(event));
+  // Serial.println("WIFI EVENT "+String(event));
 
   switch (event)
   {
@@ -93,7 +96,7 @@ void ESPuppet::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     break;
   case ARDUINO_EVENT_WIFI_AP_STACONNECTED:
   // ledModule.setPattern(LedPattern::SOLID, 100, 0, 0);
-    // notify client connected
+    // TODO notify client connected ?
     break;
   default:
     break;
