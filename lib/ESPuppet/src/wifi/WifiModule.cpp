@@ -32,7 +32,7 @@ void WifiModule::loadConfig(JsonObject const &config)
     uint16_t listeningPort = config["osc"]["listeningPort"] | -1;
     uint16_t targetPort = config["osc"]["targetPort"] | -1;
     String ip = config["osc"]["targetIP"];
-    IPAddress targetIP = IPAddress((char *)ip.c_str()) | IPAddress();
+    IPAddress targetIP = IPAddress();
     bool broadcast = targetIP == IPAddress();
     long oscPingTimeoutMs = config["osc"]["oscPingTimeoutMs"] | 3000;
     bool oscSendDebug = config["osc"]["oscSendDebug"] | false;
@@ -61,7 +61,7 @@ void WifiModule::update()
       initAP();
     break;
 
-  case WL_STOPPED:   // 254
+  // case WL_STOPPED:   // 254
   case WL_NO_SHIELD: // 255
                      // AP running
     configServer->update();
@@ -213,27 +213,26 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     // or every second with reason 15 WIFI_REASON_4WAY_HANDSHAKE_TIMEOUT
     switch (info.wifi_sta_disconnected.reason)
     {
-      case 15:
-        err("incorrect Wifi credentials, closing and start AP...");
-        lastDisconnectTime = millis();
-        if (osc)
-          osc->close();
-        MDNS.end();
-        initAP();
-        // ArduinoOTA.end();
-        break;
+    case 15:
+      err("incorrect Wifi credentials, closing and start AP...");
+      lastDisconnectTime = millis();
+      if (osc)
+        osc->close();
+      MDNS.end();
+      initAP();
+      // ArduinoOTA.end();
+      break;
 
-      case 0:
-        dbg("closing...");
-        lastDisconnectTime = millis();
-        if (osc)
-          osc->close();
-        MDNS.end();
-        ArduinoOTA.end(); // FIXME only if started already
-        break; 
+    case 0:
+      dbg("closing...");
+      lastDisconnectTime = millis();
+      if (osc)
+        osc->close();
+      MDNS.end();
+      ArduinoOTA.end(); // FIXME only if started already
+      break;
     }
     break;
-
 
   case ARDUINO_EVENT_WIFI_AP_START:
     dbg("Event: WiFi access point started");

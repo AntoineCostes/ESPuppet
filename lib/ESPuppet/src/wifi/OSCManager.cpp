@@ -12,8 +12,8 @@ OSCManager::OSCManager(uint16_t listeningPort,
                                                targetPort(targetPort),
                                                targetIP(targetIP),
                                                boardName(boardName),
-                                               oscPingTimeoutMs(oscPingTimeoutMs), 
-                                               oscSendDebug(oscSendDebug), 
+                                               oscPingTimeoutMs(oscPingTimeoutMs),
+                                               oscSendDebug(oscSendDebug),
                                                oscReceiveDebug(oscReceiveDebug),
                                                broadcast(broadcast),
                                                broadcastIP(IPAddress()),
@@ -66,13 +66,13 @@ void OSCManager::open()
 {
   dbg("open OSC");
   udp.begin(listeningPort);
-  udp.clear();
+  udp.flush();
   lastSentPingMs = millis();
 }
 
 void OSCManager::close()
 {
-  udp.clear();
+  udp.flush();
   udp.stop();
 }
 
@@ -90,22 +90,23 @@ void OSCManager::sendOSC(String address)
 
 void OSCManager::sendMessage(OSCMessage &msg)
 {
-  String fullAddress = "/"+boardName+String(msg.getAddress());
+  String fullAddress = "/" + boardName + String(msg.getAddress());
   msg.setAddress(fullAddress.c_str());
 
   if (broadcast)
   {
     if (oscSendDebug)
-      log("Bradcast message to " + broadcastIP.toString() + " and "+ gatewayIP.toString() + "@" + String(targetPort) + " : " + fullAddress);
+      log("Bradcast message to " + broadcastIP.toString() + " and " + gatewayIP.toString() + "@" + String(targetPort) + " : " + fullAddress);
     udp.beginPacket(broadcastIP, targetPort);
     msg.send(udp);
     udp.endPacket();
-    
+
     udp.beginPacket(gatewayIP, targetPort);
     msg.send(udp);
     udp.endPacket();
     msg.empty();
-  } else
+  }
+  else
   {
     if (oscSendDebug)
       log("Send message to " + targetIP.toString() + "@" + String(targetPort) + " : " + fullAddress);
@@ -114,5 +115,4 @@ void OSCManager::sendMessage(OSCMessage &msg)
     udp.endPacket();
     msg.empty();
   }
-
-  }
+}

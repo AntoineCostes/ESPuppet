@@ -7,28 +7,30 @@
 
 class ServoMotor : public Component
 {
-    public:
-        ServoMotor(uint8_t pin, float min, float max, bool inverse, Adafruit_MS_PWMServoDriver* pwm);   
-        void update() override;
-        
-        // parameters
-        float min;
-        float max;
-        bool inverse;
+public:
+    ServoMotor(uint8_t pin, float min, float max, bool inverse, Adafruit_MS_PWMServoDriver *pwm);
+    void update() override;
 
-        void goTo(float relative);
-        void goTo(float relative, uint32_t durationMs);
+    // parameters
+    float min;
+    float max;
+    bool inverse;
 
-    protected:
-        Adafruit_MS_PWMServoDriver* pwm;
-        Servo servo;
+    void goTo(float relative);
+    void goTo(float relative, uint32_t durationMs);
 
-        int pin;
+protected:
+    Adafruit_MS_PWMServoDriver *pwm;
+    Servo servo;
 
-        float currentPosition;
-        float startPosition;
-        float targetPosition;
-        uint32_t motionDurationMs;
-        uint32_t motionStartMs;
-        uint32_t lastMoveMs;
+    int pin;
+
+    float currentPosition;
+    float startPosition;
+    float targetPosition;
+    uint32_t motionDurationMs;
+    uint32_t motionStartMs;
+    uint32_t lastMoveMs;
+
+    float lerp(float a, float b, float f);
 };

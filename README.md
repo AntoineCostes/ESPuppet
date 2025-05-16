@@ -1,7 +1,9 @@
 # ESPuppet
+
 ESP32 firmware for animatronics and connected stage props
 
 ROADMAP
+
 - liste des config files
 - fix crash if no littleFS
 - ServoPWMShield separate class + servo start
@@ -14,11 +16,13 @@ ROADMAP
 - niceName from config ? est-ce qu'on peut avoir des entrées identiques ?
 
 TO DIG
+
 - wifi set power
 - differences Preferences / LittleFS: memmory size ?
 - https://github.com/ayushsharma82/WebSerial
 
 IDEAS
+
 - lastUpdateMs in component ?
 - inputComponent génère des évènement, outputComponent est contrôlable par OSC ?
 - FileManager Component
@@ -28,6 +32,11 @@ IDEAS
 - Component checkRange
 
 COSMETICS
-- char * name
+
+- char \* name
 - variadic reservePins
 - color instead of r, g, b in LedModule
+
+GETTING STARTED
+remove ESP32Async and RPAsyncTCP from ESPAsyncWebServer depedencies
+which ESP32 platform to use ?
