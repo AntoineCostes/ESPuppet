@@ -43,6 +43,13 @@ void OSCManager::update()
       if (oscReceiveDebug)
         log("got message: " + String(msg.getAddress()));
 
+      if (msg.match("/yo")) 
+      {
+        if (msg.isInt(0)) log("NEW PORT");
+        if (msg.isInt(0)) targetPort = msg.getInt(0);
+        sendYo(); 
+      }
+
       // when receiving messages from new IP, makes this the new target
       if (targetIP != udp.remoteIP())
       {
@@ -50,8 +57,6 @@ void OSCManager::update()
         doBroadcast = false;
         dbg("new target: " + String(targetPort) + "@" + targetIP.toString());
       }
-
-      if (msg.match("/yo")) sendYo(); // TODO set listening port from yo
       else sendEvent(Command(&msg));
     }
   }
