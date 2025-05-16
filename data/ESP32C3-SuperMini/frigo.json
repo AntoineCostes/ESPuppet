@@ -29,7 +29,7 @@
         "serialDebug":true,
         "dout":
         {
-            "pins":[0,1,2,3, 4, 5]
+            "pins":[5, 6, 7, 8, 9, 10]
         }
     }
 }

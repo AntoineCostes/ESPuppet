@@ -26,6 +26,7 @@ public:
     IPAddress targetIP;
     
     bool broadcast;
+    bool isOpen;
 
     void setBroadcastIPs(IPAddress broadcastIP, IPAddress gatewayIP);
 

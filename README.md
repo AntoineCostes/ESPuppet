@@ -3,23 +3,24 @@
 ESP32 firmware for animatronics and connected stage props
 
 ROADMAP
-
 - liste des config files
 - fix crash if no littleFS
 - ServoPWMShield separate class + servo start
-- neopixel gamma
+OK neopixel gamma
+OK OSC broadcast on boot
 - ledModule advertise/notify -> wifi debug
 - button events in main.cpp
 - Parameters -> automated loadConfig + no handleOSCCommand
 - config portal html -> setup wifi + pick config file
-- pin management -> config errors
-- niceName from config ? est-ce qu'on peut avoir des entrées identiques ?
+- pin management -> advertise config errors
+- niceName from config ? est-ce qu'on peut avoir des entrées identiques dans un JSON ?
+- handle if targetIP not valid
 
 TO DIG
-
 - wifi set power
 - differences Preferences / LittleFS: memmory size ?
 - https://github.com/ayushsharma82/WebSerial
+- handle if mDNS & OTA failed
 
 IDEAS
 
