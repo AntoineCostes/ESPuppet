@@ -1,0 +1,26 @@
+{
+    "wifi":
+    {
+        "serialDebug":true,
+        "boardName":"toron",
+        "osc":
+        {
+            "serialDebug":true,
+            "targetPort":12345,
+            "listeningPort":12345,
+            "oscReceiveDebug":true,
+            "oscSendDebug":true
+        }
+    },
+    "leds":
+    {
+        "serialDebug":true,
+        "toron":
+        {
+            "pin":4,
+            "numPixels":250, 
+            "brightness":0.2,
+            "wifiDebug":true
+        }
+    }
+}

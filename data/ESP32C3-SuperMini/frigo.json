@@ -2,7 +2,7 @@
     "wifi":
     {
         "serialDebug":true,
-        "boardName":"Houdini_toron",
+        "boardName":"Frigo",
         "osc":
         {
             "serialDebug":true,
@@ -21,6 +21,14 @@
             "numPixels":250, 
             "brightness":0.2,
             "wifiDebug":true
+        }
+    },
+    "gpio":
+    {
+        "serialDebug":true,
+        "dout":
+        {
+            "pins":[0,1,2,3, 4, 5]
         }
     }
 }
