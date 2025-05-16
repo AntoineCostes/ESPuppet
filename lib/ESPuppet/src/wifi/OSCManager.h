@@ -18,17 +18,16 @@ public:
                bool oscReceiveDebug);
     void update() override;
 
-    void open();
+    void open(IPAddress broadcastIP, IPAddress gatewayIP);
     void close();
+    void sendYo();
 
     uint16_t listeningPort;
     uint16_t targetPort;
     IPAddress targetIP;
     
-    bool broadcast;
+    bool doBroadcast;
     bool isOpen;
-
-    void setBroadcastIPs(IPAddress broadcastIP, IPAddress gatewayIP);
 
 protected:
     WiFiUDP udp;
@@ -37,7 +36,7 @@ protected:
 
     void sendOSC(String address);
     // TODO make variadic function sendOSC(String address, OSCArgument args...)
-    void sendMessage(OSCMessage &msg);
+    void sendMessage(OSCMessage &msg, bool broadcast);
 
     String boardName;
     long oscPingTimeoutMs;

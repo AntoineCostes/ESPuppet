@@ -244,9 +244,8 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     initOTA();
     if (osc)
     {
-      osc->open();
-      osc->broadcast = true;
-      osc->setBroadcastIPs(WiFi.softAPBroadcastIP(), WiFi.softAPIP());
+      osc->open(WiFi.softAPBroadcastIP(), WiFi.softAPIP());
+      osc->doBroadcast = true;
     }
     break;
 
@@ -256,8 +255,7 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     initOTA();
     if (osc)
     {
-      osc->open();
-      osc->setBroadcastIPs(WiFi.broadcastIP(), WiFi.gatewayIP());
+      osc->open(WiFi.broadcastIP(), WiFi.gatewayIP());
     }
     // server->start(); TODO ADD WEBSERVER
     break;

@@ -15,7 +15,7 @@ OSCManager::OSCManager(uint16_t listeningPort,
                                                oscPingTimeoutMs(oscPingTimeoutMs),
                                                oscSendDebug(oscSendDebug),
                                                oscReceiveDebug(oscReceiveDebug),
-                                               broadcast(broadcast),
+                                               doBroadcast(broadcast),
                                                broadcastIP(IPAddress()),
                                                gatewayIP(IPAddress()),
                                                isOpen(false)
@@ -47,31 +47,26 @@ void OSCManager::update()
       if (targetIP != udp.remoteIP())
       {
         targetIP = udp.remoteIP();
-        broadcast = false;
+        doBroadcast = false;
         dbg("new target: " + String(targetPort) + "@" + targetIP.toString());
       }
 
-      if (msg.match("/yo"))
-      {
-        OSCMessage m("/yo");
-        m.add(WiFi.localIP().toString());
-        sendMessage(m);
-      }
-      else
-      {
-        sendEvent(Command(&msg));
-      }
+      if (msg.match("/yo")) sendYo(); // TODO set listening port from yo
+      else sendEvent(Command(&msg));
     }
   }
 }
 
-void OSCManager::open()
+void OSCManager::open(IPAddress broadcastIP, IPAddress gatewayIP)
 {
   dbg("open OSC");
   udp.begin(listeningPort);
   udp.flush();
+  this->broadcastIP = broadcastIP;
+  this->gatewayIP = gatewayIP;
   lastSentPingMs = millis();
   isOpen = true;
+  sendYo();
 }
 
 void OSCManager::close()
@@ -81,20 +76,27 @@ void OSCManager::close()
   isOpen = false;
 }
 
-void OSCManager::setBroadcastIPs(IPAddress broadcastIP, IPAddress gatewayIP)
+void OSCManager::sendYo()
 {
-  this->broadcastIP = broadcastIP;
-  this->gatewayIP = gatewayIP;
+  OSCMessage m("/yo");
+  m.add(WiFi.localIP().toString().c_str());
+  // m.add((int32_t)listeningPort); TODO broadcast on multiport ?
+  sendMessage(m, true);
 }
 
 void OSCManager::sendOSC(String address)
 {
   OSCMessage m(address.c_str());
-  sendMessage(m);
+  sendMessage(m, doBroadcast);
 }
 
-void OSCManager::sendMessage(OSCMessage &msg)
+void OSCManager::sendMessage(OSCMessage &msg, bool broadcast)
 {
+  if (!isOpen)
+  {
+    err("Can't send OSC message yet");
+    return;
+  }
   String fullAddress = "/" + boardName + String(msg.getAddress());
   msg.setAddress(fullAddress.c_str());
 
