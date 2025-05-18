@@ -22,7 +22,7 @@ void ESPuppet::init()
     Preferences prefs;
     prefs.begin("ESPuppet");
 
-    prefs.putString("config", "frigo"); // force config
+    // prefs.putString("config", "houdini_fire"); // force config
 
     configFileName = prefs.getString("config", "default"); // TODO test default config
     prefs.end();
@@ -75,7 +75,7 @@ void ESPuppet::gotOSCCommand(const Command &command)
 // TODO make ledModule Status + notify
 void ESPuppet::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
 {
-  // Serial.println("WIFI EVENT "+String(event));
+  Serial.println("WIFI EVENT "+String(event));
 
   switch (event)
   {
@@ -91,6 +91,11 @@ void ESPuppet::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
   case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
     ledModule.setPattern(LedPattern::SOLID, 100, 0, 0);
     break;
+
+  case ARDUINO_EVENT_WIFI_STA_AUTHMODE_CHANGE:
+    ledModule.setPattern(LedPattern::BLINK, 100, 0, 0);
+    break;
+
   case ARDUINO_EVENT_WIFI_AP_START:
     ledModule.setPattern(LedPattern::OSCILLATOR, 0, 100, 100);
     break;

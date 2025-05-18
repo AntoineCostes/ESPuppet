@@ -8,6 +8,7 @@ ROADMAP
 - ServoPWMShield separate class + servo start
 OK neopixel gamma
 OK OSC broadcast on boot
+FIXME filter ping messages, multiport yo
 - ledModule advertise/notify -> wifi debug
 - button events in main.cpp
 - Parameters -> automated loadConfig + no handleOSCCommand

@@ -24,8 +24,8 @@ OSCManager::OSCManager(uint16_t listeningPort,
 
 void OSCManager::update()
 {
-  if(!isOpen) return;
-
+  if(!isOpen)  return;
+  
   if (millis() > lastSentPingMs + oscPingTimeoutMs)
   {
     sendOSC("/ping");
@@ -64,7 +64,7 @@ void OSCManager::update()
 
 void OSCManager::open(IPAddress broadcastIP, IPAddress gatewayIP)
 {
-  dbg("open OSC");
+  dbg("open");
   udp.begin(listeningPort);
   udp.flush();
   this->broadcastIP = broadcastIP;
@@ -86,7 +86,8 @@ void OSCManager::sendYo()
   OSCMessage m("/yo");
   m.add(WiFi.localIP().toString().c_str());
   // m.add((int32_t)listeningPort); TODO broadcast on multiport ?
-  sendMessage(m, true);
+  // sendMessage(m, true);
+  sendMessage(m, false);
 }
 
 void OSCManager::sendOSC(String address)

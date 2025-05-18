@@ -17,6 +17,7 @@ public:
     void initSTA();
     void initMDNS();
     void initOTA();
+    void disconnect();
 
     OSCManager *osc;
     ConfigWebserver *configServer;
