@@ -103,13 +103,18 @@ void LedStrip::setBrightness(float value)
     brightness = min(1.0f, max(0.0f, value));
 }
 
+void LedStrip::setPattern(LedPattern pattern, uint32_t patternColor, float parameter, float brightness)
+{
+    setBrightness(brightness);
+    setPattern(pattern, patternColor, parameter);
+}
+    
 void LedStrip::setPattern(LedPattern pattern, uint32_t patternColor, float parameter)
 {
     increment = 0;
     switch (pattern)
     {
     case SOLID:
-        setBrightness(parameter);
         fill(patternColor);
         break;
         

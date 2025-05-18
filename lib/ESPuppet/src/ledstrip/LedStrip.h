@@ -28,6 +28,7 @@ class LedStrip : public Component
         void setBrightness(float value);
 
         void setPattern(LedPattern pattern, uint32_t patternColor, float parameter);
+        void setPattern(LedPattern pattern, uint32_t patternColor, float parameter, float brightness);
 
     protected:
         Adafruit_NeoPixel strip;
