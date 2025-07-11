@@ -30,7 +30,7 @@
             "numPixels":10, 
             "brightness":0.5,
             "wifiDebug":true,
-            "grb":true
+            "grb":false
         }
     }
 }
