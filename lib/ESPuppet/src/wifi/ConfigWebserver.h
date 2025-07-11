@@ -1,6 +1,7 @@
 #pragma once
 #include "util/Includes.h"
 #include "common/Component.h"
+#include "common/FileManager.h"
 
 class ConfigWebserver : public Component
 {
@@ -15,38 +16,18 @@ public:
 protected:
     DNSServer* dnsServer;
     AsyncWebServer* server;
-  void serveIndex(AsyncWebServerRequest *request);
-  void redirect(AsyncWebServerRequest *request);
-  void serveInfo(AsyncWebServerRequest *request);
-  void serveCSS(AsyncWebServerRequest *request);
-  void serveWifi(AsyncWebServerRequest *request);
-  void serveWifiSaved(AsyncWebServerRequest *request);
-  void handleWifiSave(AsyncWebServerRequest *request);
-
+    void serveIndex(AsyncWebServerRequest *request);
+    void redirect(AsyncWebServerRequest *request);
+    void serveCSS(AsyncWebServerRequest *request);
+    void serveConfig(AsyncWebServerRequest *request);
+    void handleLoadConfig(AsyncWebServerRequest *request);
+    void handleConfigUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final);
+    void serveWifi(AsyncWebServerRequest *request);
+    void handleWifiSave(AsyncWebServerRequest *request);
+    void serveInfo(AsyncWebServerRequest *request);
+    void reboot(AsyncWebServerRequest *request);
+    
+    IPAddress getIP();
+    bool shouldReboot;
 
 };
-
-
-class CaptiveRequestHandler : public AsyncWebHandler {
-    public:
-      CaptiveRequestHandler() {}
-      virtual ~CaptiveRequestHandler() {}
-  
-      bool canHandle(__unused AsyncWebServerRequest* request) {
-        // request->addInterestingHeader("ANY");
-        Serial.println("can Handle");
-        return true;
-      }
-  
-      void handleRequest(AsyncWebServerRequest* request) {
-        Serial.println("handle");
-        AsyncResponseStream* response = request->beginResponseStream("text/html");
-        response->print("<!DOCTYPE html><html><head><title>Captive Portal</title></head><body>");
-        response->print("<p>This is out captive portal front page.</p>");
-        response->printf("<p>You were trying to reach: http://%s%s</p>", request->host().c_str(), request->url().c_str());
-        response->printf("<p>Try opening <a href='http://%s'>this link</a> instead</p>", WiFi.softAPIP().toString().c_str());
-        response->print("</body></html>");
-        request->send(response);
-      }
-  };
-  

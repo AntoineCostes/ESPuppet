@@ -7,12 +7,13 @@ OK neopixel gamma
 OK OSC broadcast on boot
 OK fix crash if no littleFS => c'était le webserver et l'osc qui n'était pas instanciés
 OK liste des config files
+OK config portal html -> setup wifi + pick config file
 
 FIXME filter ping messages, multiport yo
 FIXME handle if targetIP not valid
-FIXME le AP crashe tout seul ?
 
-- config portal html -> setup wifi + pick config file
+- upload config file
+- list previous wifi credentials
 - niceName from config ? est-ce qu'on peut avoir des entrées identiques dans un JSON ?
 - color templates for wifidebug
 - Parameters -> automated loadConfig + no handleOSCCommand

@@ -2,26 +2,15 @@
 
 String indexProcessor(const String &var)
 {
-
-  if (var == "TITLE") return "ESPuppet Config";
-  if (var == "BOARD")
+  if (var == "BOARD") return String(ARDUINO_BOARD);
+  if (var == "CONFIG") return FileManager::getCurrentConfigName();
+  if (var == "CONFIG_OPTIONS")
   {
-    return String(ARDUINO_BOARD);
-  }
-  if (var == "CONFIG")
-  {
-    Preferences prefs;
-    prefs.begin("ESPuppet");
-    String configFileName = prefs.getString("config", "config file name not found");
-    prefs.end();
-    
-    String ret = "<h3>Current: "+ configFileName + "</h3>";
-    
+    Serial.println("OPTIONS");
+    String options;
     std::vector<String> configs = FileManager::getConfigNames();
-    ret += "<select id='configs'>";
-    for (const String& name : configs) ret +=  "<option value='"+name+"'>"+name+"</option>" ;
-    ret += "</select>";
-    return ret;
+    for (const String& name : configs) options +=  "<option value='"+name+"'>"+name+"</option>\n" ;
+    return options;
   }
   if (var == "TITLE") return "ESPuppet Config";
   return "[???]";
@@ -88,26 +77,33 @@ void ConfigWebserver::start()
   dnsServer = new DNSServer();
   dnsServer->setErrorReplyCode(DNSReplyCode::NoError);
   dnsServer->setTTL(6000); // default is 60, not sure what value is best
-  dnsServer->start(53, "*", WiFi.softAPIP());
-  dbg("started on :" + WiFi.softAPIP().toString());
+  dnsServer->start(53, "*", getIP());
+  dbg("started on :" + getIP().toString());
 
   server = new AsyncWebServer(80);
-  // TODO check Filters example
-  // does not work ?
-  server->addHandler(new CaptiveRequestHandler()).setFilter(ON_AP_FILTER); // only when requested from AP
 
   server->on("/", HTTP_GET, std::bind(&ConfigWebserver::serveIndex, this, std::placeholders::_1));
   server->on("/portal.css", HTTP_GET, std::bind(&ConfigWebserver::serveCSS, this, std::placeholders::_1));
-  server->on("/info", HTTP_GET, std::bind(&ConfigWebserver::serveInfo, this, std::placeholders::_1));
   server->on("/wifi", HTTP_GET, std::bind(&ConfigWebserver::serveWifi, this, std::placeholders::_1));
   server->on("/wifisave", HTTP_POST, std::bind(&ConfigWebserver::handleWifiSave, this, std::placeholders::_1));
-  server->on("/restart", [](AsyncWebServerRequest *request) { request->send(200); ESP.restart(); }); 
+  server->on("/config", HTTP_GET, std::bind(&ConfigWebserver::serveConfig, this, std::placeholders::_1));
+  server->on("/loadconfig", HTTP_POST, std::bind(&ConfigWebserver::handleLoadConfig, this, std::placeholders::_1));
+  
+  server->onFileUpload(std::bind(&ConfigWebserver::handleConfigUpload, this, 
+    std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, 
+        std::placeholders::_5, std::placeholders::_6));
+        
+  server->on("/info", HTTP_GET, std::bind(&ConfigWebserver::serveInfo, this, std::placeholders::_1));
+  server->on("/reboot", HTTP_GET, std::bind(&ConfigWebserver::reboot, this, std::placeholders::_1));
+  // server->on("/restart", [](AsyncWebServerRequest *request) { request->send(200); ESP.restart(); }); 
+
   // server->onNotFound(std::bind(&ConfigWebserver::redirect, this, std::placeholders::_1));
   server->onNotFound([](AsyncWebServerRequest *request)
                      {
                       Serial.println("NOT FOUND, host: "+ request->host()+", url:"+request->url()); 
                       request->send(404, "text/plain", "Not found"); });
 
+  //redirections for captive portal
   server->on("/success.txt", [](AsyncWebServerRequest *request)
              { 
               Serial.println("SUCCESS");
@@ -205,19 +201,24 @@ void ConfigWebserver::serveInfo(AsyncWebServerRequest *request)
 void ConfigWebserver::serveWifi(AsyncWebServerRequest *request)
 {
   dbg("serve wifi");
-  request->send(LittleFS, "/wifi.html", "text/html");
+  request->send(LittleFS, "/wifi.html", String(), false, indexProcessor);
 }
 
-void ConfigWebserver::serveWifiSaved(AsyncWebServerRequest *request)
+void ConfigWebserver::serveConfig(AsyncWebServerRequest *request)
 {
-  dbg("serve wifi saved");
-  request->send(LittleFS, "/wifisaved.html", "text/html");
+  dbg("serve config");
+  request->send(LittleFS, "/config.html", String(), false, indexProcessor);
+}
+
+void ConfigWebserver::reboot(AsyncWebServerRequest *request)
+{
+  dbg("REBOOT");
+  shouldReboot = true;
+  request->send(LittleFS, "/reboot.html", "text/html");
 }
 
 void ConfigWebserver::handleWifiSave(AsyncWebServerRequest *request)
 {
-  dbg("SAVE WIFI");
-
   if (request->hasParam("ssid", true) && request->hasParam("pwd", true))
   {
     const String ssid = request->getParam("ssid", true)->value();
@@ -229,10 +230,55 @@ void ConfigWebserver::handleWifiSave(AsyncWebServerRequest *request)
     prefs.putString("pwd", pwd.c_str());
     prefs.end();
 
-    dbg("new credentials: " + ssid + " / " + pwd);
+    dbg("new wifi credentials: " + ssid + " / " + pwd);
+    request->redirect("http://" + getIP().toString());
+  }
+  else request->send(404, "text/plain", "Not found");
+}
+
+void ConfigWebserver::handleLoadConfig(AsyncWebServerRequest *request)
+{
+  dbg("load config");
+  
+  if (request->hasParam("config", true) )
+  {
+    const String newConfig = request->getParam("config", true)->value();
+    dbg(newConfig);
+    FileManager::setNewConfig(newConfig);
+    shouldReboot = true;
+    request->send(LittleFS, "/reboot.html", "text/html");
+  }
+  else request->send(404, "text/plain", "Not found");
+}
+
+
+void ConfigWebserver::handleConfigUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final)
+{
+  dbg("UPLOAD");
+  String logmessage = "Client:" + request->client()->remoteIP().toString() + " " + request->url();
+  Serial.println(logmessage);
+
+  if (!index) {
+    logmessage = "Upload Start: " + String(filename);
+    // open the file on first call and store the file handle in the request object
+    request->_tempFile = FileManager::openFile("/" + filename, true);
+    Serial.println(logmessage);
   }
 
-  request->redirect("http://" + WiFi.softAPIP().toString());
+  if (len) {
+    // stream the incoming chunk to the opened file
+    request->_tempFile.write(data, len);
+    logmessage = "Writing file: " + String(filename) + " index=" + String(index) + " len=" + String(len);
+    Serial.println(logmessage);
+  }
+
+  if (final) {
+    logmessage = "Upload Complete: " + String(filename) + ",size: " + String(index + len);
+    // close the file handle as the upload is now done
+    request->_tempFile.close();
+    Serial.println(logmessage);
+    request->redirect("/");
+  }
 }
 
 void ConfigWebserver::serveCSS(AsyncWebServerRequest *request)
@@ -251,4 +297,31 @@ void ConfigWebserver::stop()
 void ConfigWebserver::update()
 {
   dnsServer->processNextRequest();
+
+  if (shouldReboot) 
+  {
+  long now = millis();
+    while (millis() < now + 1000) 
+    {
+      dnsServer->processNextRequest();
+      delay(10);
+    }
+    ESP.restart();
+  }
+}
+
+
+IPAddress ConfigWebserver::getIP()
+{
+  switch (WiFi.status())
+  {
+  case WL_NO_SHIELD: 
+  return WiFi.softAPIP();
+
+  case WL_CONNECTED:
+  return WiFi.localIP();
+
+  default:
+    return IPAddress();
+  }
 }

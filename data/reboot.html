@@ -6,22 +6,33 @@
   <meta charset='UTF-8'>
   <meta name='viewport' content='width=device-width,initial-scale=1,user-scalable=no' />
   <link rel="stylesheet" type="text/css" href="portal.css">
-  <title>ESPuppet Setup</title>
+  <title>ESPuppet Config</title>
   <script>function c(l) { document.getElementById('s').value = l.getAttribute('data-ssid') || l.innerText || l.textContent; p = l.nextElementSibling.classList.contains('l'); document.getElementById('p').disabled = !p; if (p) document.getElementById('p').focus(); }; function f() { var x = document.getElementById('p'); x.type === 'password' ? x.type = 'text' : x.type = 'password'; }</script>
   
 </head>
 
 <body class='invert'>
-  <div class='wrap'>
-    <h1>ESPuppet Setup</h1>
-    <h3>%BOARD% /  %CONFIG%</h3>
-
-    <form action='/wifi' method='get'><button>Configure WiFi</button></form><br />
-    <form action='/config' method='get'><button>Config</button></form><br />
-    <form action='/info' method='get'><button>Info</button></form><br />
-    <hr><br/>
-    <form action='/reboot' method='get'><button class='D'>Restart</button></form><br/>
-  </div>
+  <!-- <div class='wrap'> -->
+    
+<h3>
+  Rebooting, returning to main page in <span id="countdown">10</span> seconds
+</h3>
+<script type="text/javascript">
+  var seconds = 10;
+  function countdown() {
+    seconds = seconds - 1;
+    if (seconds < 0) {
+      window.location = "/";
+    } else {
+      document.getElementById("countdown").innerHTML = seconds;
+      window.setTimeout("countdown()", 1000);
+    }
+  }
+  countdown();
+</script>
+  <!-- </div> -->
 </body>
 
 </html>
+
+
