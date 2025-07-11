@@ -10,6 +10,8 @@ void WifiModule::init()
   serialDebug = true;
   connectionTimeoutMs = 5000;
   configPortalTimeoutMs = 2*60*1000;
+  boardName = "Proppy";
+  configServer = new ConfigWebserver(true); // TODO change this according to config ?
 
   lastConnectTime = millis();
   // lastDisconnectTime = millis();
@@ -26,7 +28,7 @@ void WifiModule::loadConfig(JsonObject const &config)
   serialDebug = config["serialDebug"] | serialDebug;
   connectionTimeoutMs = config["connectionTimeoutMs"] | connectionTimeoutMs;
   configPortalTimeoutMs = config["configPortalTimeoutMs"] | configPortalTimeoutMs;
-  boardName = config["boardName"] | "default";
+  boardName = config["boardName"] | boardName;
   boardName.replace(" ", "_");
 
   if (config["osc"])
@@ -44,8 +46,7 @@ void WifiModule::loadConfig(JsonObject const &config)
     osc->addListener(std::bind(&WifiModule::gotOSCCommand, this, std::placeholders::_1));
   }
 
-  bool serverDebug = config["webserver"]["serialDebug"] | false;
-  configServer = new ConfigWebserver(serverDebug);
+  // bool serverDebug = config["webserver"]["serialDebug"] | false;
 
   initSTA();
 }
@@ -95,14 +96,16 @@ void WifiModule::update()
   case WL_NO_SHIELD: // 255
                      // AP running
     if (millis() % 5000 < 1) dbg("STATUS: AP RUNNING");
-    configServer->update();
-    if (millis() - configPortalStartTimeMs > configPortalTimeoutMs) ESP.restart();
-
+    if (millis() - configPortalStartTimeMs > configPortalTimeoutMs) 
+    {
+      log("PORTAL TIMEOUT EXPIRED - RESTART");
+      ESP.restart();
+    }
   case WL_CONNECTED:
     if (millis() % 5000 < 1 && WiFi.status() != WL_NO_SHIELD) dbg("STATUS: CONNECTED TO STA");
     ArduinoOTA.handle();
-    if (osc)
-      osc->update();
+    if (configServer) configServer->update();
+    if (osc) osc->update();
     break;
 
   case WL_IDLE_STATUS: // 0: connected but no IP yet
@@ -171,11 +174,23 @@ void WifiModule::initMDNS()
   dbg("creating mDNS instance: " + boardName);
   if (MDNS.begin(boardName.c_str()))
   {
-    MDNS.addService("_osc", "_udp", osc->listeningPort);
-    MDNS.addServiceTxt("osc", "udp", "boardName", boardName.c_str());
+    if (osc)
+    {
+      if (MDNS.addService("_osc", "_udp", osc->listeningPort)) 
+      {
+        dbg("OSC Zeroconf service added sucessfully !");
+        MDNS.addServiceTxt("osc", "udp", "boardName", boardName.c_str());
+      }
+      else 
+      {
+        err("OSC zeroconf services could not be added");
+        log(String(osc->listeningPort));
+        log(boardName);
+      }
+    }
 
     MDNS.addService("_http", "_tcp", 80);
-    dbg("OSC Zeroconf service added sucessfully !");
+    
   }
   else
     err("could not setup MDNS");
@@ -286,7 +301,7 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
   case ARDUINO_EVENT_WIFI_AP_START:
     dbg("Event: WiFi access point started");
     WiFi.softAPsetHostname(boardName.c_str()); // after we get IP
-    configServer->start();
+    if (configServer) configServer->start();
     initMDNS();
     initOTA();
     if (osc)
@@ -304,7 +319,7 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     {
       osc->open(WiFi.broadcastIP(), WiFi.gatewayIP());
     }
-    // server->start(); TODO ADD WEBSERVER
+    if (configServer) configServer->start(); 
     break;
 
   case ARDUINO_EVENT_WIFI_READY:

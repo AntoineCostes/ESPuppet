@@ -5,9 +5,14 @@ class FileManager
 {
     public:
         FileManager();
-        void init();
-        std::vector<String> getFileNameList(const char *extension);
-        void printFilesInDirectory(const char *dirname, uint8_t levels);
-        File openFile(String fileName);
-        bool exists(String fileName);
+        static void init();
+
+        static void printFilesInDirectory(String dirname, uint8_t levels);
+        static File openFile(String fileName, bool write = false);
+        static bool exists(String fileName);
+
+        static std::vector<String> getConfigNames();
+        static String getCurrentConfigName();
+        static File openCurrentConfig();
+        static void setNewConfig(String configName);
 };

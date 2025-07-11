@@ -3,19 +3,26 @@
 ESP32 firmware for animatronics and connected stage props
 
 ROADMAP
-- liste des config files
-- fix crash if no littleFS
-- ServoPWMShield separate class + servo start
 OK neopixel gamma
 OK OSC broadcast on boot
+OK fix crash if no littleFS => c'était le webserver et l'osc qui n'était pas instanciés
+OK liste des config files
+
 FIXME filter ping messages, multiport yo
-- ledModule advertise/notify -> wifi debug
-- button events in main.cpp
-- Parameters -> automated loadConfig + no handleOSCCommand
+FIXME handle if targetIP not valid
+FIXME le AP crashe tout seul ?
+
 - config portal html -> setup wifi + pick config file
-- pin management -> advertise config errors
 - niceName from config ? est-ce qu'on peut avoir des entrées identiques dans un JSON ?
-- handle if targetIP not valid
+- color templates for wifidebug
+- Parameters -> automated loadConfig + no handleOSCCommand
+- FileManager singleton 
+
+
+- ledModule advertise/notify -> wifi debug
+- ServoPWMShield separate class + servo start
+- button events in main.cpp
+- pin management -> advertise config errors
 
 TO DIG
 - wifi set power
@@ -24,7 +31,6 @@ TO DIG
 - handle if mDNS & OTA failed
 
 IDEAS
-
 - lastUpdateMs in component ?
 - inputComponent génère des évènement, outputComponent est contrôlable par OSC ?
 - FileManager Component
@@ -34,7 +40,6 @@ IDEAS
 - Component checkRange
 
 COSMETICS
-
 - char \* name
 - variadic reservePins
 - color instead of r, g, b in LedModule

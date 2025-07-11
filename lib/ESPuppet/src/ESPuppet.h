@@ -19,7 +19,7 @@ public:
 
     void initWifi();
 
-    FileManager fileModule;
+    // FileManager fileModule;
     WifiModule wifiModule;
     GPIOModule gpioModule;
     LedModule ledModule;

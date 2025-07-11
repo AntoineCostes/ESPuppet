@@ -14,8 +14,16 @@ String indexProcessor(const String &var)
     prefs.begin("ESPuppet");
     String configFileName = prefs.getString("config", "config file name not found");
     prefs.end();
-    return configFileName;
+    
+    String ret = "<h3>Current: "+ configFileName + "</h3>";
+    
+    std::vector<String> configs = FileManager::getConfigNames();
+    ret += "<select id='configs'>";
+    for (const String& name : configs) ret +=  "<option value='"+name+"'>"+name+"</option>" ;
+    ret += "</select>";
+    return ret;
   }
+  if (var == "TITLE") return "ESPuppet Config";
   return "[???]";
 }
 
@@ -111,6 +119,11 @@ void ConfigWebserver::start()
               Serial.println("canonical");
               request->redirect("http://" + WiFi.softAPIP().toString()); });
 
+  server->on("/monitor.html", [](AsyncWebServerRequest *request)
+             { 
+              Serial.println("monitor");
+              request->redirect("http://" + WiFi.softAPIP().toString()); });
+
   server->on("/favicon.ico", [](AsyncWebServerRequest *request)
              { request->send(404); }); // webpage icon
 
@@ -137,6 +150,18 @@ void ConfigWebserver::start()
              { 
               // microsoft redirect
               Serial.println("redrect");
+              request->redirect("http://" + WiFi.softAPIP().toString()); });
+
+  server->on("/redirect/internal", [](AsyncWebServerRequest *request)
+             { 
+              // microsoft redirect
+              Serial.println("redrect internal");
+              request->redirect("http://" + WiFi.softAPIP().toString()); });
+
+  server->on("/redirect/external", [](AsyncWebServerRequest *request)
+             { 
+              // microsoft redirect
+              Serial.println("redrect internal");
               request->redirect("http://" + WiFi.softAPIP().toString()); });
 
   server->on("/hotspot-detect.html", [](AsyncWebServerRequest *request)

@@ -8,8 +8,9 @@ String ESPuppet::niceName = "ESPuppet";
 
 void ESPuppet::init()
 {
+    FileManager::init();
+
     // init each module
-    fileModule.init();
     WiFi.onEvent(std::bind(&ESPuppet::WiFiEvent,this,std::placeholders::_1,std::placeholders::_2));
     wifiModule.init();
     wifiModule.addListener(std::bind(&ESPuppet::gotOSCCommand, this, std::placeholders::_1));
@@ -17,23 +18,10 @@ void ESPuppet::init()
     servoModule.init();
     gpioModule.init();
 
-    // load config file
-    String configFileName = "default";
-    Preferences prefs;
-    prefs.begin("ESPuppet");
-
-    // prefs.putString("config", "houdini_fire"); // force config
-
-    configFileName = prefs.getString("config", "default"); // TODO test default config
-    prefs.end();
-    configFileName += ".json";
-    String filePath = String(ARDUINO_BOARD) + "/"+ configFileName;
-
     Serial.println("");
     Serial.println("");
-    Serial.println("loading config file: " +filePath);
 
-    File config = fileModule.openFile(filePath);
+    File config = FileManager::openCurrentConfig();
     if (config)
     {
         JsonDocument json;
@@ -49,11 +37,15 @@ void ESPuppet::init()
           servoModule.loadConfig(json["servo"].as<JsonObject>());
           gpioModule.loadConfig(json["gpio"].as<JsonObject>());
         }
-    } else Serial.println("no config file ! Please upload LittleFS image");
-
-    Serial.println("INIT OK");
-    Serial.println("");
-    Serial.println("");
+      Serial.println("INIT OK");
+      Serial.println("");
+      Serial.println("");
+    } else 
+    {
+      Serial.println("no config file ! Please upload LittleFS image");
+      // TODO advertise error with leds
+      wifiModule.initAP();
+    }
 }
 
 void ESPuppet::update()
