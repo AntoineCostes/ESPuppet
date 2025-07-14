@@ -28,7 +28,7 @@ protected:
     long configPortalTimeoutMs;
     long configPortalStartTimeMs;
     
-    
+    int numFailedAttempts;
     long lastDisconnectTime;
     long lastConnectTime;
 };

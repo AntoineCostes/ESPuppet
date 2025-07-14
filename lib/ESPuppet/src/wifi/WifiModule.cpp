@@ -137,6 +137,13 @@ void WifiModule::initAP()
 
 void WifiModule::initSTA()
 {
+    if (numFailedAttempts > 3) 
+    {
+      log("we failed too many times, start AP instead of STA");
+      initAP();
+      return;
+    }
+
   dbg("START STA");
   lastConnectTime = millis();
 
@@ -165,17 +172,14 @@ void WifiModule::initSTA()
 void WifiModule::initZeroConf()
 {
   dbg("init zeroConf");
-  WiFi.setHostname(FileManager::getCurrentConfigNiceName().c_str());
+  // WiFi.setHostname(FileManager::getCurrentConfigNiceName().c_str());
   ArduinoOTA.setHostname(FileManager::getCurrentConfigName().c_str());
 
   ArduinoOTA.onStart([]()
                      {
     String type;
-    if (ArduinoOTA.getCommand() == U_FLASH) {
-      type = "sketch";
-    } else { // U_FS
-      type = "filesystem";
-    }
+    if (ArduinoOTA.getCommand() == U_FLASH)  type = "sketch";
+    else type = "filesystem"; // U_FS
 
     // NOTE: if updating FS this would be the place to unmount FS using FS.end()
     Serial.println("[OTA] Start updating " + type); });
@@ -186,17 +190,12 @@ void WifiModule::initZeroConf()
   ArduinoOTA.onError([](ota_error_t error)
                      {
     Serial.printf("[OTA] Error[%u]: ", error);
-    if (error == OTA_AUTH_ERROR) {
-      Serial.println("Auth Failed");
-    } else if (error == OTA_BEGIN_ERROR) {
-      Serial.println("Begin Failed");
-    } else if (error == OTA_CONNECT_ERROR) {
-      Serial.println("Connect Failed");
-    } else if (error == OTA_RECEIVE_ERROR) {
-      Serial.println("Receive Failed");
-    } else if (error == OTA_END_ERROR) {
-      Serial.println("End Failed");
-    } });
+    if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
+    else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
+    else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
+    else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
+    else if (error == OTA_END_ERROR) Serial.println("End Failed");
+    });
 
   ArduinoOTA.begin();
 
@@ -225,8 +224,8 @@ void WifiModule::disconnect()
   dbg("\t === DISCONNECT ===");
   // lastDisconnectTime = millis();
   if (osc) osc->close();
-
   ArduinoOTA.end();
+  numFailedAttempts++;
 }
 
 void WifiModule::gotOSCCommand(const Command &command)
@@ -240,6 +239,7 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
   {
   case ARDUINO_EVENT_WIFI_STA_START:
     dbg("Event: Start connecting to router");
+  tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA, FileManager::getCurrentConfigNiceName().c_str());
     break;
 
   case ARDUINO_EVENT_WIFI_STA_CONNECTED:
@@ -290,16 +290,15 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
       osc->doBroadcast = true;
     }
     if (configServer) configServer->start();
+    numFailedAttempts = 0;
     break;
 
   case ARDUINO_EVENT_WIFI_STA_GOT_IP:
     dbg("Event: Obtained IP address: " + WiFi.localIP().toString());
     initZeroConf();
-    if (osc)
-    {
-      osc->open(WiFi.broadcastIP(), WiFi.gatewayIP());
-    }
+    if (osc) osc->open(WiFi.broadcastIP(), WiFi.gatewayIP());
     if (configServer) configServer->start();
+    numFailedAttempts = 0;
     break;
 
   case ARDUINO_EVENT_WIFI_READY:

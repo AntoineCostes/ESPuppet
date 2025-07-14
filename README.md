@@ -8,6 +8,7 @@ OK OSC broadcast on boot
 OK fix crash if no littleFS => c'était le webserver et l'osc qui n'était pas instanciés
 OK liste des config files
 OK config portal html -> setup wifi + pick config file
+OK handle incorrect credentials
 
 FIXME filter ping messages, multiport yo
 FIXME handle if targetIP not valid
