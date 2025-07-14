@@ -19,12 +19,16 @@ protected:
     AsyncWebServer* server;
     void serveIndex(AsyncWebServerRequest *request);
     void serveCSS(AsyncWebServerRequest *request);
-    void serveConfig(AsyncWebServerRequest *request);
-    void handleLoadConfig(AsyncWebServerRequest *request);
-    void handleConfigUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final);
     void serveWifi(AsyncWebServerRequest *request);
-    void handleWifiSave(AsyncWebServerRequest *request);
     void serveInfo(AsyncWebServerRequest *request);
+    void serveConfig(AsyncWebServerRequest *request);
+
+    void handleWifiSave(AsyncWebServerRequest *request);
+
+    void handleLoadConfig(AsyncWebServerRequest *request);
+    void handleDownloadConfig(AsyncWebServerRequest *request);
+    void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final);
+    
     void reboot(AsyncWebServerRequest *request);
     
     bool shouldReboot;

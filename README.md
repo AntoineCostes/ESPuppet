@@ -12,12 +12,13 @@ OK handle incorrect credentials
 
 FIXME filter ping messages, multiport yo
 FIXME handle if targetIP not valid
+FIXME redirection problem after file upload
 
-- upload config file
 - list previous wifi credentials
 - color templates for wifidebug
 - Parameters -> automated loadConfig + no handleOSCCommand
 - FileManager singleton 
+- firmware version ?
 
 - ledModule advertise/notify -> wifi debug
 - ServoPWMShield separate class + servo start

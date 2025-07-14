@@ -139,7 +139,7 @@ void WifiModule::initSTA()
 {
     if (numFailedAttempts > 3) 
     {
-      log("we failed too many times, start AP instead of STA");
+      log("got disconneged too many times, start AP instead of STA");
       initAP();
       return;
     }

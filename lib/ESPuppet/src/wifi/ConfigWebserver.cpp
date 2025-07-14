@@ -18,6 +18,7 @@ IPAddress ConfigWebserver::getIP()
 String generalProcessor(const String &var)
 {
   if (var == "BOARD") return String(ARDUINO_BOARD);
+  if (var == "DATE") return String(__DATE__);
   if (var == "CONFIG") return FileManager::getCurrentConfigName();
   if (var == "NICENAME") return FileManager::getCurrentConfigNiceName();
   if (var == "HOSTNAME") return FileManager::getCurrentConfigName()+".local";
@@ -29,7 +30,6 @@ String configProcessor(const String &var)
   if (var == "CONFIG") return FileManager::getCurrentConfigName();
   if (var == "CONFIG_OPTIONS")
   {
-    Serial.println("OPTIONS");
     String options;
     std::vector<String> configs = FileManager::getConfigNames();
     for (const String& name : configs) options +=  "<option value='"+name+"'>"+name+"</option>\n" ;
@@ -122,13 +122,13 @@ void ConfigWebserver::start()
   server->on("/config", HTTP_GET, std::bind(&ConfigWebserver::serveConfig, this, std::placeholders::_1));
 
   server->on("/wifisave", HTTP_POST, std::bind(&ConfigWebserver::handleWifiSave, this, std::placeholders::_1));
-  server->on("/loadconfig", HTTP_POST, std::bind(&ConfigWebserver::handleLoadConfig, this, std::placeholders::_1));
+  server->on("/load", HTTP_POST, std::bind(&ConfigWebserver::handleLoadConfig, this, std::placeholders::_1));
+  server->on("/download", HTTP_POST, std::bind(&ConfigWebserver::handleDownloadConfig, this, std::placeholders::_1));
   
-  server->onFileUpload(std::bind(&ConfigWebserver::handleConfigUpload, this, 
+  server->onFileUpload(std::bind(&ConfigWebserver::handleFileUpload, this, 
     std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, 
         std::placeholders::_5, std::placeholders::_6));
         
-
   //redirections for captive portal
   server->on("/success.txt", [](AsyncWebServerRequest *request)
              { 
@@ -254,7 +254,7 @@ void ConfigWebserver::handleWifiSave(AsyncWebServerRequest *request)
 void ConfigWebserver::handleLoadConfig(AsyncWebServerRequest *request)
 {
   dbg("load config");
-  
+
   if (request->hasParam("config", true) )
   {
     const String newConfig = request->getParam("config", true)->value();
@@ -267,33 +267,40 @@ void ConfigWebserver::handleLoadConfig(AsyncWebServerRequest *request)
   else request->send(404, "text/plain", "Not found");
 }
 
+void ConfigWebserver::handleDownloadConfig(AsyncWebServerRequest *request)
+{
+  dbg("download config");
 
-void ConfigWebserver::handleConfigUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final)
+  if (request->hasParam("config", true) )
+  {
+    const String name = request->getParam("config", true)->value();
+
+    request->send(LittleFS, "/"+String(ARDUINO_BOARD)+"/"+name+".json", String(), true);
+  }
+  else request->send(404, "text/plain", "Not found");
+}
+
+void ConfigWebserver::handleFileUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final)
 {
   dbg("UPLOAD");
-  String logmessage = "Client:" + request->client()->remoteIP().toString() + " " + request->url();
-  Serial.println(logmessage);
+  // dbg("Client:" + request->client()->remoteIP().toString() + " " + request->url());
 
   if (!index) {
-    logmessage = "Upload Start: " + String(filename);
+    dbg("Upload Start: " + String(filename));
     // open the file on first call and store the file handle in the request object
-    request->_tempFile = FileManager::openFile("/" + filename, true);
-    Serial.println(logmessage);
+    request->_tempFile = FileManager::openFile("/"+String(ARDUINO_BOARD)+"/" + filename, true);
   }
-
   if (len) {
     // stream the incoming chunk to the opened file
     request->_tempFile.write(data, len);
-    logmessage = "Writing file: " + String(filename) + " index=" + String(index) + " len=" + String(len);
-    Serial.println(logmessage);
+    dbg("Writing file: " + String(filename) + String(index) + "/" + String(len));
   }
-
   if (final) {
-    logmessage = "Upload Complete: " + String(filename) + ",size: " + String(index + len);
-    // close the file handle as the upload is now done
+    dbg("Upload Complete: " + String(filename) + "(" + String(index + len)+" bytes)");
     request->_tempFile.close();
-    Serial.println(logmessage);
-    request->redirect("/");
+    // FIXME WHY DOES NOT WORK ???
+    // request->redirect("/files");
+    // request->send(200, "text/plain", "File upload successfull !");
   }
 }
 

@@ -9,24 +9,27 @@
   <title>ESPuppet Config</title>
   
 </head>
-
 <body class='invert'>
   <div class='wrap'>
     
-    <h3>Current config:  %CONFIG%</h3>
+    <h2>Current config:  %CONFIG%</h2>
 
     <form action="/loadconfig" method='post'>
       <select id='configs' name="config">
         %CONFIG_OPTIONS%
       </select>
-      <input type="submit" value="Charger">
+      <input type="submit" value="Download" formaction="/download">
+      <input type="submit" value="Load and reboot" formaction="/load">
+      <input type="submit" value="Delete" formaction="/delete">
     </form>
-
     <br/>
     <br/>
-  <p><h1>File Upload</h1></p>
-  <!-- <p>Free Storage: %FREESPIFFS% | Used Storage: %USEDSPIFFS% | Total Storage: %TOTALSPIFFS%</p> -->
-  <form method="POST" action="/upload" enctype="multipart/form-data"><input type="file" name="data"/><input type="submit" name="upload" value="Upload" title="Upload File"></form>
+  <p><h2>File Upload</h2>
+  </p>
+  <form method="POST" action="/upload" enctype="multipart/form-data">
+    <input type="file" name="data"/>
+    <input type="submit" name="upload" value="Upload" title="Upload File">
+  </form>
 
   </div>
 </body>
