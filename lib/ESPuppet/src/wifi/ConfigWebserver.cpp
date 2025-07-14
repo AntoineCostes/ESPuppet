@@ -1,8 +1,30 @@
 #include "ConfigWebserver.h"
 
-String indexProcessor(const String &var)
+IPAddress ConfigWebserver::getIP()
+{
+  switch (WiFi.status())
+  {
+  case WL_NO_SHIELD: 
+  return WiFi.softAPIP();
+
+  case WL_CONNECTED:
+  return WiFi.localIP();
+
+  default:
+    return IPAddress();
+  }
+}
+
+String generalProcessor(const String &var)
 {
   if (var == "BOARD") return String(ARDUINO_BOARD);
+  if (var == "CONFIG") return FileManager::getCurrentConfigName();
+  if (var == "HOSTNAME") return FileManager::getCurrentConfigName()+".local";
+  return "[???]";
+}
+
+String configProcessor(const String &var)
+{
   if (var == "CONFIG") return FileManager::getCurrentConfigName();
   if (var == "CONFIG_OPTIONS")
   {
@@ -12,7 +34,6 @@ String indexProcessor(const String &var)
     for (const String& name : configs) options +=  "<option value='"+name+"'>"+name+"</option>\n" ;
     return options;
   }
-  if (var == "TITLE") return "ESPuppet Config";
   return "[???]";
 }
 
@@ -42,9 +63,15 @@ String infoProcessor(const String &var)
     return (String)(ESP.getSketchSize() + ESP.getFreeSketchSpace());
   if (var.equals("temp"))
     return (String)temperatureRead();
-  if (var.equals("conx"))
-    return WiFi.isConnected() ? "Yes" : "No";
-    // TODO add stassid
+  if (var.equals("stassid"))
+  {
+    
+  Preferences prefs;
+  prefs.begin("wifi");
+  String ssid = prefs.getString("ssid", "");
+  prefs.end();
+  return ssid;
+  }
   if (var.equals("staip"))
     return WiFi.localIP().toString();
   if (var.equals("stagw"))
@@ -81,27 +108,25 @@ void ConfigWebserver::start()
   dbg("started on :" + getIP().toString());
 
   server = new AsyncWebServer(80);
+  server->onNotFound([](AsyncWebServerRequest *request)
+                     {
+                      Serial.println("NOT FOUND, host: "+ request->host()+", url:"+request->url()); 
+                      request->send(404, "text/plain", "Not found"); });
 
   server->on("/", HTTP_GET, std::bind(&ConfigWebserver::serveIndex, this, std::placeholders::_1));
   server->on("/portal.css", HTTP_GET, std::bind(&ConfigWebserver::serveCSS, this, std::placeholders::_1));
   server->on("/wifi", HTTP_GET, std::bind(&ConfigWebserver::serveWifi, this, std::placeholders::_1));
-  server->on("/wifisave", HTTP_POST, std::bind(&ConfigWebserver::handleWifiSave, this, std::placeholders::_1));
+  server->on("/info", HTTP_GET, std::bind(&ConfigWebserver::serveInfo, this, std::placeholders::_1));
+  server->on("/reboot", HTTP_GET, std::bind(&ConfigWebserver::reboot, this, std::placeholders::_1));
   server->on("/config", HTTP_GET, std::bind(&ConfigWebserver::serveConfig, this, std::placeholders::_1));
+
+  server->on("/wifisave", HTTP_POST, std::bind(&ConfigWebserver::handleWifiSave, this, std::placeholders::_1));
   server->on("/loadconfig", HTTP_POST, std::bind(&ConfigWebserver::handleLoadConfig, this, std::placeholders::_1));
   
   server->onFileUpload(std::bind(&ConfigWebserver::handleConfigUpload, this, 
     std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, 
         std::placeholders::_5, std::placeholders::_6));
         
-  server->on("/info", HTTP_GET, std::bind(&ConfigWebserver::serveInfo, this, std::placeholders::_1));
-  server->on("/reboot", HTTP_GET, std::bind(&ConfigWebserver::reboot, this, std::placeholders::_1));
-  // server->on("/restart", [](AsyncWebServerRequest *request) { request->send(200); ESP.restart(); }); 
-
-  // server->onNotFound(std::bind(&ConfigWebserver::redirect, this, std::placeholders::_1));
-  server->onNotFound([](AsyncWebServerRequest *request)
-                     {
-                      Serial.println("NOT FOUND, host: "+ request->host()+", url:"+request->url()); 
-                      request->send(404, "text/plain", "Not found"); });
 
   //redirections for captive portal
   server->on("/success.txt", [](AsyncWebServerRequest *request)
@@ -175,21 +200,10 @@ void ConfigWebserver::start()
   server->begin();
 }
 
-void ConfigWebserver::redirect(AsyncWebServerRequest *request)
-{
-
-  // server->addHeader("Location", "/",true); //Redirect to our html web page
-  // server->_send(302, "text/plane","");
-
-  // server->sendHeader("Location","http://" + WiFi.softAPIP().toString(), true); // @HTTPHEAD send redirect
-  // server->send ( 302, "text/plain", ""); // Empty content inhibits Content-length header so we have to close the socket ourselves.
-  // server->client().stop();
-}
-
 void ConfigWebserver::serveIndex(AsyncWebServerRequest *request)
 {
   dbg("SERVE INDEX");
-  request->send(LittleFS, "/index.html", String(), false, indexProcessor);
+  request->send(LittleFS, "/index.html", String(), false, generalProcessor);
 }
 
 void ConfigWebserver::serveInfo(AsyncWebServerRequest *request)
@@ -201,20 +215,20 @@ void ConfigWebserver::serveInfo(AsyncWebServerRequest *request)
 void ConfigWebserver::serveWifi(AsyncWebServerRequest *request)
 {
   dbg("serve wifi");
-  request->send(LittleFS, "/wifi.html", String(), false, indexProcessor);
+  request->send(LittleFS, "/wifi.html", String(), false, generalProcessor);
 }
 
 void ConfigWebserver::serveConfig(AsyncWebServerRequest *request)
 {
   dbg("serve config");
-  request->send(LittleFS, "/config.html", String(), false, indexProcessor);
+  request->send(LittleFS, "/config.html", String(), false, configProcessor);
 }
 
 void ConfigWebserver::reboot(AsyncWebServerRequest *request)
 {
   dbg("REBOOT");
   shouldReboot = true;
-  request->send(LittleFS, "/reboot.html", "text/html");
+  request->send(LittleFS, "/reboot.html", String(), false, generalProcessor);
 }
 
 void ConfigWebserver::handleWifiSave(AsyncWebServerRequest *request)
@@ -246,7 +260,8 @@ void ConfigWebserver::handleLoadConfig(AsyncWebServerRequest *request)
     dbg(newConfig);
     FileManager::setNewConfig(newConfig);
     shouldReboot = true;
-    request->send(LittleFS, "/reboot.html", "text/html");
+    request->send(LittleFS, "/reboot.html", String(), false, generalProcessor);
+
   }
   else request->send(404, "text/plain", "Not found");
 }
@@ -310,18 +325,3 @@ void ConfigWebserver::update()
   }
 }
 
-
-IPAddress ConfigWebserver::getIP()
-{
-  switch (WiFi.status())
-  {
-  case WL_NO_SHIELD: 
-  return WiFi.softAPIP();
-
-  case WL_CONNECTED:
-  return WiFi.localIP();
-
-  default:
-    return IPAddress();
-  }
-}

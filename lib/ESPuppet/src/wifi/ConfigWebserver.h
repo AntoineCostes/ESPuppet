@@ -12,12 +12,12 @@ public:
 
     void start();
     void stop();
+    static IPAddress getIP();
 
 protected:
     DNSServer* dnsServer;
     AsyncWebServer* server;
     void serveIndex(AsyncWebServerRequest *request);
-    void redirect(AsyncWebServerRequest *request);
     void serveCSS(AsyncWebServerRequest *request);
     void serveConfig(AsyncWebServerRequest *request);
     void handleLoadConfig(AsyncWebServerRequest *request);
@@ -27,7 +27,6 @@ protected:
     void serveInfo(AsyncWebServerRequest *request);
     void reboot(AsyncWebServerRequest *request);
     
-    IPAddress getIP();
     bool shouldReboot;
 
 };

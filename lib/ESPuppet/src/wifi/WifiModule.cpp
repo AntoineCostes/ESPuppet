@@ -9,7 +9,7 @@ void WifiModule::init()
   // TODO declare parameters
   serialDebug = true;
   connectionTimeoutMs = 5000;
-  configPortalTimeoutMs = 2*60*1000;
+  configPortalTimeoutMs = 5*60*1000;
   boardName = "Proppy";
   configServer = new ConfigWebserver(true); // TODO change this according to config ?
 

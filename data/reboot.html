@@ -6,23 +6,22 @@
   <meta charset='UTF-8'>
   <meta name='viewport' content='width=device-width,initial-scale=1,user-scalable=no' />
   <link rel="stylesheet" type="text/css" href="portal.css">
-  <title>ESPuppet Config</title>
-  <script>function c(l) { document.getElementById('s').value = l.getAttribute('data-ssid') || l.innerText || l.textContent; p = l.nextElementSibling.classList.contains('l'); document.getElementById('p').disabled = !p; if (p) document.getElementById('p').focus(); }; function f() { var x = document.getElementById('p'); x.type === 'password' ? x.type = 'text' : x.type = 'password'; }</script>
+  <title>ESPuppet Rebooting</title>
   
 </head>
 
 <body class='invert'>
   <!-- <div class='wrap'> -->
     
-<h3>
-  Rebooting, returning to main page in <span id="countdown">10</span> seconds
-</h3>
+  Rebooting, returning to <span id="hostname">%HOSTNAME%</span> <br/>
+  in <span id="countdown">10</span> seconds
+
 <script type="text/javascript">
   var seconds = 10;
   function countdown() {
     seconds = seconds - 1;
     if (seconds < 0) {
-      window.location = "/";
+      window.location.href = "http://"+document.getElementById("hostname").innerHTML;
     } else {
       document.getElementById("countdown").innerHTML = seconds;
       window.setTimeout("countdown()", 1000);
