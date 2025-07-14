@@ -13,6 +13,7 @@ class FileManager
 
         static std::vector<String> getConfigNames();
         static String getCurrentConfigName();
+        static String getCurrentConfigNiceName();
         static File openCurrentConfig();
         static void setNewConfig(String configName);
 };

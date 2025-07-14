@@ -12,8 +12,6 @@ public:
     ESPuppet();
     ~ESPuppet() {}
 
-    static String niceName;
-
     void init();
     void update();
 

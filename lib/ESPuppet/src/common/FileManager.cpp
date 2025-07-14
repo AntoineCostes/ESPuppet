@@ -70,8 +70,6 @@ void FileManager::printFilesInDirectory(String dirname, uint8_t levels)
     }
 }
 
-
-
 String FileManager::getCurrentConfigName()
 {
     Preferences prefs;
@@ -79,6 +77,20 @@ String FileManager::getCurrentConfigName()
     String configFileName = prefs.getString("config", "default"); // TODO test default config
     prefs.end();
     return configFileName;
+}
+
+String FileManager::getCurrentConfigNiceName()
+{
+    String name = getCurrentConfigName();
+    name.replace("_", " ");
+
+    String niceName = "";
+    for (int i = 0; i < name.length(); i++)
+    {
+        if (i == 0 || name.charAt(i-1) == ' ') niceName += (char)toUpperCase(name.charAt(i));
+        else niceName += name.charAt(i);
+    }
+    return niceName;
 }
 
 void FileManager::setNewConfig(String configName)

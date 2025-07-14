@@ -4,14 +4,12 @@ OSCManager::OSCManager(uint16_t listeningPort,
                        uint16_t targetPort,
                        IPAddress targetIP,
                        bool broadcast,
-                       String boardName,
                        long oscPingTimeoutMs,
                        bool oscSendDebug,
                        bool oscReceiveDebug) : Component("osc", true),
                                                listeningPort(listeningPort),
                                                targetPort(targetPort),
                                                targetIP(targetIP),
-                                               boardName(boardName),
                                                oscPingTimeoutMs(oscPingTimeoutMs),
                                                oscSendDebug(oscSendDebug),
                                                oscReceiveDebug(oscReceiveDebug),
@@ -85,9 +83,8 @@ void OSCManager::sendYo()
 {
   OSCMessage m("/yo");
   m.add(WiFi.localIP().toString().c_str());
-  // m.add((int32_t)listeningPort); TODO broadcast on multiport ?
-  // sendMessage(m, true);
-  sendMessage(m, false);
+  m.add((int32_t)listeningPort); // TODO broadcast on multiport ?
+  sendMessage(m, true);
 }
 
 void OSCManager::sendOSC(String address)
@@ -103,7 +100,7 @@ void OSCManager::sendMessage(OSCMessage &msg, bool broadcast)
     err("Can't send OSC message yet");
     return;
   }
-  String fullAddress = "/" + boardName + String(msg.getAddress());
+  String fullAddress = "/" + FileManager::getCurrentConfigName() + String(msg.getAddress());
   msg.setAddress(fullAddress.c_str());
 
   switch (WiFi.status())

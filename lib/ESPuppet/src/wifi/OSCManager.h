@@ -2,6 +2,7 @@
 #include "util/Includes.h"
 #include "common/Component.h"
 #include "common/EventBroadcaster.h"
+#include "common/FileManager.h"
 
 
 class OSCManager : Component,
@@ -12,7 +13,6 @@ public:
                uint16_t targetPort,
                IPAddress targetIP,
                bool broadcast,
-               String boardName,
                long oscPingTimeoutMs,
                bool oscSendDebug,
                bool oscReceiveDebug);
@@ -38,7 +38,6 @@ protected:
     // TODO make variadic function sendOSC(String address, OSCArgument args...)
     void sendMessage(OSCMessage &msg, bool broadcast);
 
-    String boardName;
     long oscPingTimeoutMs;
     bool oscSendDebug;
     bool oscReceiveDebug;

@@ -15,15 +15,13 @@ public:
 
     void initAP();
     void initSTA();
-    void initMDNS();
-    void initOTA();
+    void initZeroConf();
     void disconnect();
 
     OSCManager *osc;
     ConfigWebserver *configServer;
 
 protected:
-    String boardName;
     void WiFiEvent(WiFiEvent_t event, arduino_event_info_t info);
     void gotOSCCommand(const Command &command);
     long connectionTimeoutMs;

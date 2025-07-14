@@ -9,8 +9,7 @@ void WifiModule::init()
   // TODO declare parameters
   serialDebug = true;
   connectionTimeoutMs = 5000;
-  configPortalTimeoutMs = 5*60*1000;
-  boardName = "Proppy";
+  configPortalTimeoutMs = 5 * 60 * 1000;
   configServer = new ConfigWebserver(true); // TODO change this according to config ?
 
   lastConnectTime = millis();
@@ -28,8 +27,6 @@ void WifiModule::loadConfig(JsonObject const &config)
   serialDebug = config["serialDebug"] | serialDebug;
   connectionTimeoutMs = config["connectionTimeoutMs"] | connectionTimeoutMs;
   configPortalTimeoutMs = config["configPortalTimeoutMs"] | configPortalTimeoutMs;
-  boardName = config["boardName"] | boardName;
-  boardName.replace(" ", "_");
 
   if (config["osc"])
   {
@@ -42,7 +39,7 @@ void WifiModule::loadConfig(JsonObject const &config)
     bool oscSendDebug = config["osc"]["oscSendDebug"] | false;
     bool oscReceiveDebug = config["osc"]["oscReceiveDebug"] | false;
 
-    osc = new OSCManager(listeningPort, targetPort, targetIP, broadcast, boardName, oscPingTimeoutMs, oscSendDebug, oscReceiveDebug);
+    osc = new OSCManager(listeningPort, targetPort, targetIP, broadcast, oscPingTimeoutMs, oscSendDebug, oscReceiveDebug);
     osc->addListener(std::bind(&WifiModule::gotOSCCommand, this, std::placeholders::_1));
   }
 
@@ -77,10 +74,10 @@ void WifiModule::update()
       initSTA();
     }
     break;
-    
+
   case WL_CONNECT_FAILED:
     if (millis() % 1000 < 1) dbg("STATUS: FAILED TO CONNECT");
-    
+
     if (millis() - lastConnectTime > connectionTimeoutMs)
     {
       // dbg("connection failed, disconnect and start AP");
@@ -96,7 +93,7 @@ void WifiModule::update()
   case WL_NO_SHIELD: // 255
                      // AP running
     if (millis() % 5000 < 1) dbg("STATUS: AP RUNNING");
-    if (millis() - configPortalStartTimeMs > configPortalTimeoutMs) 
+    if (millis() - configPortalStartTimeMs > configPortalTimeoutMs)
     {
       log("PORTAL TIMEOUT EXPIRED - RESTART");
       ESP.restart();
@@ -124,14 +121,13 @@ void WifiModule::update()
 
 void WifiModule::initAP()
 {
-  String apName = "CONFIG " + boardName;
+  String apName = "CONFIG " + FileManager::getCurrentConfigNiceName();
 
-  dbg("START AP: "+apName);
+  dbg("START AP: " + apName);
   configPortalStartTimeMs = millis();
   lastConnectTime = millis();
 
-  if (WiFi.isConnected())
-    WiFi.disconnect();
+  if (WiFi.isConnected())  WiFi.disconnect();
 
   WiFi.mode(WIFI_AP);
   WiFi.setSleep(false); // can improve ap stability
@@ -144,8 +140,7 @@ void WifiModule::initSTA()
   dbg("START STA");
   lastConnectTime = millis();
 
-  if (WiFi.isConnected())
-    WiFi.disconnect();
+  if (WiFi.isConnected()) WiFi.disconnect();
 
   Preferences prefs;
   prefs.begin("wifi");
@@ -167,39 +162,12 @@ void WifiModule::initSTA()
   }
 }
 
-void WifiModule::initMDNS()
+void WifiModule::initZeroConf()
 {
-  WiFi.setHostname(boardName.c_str());
+  dbg("init zeroConf");
+  WiFi.setHostname(FileManager::getCurrentConfigNiceName().c_str());
+  ArduinoOTA.setHostname(FileManager::getCurrentConfigName().c_str());
 
-  dbg("creating mDNS instance: " + boardName);
-  if (MDNS.begin(boardName.c_str()))
-  {
-    if (osc)
-    {
-      if (MDNS.addService("_osc", "_udp", osc->listeningPort)) 
-      {
-        dbg("OSC Zeroconf service added sucessfully !");
-        MDNS.addServiceTxt("osc", "udp", "boardName", boardName.c_str());
-      }
-      else 
-      {
-        err("OSC zeroconf services could not be added");
-        log(String(osc->listeningPort));
-        log(boardName);
-      }
-    }
-
-    MDNS.addService("_http", "_tcp", 80);
-    
-  }
-  else
-    err("could not setup MDNS");
-}
-
-void WifiModule::initOTA()
-{
-  dbg("init OTA");
-  ArduinoOTA.setHostname(boardName.c_str());
   ArduinoOTA.onStart([]()
                      {
     String type;
@@ -229,21 +197,36 @@ void WifiModule::initOTA()
     } else if (error == OTA_END_ERROR) {
       Serial.println("End Failed");
     } });
+
   ArduinoOTA.begin();
+
+  if (osc)
+  {
+    if (MDNS.addService("_osc", "_udp", osc->listeningPort))
+    {
+      dbg("OSC Zeroconf service added sucessfully !");
+      MDNS.addServiceTxt("osc", "udp", "board", ARDUINO_BOARD);
+      MDNS.addServiceTxt("osc", "udp", "config", FileManager::getCurrentConfigName().c_str());
+    }
+    else
+    {
+      err("OSC zeroconf services could not be added");
+      log(String(osc->listeningPort));
+      log(FileManager::getCurrentConfigName());
+    }
+  }
+
+  if (MDNS.addService("_http", "_tcp", 80)) dbg("TCP service added sucessfully !");
+  else err("TCP service could not be added");
 }
 
 void WifiModule::disconnect()
 {
-    dbg("\t === DISCONNECT ===");
-    // lastDisconnectTime = millis();
-    if (osc)
-      osc->close();
+  dbg("\t === DISCONNECT ===");
+  // lastDisconnectTime = millis();
+  if (osc) osc->close();
 
-    MDNS.begin("-"); // in case it did not start
-    MDNS.end();
-    
-    ArduinoOTA.begin(); // in case it did not start
-    ArduinoOTA.end(); // FIXME only if started already
+  ArduinoOTA.end();
 }
 
 void WifiModule::gotOSCCommand(const Command &command)
@@ -264,23 +247,23 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     break;
 
   case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
-    dbg("Event: Disconnected from WiFi access point with reason: "+String(info.wifi_sta_disconnected.reason));
+    dbg("Event: Disconnected from WiFi access point with reason: " + String(info.wifi_sta_disconnected.reason));
     // For some reason when unable to connect this event is triggered
     // once with reason 0 then every second with reason 201 WIFI_REASON_NO_AP_FOUND
     // or every second with reason 15 WIFI_REASON_4WAY_HANDSHAKE_TIMEOUT
-    
+
     switch (info.wifi_sta_disconnected.reason)
     {
       // could not connect to STA
     case WIFI_REASON_AUTH_EXPIRE: // 2
       err("WIFI_REASON_AUTH_EXPIRE");
       break;
-      
+
     case WIFI_REASON_4WAY_HANDSHAKE_TIMEOUT: // 15
       err("handshake timeout expired. incorrect Wifi credentials ?");
       break;
 
-    case WIFI_REASON_TIMEOUT: //39
+    case WIFI_REASON_TIMEOUT: // 39
       err("WIFI_REASON_TIMEOUT");
       break;
 
@@ -300,26 +283,23 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
 
   case ARDUINO_EVENT_WIFI_AP_START:
     dbg("Event: WiFi access point started");
-    WiFi.softAPsetHostname(boardName.c_str()); // after we get IP
-    if (configServer) configServer->start();
-    initMDNS();
-    initOTA();
+    WiFi.softAPsetHostname(FileManager::getCurrentConfigNiceName().c_str());
     if (osc)
     {
       osc->open(WiFi.softAPBroadcastIP(), WiFi.softAPIP());
       osc->doBroadcast = true;
     }
+    if (configServer) configServer->start();
     break;
 
   case ARDUINO_EVENT_WIFI_STA_GOT_IP:
     dbg("Event: Obtained IP address: " + WiFi.localIP().toString());
-    initMDNS();
-    initOTA();
+    initZeroConf();
     if (osc)
     {
       osc->open(WiFi.broadcastIP(), WiFi.gatewayIP());
     }
-    if (configServer) configServer->start(); 
+    if (configServer) configServer->start();
     break;
 
   case ARDUINO_EVENT_WIFI_READY:
@@ -374,5 +354,4 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
   default:
     break;
   }
-
 }

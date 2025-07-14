@@ -14,11 +14,9 @@ FIXME handle if targetIP not valid
 
 - upload config file
 - list previous wifi credentials
-- niceName from config ? est-ce qu'on peut avoir des entrées identiques dans un JSON ?
 - color templates for wifidebug
 - Parameters -> automated loadConfig + no handleOSCCommand
 - FileManager singleton 
-
 
 - ledModule advertise/notify -> wifi debug
 - ServoPWMShield separate class + servo start
@@ -29,7 +27,8 @@ TO DIG
 - wifi set power
 - differences Preferences / LittleFS: memmory size ?
 - https://github.com/ayushsharma82/WebSerial
-- handle if mDNS & OTA failed
+- handle if mDNS failed ?
+- not sure if wifi host name is usefull for anything
 
 IDEAS
 - lastUpdateMs in component ?

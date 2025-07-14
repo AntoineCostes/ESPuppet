@@ -19,6 +19,7 @@ String generalProcessor(const String &var)
 {
   if (var == "BOARD") return String(ARDUINO_BOARD);
   if (var == "CONFIG") return FileManager::getCurrentConfigName();
+  if (var == "NICENAME") return FileManager::getCurrentConfigNiceName();
   if (var == "HOSTNAME") return FileManager::getCurrentConfigName()+".local";
   return "[???]";
 }

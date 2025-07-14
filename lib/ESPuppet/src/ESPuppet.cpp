@@ -4,8 +4,6 @@ ESPuppet::ESPuppet()
 {
 }
 
-String ESPuppet::niceName = "ESPuppet";
-
 void ESPuppet::init()
 {
     FileManager::init();
