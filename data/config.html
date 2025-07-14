@@ -7,22 +7,38 @@
   <meta name='viewport' content='width=device-width,initial-scale=1,user-scalable=no' />
   <link rel="stylesheet" type="text/css" href="portal.css">
   <title>ESPuppet Config</title>
-  
 </head>
+
+<script>
+function viewConfig() {
+  xmlhttp=new XMLHttpRequest();
+  const target = '/configfile?name='+document.getElementById("configs").value;
+  xmlhttp.open("GET", target, false);
+  xmlhttp.send();
+  
+  var json = JSON.parse(xmlhttp.responseText);
+  var jsonStr = JSON.stringify(json, null, 4);
+  document.getElementById("details").innerHTML = jsonStr;
+}
+</script>
+
 <body class='invert'>
   <div class='wrap'>
     
     <h2>Current config:  %CONFIG%</h2>
 
     <form action="/loadconfig" method='post'>
-      <select id='configs' name="config">
+      <select id='configs' name="selected">
         %CONFIG_OPTIONS%
       </select>
-      <input type="submit" value="Download" formaction="/download">
       <input type="submit" value="Load and reboot" formaction="/load">
-      <input type="submit" value="Delete" formaction="/delete">
-    </form>
+      <input type="submit" value="Download" formaction="/download">
+      <input type="button" value="View" onclick="viewConfig()">
     <br/>
+    <br/>
+      <input type="submit" value="Delete" formaction="/delete" class='D'>
+    </form>
+  <pre id="details"></pre>
     <br/>
   <p><h2>File Upload</h2>
   </p>

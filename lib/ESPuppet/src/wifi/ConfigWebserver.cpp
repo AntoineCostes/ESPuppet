@@ -121,9 +121,12 @@ void ConfigWebserver::start()
   server->on("/reboot", HTTP_GET, std::bind(&ConfigWebserver::reboot, this, std::placeholders::_1));
   server->on("/config", HTTP_GET, std::bind(&ConfigWebserver::serveConfig, this, std::placeholders::_1));
 
+  server->on("/configfile", HTTP_GET, std::bind(&ConfigWebserver::handleGetConfigFile, this, std::placeholders::_1));
+
   server->on("/wifisave", HTTP_POST, std::bind(&ConfigWebserver::handleWifiSave, this, std::placeholders::_1));
   server->on("/load", HTTP_POST, std::bind(&ConfigWebserver::handleLoadConfig, this, std::placeholders::_1));
-  server->on("/download", HTTP_POST, std::bind(&ConfigWebserver::handleDownloadConfig, this, std::placeholders::_1));
+  server->on("/download", HTTP_POST, std::bind(&ConfigWebserver::handleFileDownload, this, std::placeholders::_1));
+  server->on("/delete", HTTP_POST, std::bind(&ConfigWebserver::handleFileDelete, this, std::placeholders::_1));
   
   server->onFileUpload(std::bind(&ConfigWebserver::handleFileUpload, this, 
     std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, 
@@ -255,9 +258,9 @@ void ConfigWebserver::handleLoadConfig(AsyncWebServerRequest *request)
 {
   dbg("load config");
 
-  if (request->hasParam("config", true) )
+  if (request->hasParam("selected", true) )
   {
-    const String newConfig = request->getParam("config", true)->value();
+    const String newConfig = request->getParam("selected", true)->value();
     dbg(newConfig);
     FileManager::setNewConfig(newConfig);
     shouldReboot = true;
@@ -267,15 +270,46 @@ void ConfigWebserver::handleLoadConfig(AsyncWebServerRequest *request)
   else request->send(404, "text/plain", "Not found");
 }
 
-void ConfigWebserver::handleDownloadConfig(AsyncWebServerRequest *request)
+void ConfigWebserver::handleGetConfigFile(AsyncWebServerRequest *request)
+{
+  dbg("get config file");
+
+  if (request->hasParam("name") )
+  {
+    const String name = request->getParam("name")->value();
+    dbg(name);
+    request->send(200, "application/json", FileManager::openConfigFile(name).readString());
+  } 
+  else request->send(404, "text/plain", "Not found");
+}
+
+void ConfigWebserver::handleFileDownload(AsyncWebServerRequest *request)
 {
   dbg("download config");
 
-  if (request->hasParam("config", true) )
+  if (request->hasParam("selected", true) )
   {
-    const String name = request->getParam("config", true)->value();
+    const String name = request->getParam("selected", true)->value();
 
     request->send(LittleFS, "/"+String(ARDUINO_BOARD)+"/"+name+".json", String(), true);
+  }
+  else request->send(404, "text/plain", "Not found");
+}
+
+void ConfigWebserver::handleFileDelete(AsyncWebServerRequest *request)
+{
+  dbg("delete config");
+
+  if (request->hasParam("selected", true) )
+  {
+    const String name = request->getParam("selected", true)->value();
+
+    if (FileManager::deleteConfigFile(name))
+    {
+      dbg("File deleted !");
+      request->redirect("/");
+    }
+    else request->send(404, "text/plain", "Error: file was not found");
   }
   else request->send(404, "text/plain", "Not found");
 }

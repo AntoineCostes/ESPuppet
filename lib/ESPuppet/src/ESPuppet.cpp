@@ -19,7 +19,7 @@ void ESPuppet::init()
     Serial.println("");
     Serial.println("");
 
-    File config = FileManager::openCurrentConfig();
+    File config = FileManager::openConfigFile();
     if (config)
     {
         JsonDocument json;

@@ -25,8 +25,10 @@ protected:
 
     void handleWifiSave(AsyncWebServerRequest *request);
 
+    void handleGetConfigFile(AsyncWebServerRequest *request);
     void handleLoadConfig(AsyncWebServerRequest *request);
-    void handleDownloadConfig(AsyncWebServerRequest *request);
+    void handleFileDownload(AsyncWebServerRequest *request);
+    void handleFileDelete(AsyncWebServerRequest *request);
     void handleFileUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final);
     
     void reboot(AsyncWebServerRequest *request);

@@ -183,6 +183,10 @@
     button.D {
       background-color: #dc3630
     }
+    
+    input.D {
+      background-color: #dc3630
+    }
 
     button:active {
       cursor: wait;

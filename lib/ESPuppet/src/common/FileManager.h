@@ -14,6 +14,9 @@ class FileManager
         static std::vector<String> getConfigNames();
         static String getCurrentConfigName();
         static String getCurrentConfigNiceName();
-        static File openCurrentConfig();
+        static bool isValidConfigName(String name);
+
+        static File openConfigFile(String name = "");
         static void setNewConfig(String configName);
+        static bool deleteConfigFile(String configName);
 };

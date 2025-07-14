@@ -101,9 +101,28 @@ void FileManager::setNewConfig(String configName)
     prefs.end();
 }
 
-File FileManager::openCurrentConfig()
+bool FileManager::deleteConfigFile(String configName)
 {
-    return FileManager::openFile("/"+String(ARDUINO_BOARD)+"/"+FileManager::getCurrentConfigName()+".json");
+    String path = "/"+String(ARDUINO_BOARD)+"/"+configName+".json";
+    if (LittleFS.exists(path) && LittleFS.remove(path)) return true;
+    return false;
+}
+
+File FileManager::openConfigFile(String name)
+{
+    if (name == "") name = FileManager::getCurrentConfigName();
+    else if (!FileManager::isValidConfigName(name))
+    {
+        Serial.println("ERROR "+name+" is not a valid config name !");
+        return File();
+    }
+    return FileManager::openFile("/"+String(ARDUINO_BOARD)+"/"+name+".json");
+}
+
+bool FileManager::isValidConfigName(String name)
+{
+    std::vector<String> configs = FileManager::getConfigNames();
+    return std::find(configs.begin(), configs.end(), name) != configs.end();
 }
 
 std::vector<String> FileManager::getConfigNames()
