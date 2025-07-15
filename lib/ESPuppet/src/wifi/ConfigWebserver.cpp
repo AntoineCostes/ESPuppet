@@ -57,49 +57,49 @@ String infoProcessor(const String &var)
 {
   if (var.equals("uptime"))
     return (String)(millis() / 1000 / 60) + " mn " + (String)((millis() / 1000) % 60) + "s";
-  if (var.equals("chipid"))
+  else if (var.equals("chipid"))
     return String((uint32_t)ESP.getEfuseMac(), HEX);
-  if (var.equals("chiprev"))
+  else if (var.equals("chiprev"))
     return (String)ESP.getChipRevision();
-  if (var.equals("idesize"))
+  else if (var.equals("idesize"))
     return (String)ESP.getFlashChipSize();
-  if (var.equals("flashsize"))
+  else if (var.equals("flashsize"))
     return (String)ESP.getPsramSize();
-  if (var.equals("cpufreq"))
+  else if (var.equals("cpufreq"))
     return (String)ESP.getCpuFreqMHz();
-  if (var.equals("freeheap"))
+  else if (var.equals("freeheap"))
     return (String)ESP.getFreeHeap();
-  if (var.equals("memsketch"))
+  else if (var.equals("memsketch"))
     return (String)(ESP.getSketchSize()) + " / " + (String)(ESP.getFreeSketchSpace());
-  if (var.equals("memsketch_used"))
+  else if (var.equals("memsketch_used"))
     return (String)(ESP.getSketchSize());
-  if (var.equals("memsketch_free"))
+  else if (var.equals("memsketch_free"))
     return (String)(ESP.getFreeSketchSpace());
-  if (var.equals("memsmeter_max"))
+  else if (var.equals("memsmeter_max"))
     return (String)(ESP.getSketchSize() + ESP.getFreeSketchSpace());
-  if (var.equals("temp"))
+  else if (var.equals("temp"))
     return (String)temperatureRead();
-  if (var.equals("stassid"))
+  else if (var.equals("stassid"))
     return FileManager::currentSSID();
-  if (var.equals("staip"))
+  else if (var.equals("staip"))
     return WiFi.localIP().toString();
-  if (var.equals("stagw"))
+  else if (var.equals("stagw"))
     return WiFi.gatewayIP().toString();
-  if (var.equals("stasub"))
+  else if (var.equals("stasub"))
     return WiFi.subnetMask().toString();
-  if (var.equals("dnss"))
+  else if (var.equals("dnss"))
     return WiFi.dnsIP().toString();
-  if (var.equals("host"))
+  else if (var.equals("host"))
     return WiFi.getHostname();
-  if (var.equals("stamac"))
+  else if (var.equals("stamac"))
     return WiFi.macAddress();
-  if (var.equals("apip"))
+  else if (var.equals("apip"))
     return WiFi.softAPIP().toString();
-  if (var.equals("apmac"))
+  else if (var.equals("apmac"))
     return WiFi.softAPmacAddress();
-  if (var.equals("aphost"))
+  else if (var.equals("aphost"))
     return WiFi.softAPgetHostname();
-  if (var.equals("apbssid"))
+  else if (var.equals("apbssid"))
     return WiFi.BSSIDstr();
   return "[???]";
 }
@@ -141,10 +141,14 @@ void ConfigWebserver::start()
   server->on("/download", HTTP_POST, std::bind(&ConfigWebserver::handleFileDownload, this, std::placeholders::_1));
   server->on("/delete", HTTP_POST, std::bind(&ConfigWebserver::handleFileDelete, this, std::placeholders::_1));
   
-  server->onFileUpload(std::bind(&ConfigWebserver::handleFileUpload, this, 
-    std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, 
-        std::placeholders::_5, std::placeholders::_6));
-        
+  // fails to redirect at the end
+  // server->onFileUpload(std::bind(&ConfigWebserver::handleFileUpload, this, 
+  //   std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, 
+  //       std::placeholders::_5, std::placeholders::_6));
+  server->on("/upload", HTTP_POST, [](AsyncWebServerRequest *request) { request->redirect("/");}, 
+  std::bind(&ConfigWebserver::handleFileUpload, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5, std::placeholders::_6)
+);
+
   //redirections for captive portal
   server->on("/success.txt", [](AsyncWebServerRequest *request)
              { 
@@ -219,25 +223,31 @@ void ConfigWebserver::start()
 
 void ConfigWebserver::serveIndex(AsyncWebServerRequest *request)
 {
-  dbg("SERVE INDEX");
+  dbg("serve index");
   request->send(LittleFS, "/index.html", String(), false, generalProcessor);
+}
+
+void ConfigWebserver::serveCSS(AsyncWebServerRequest *request)
+{
+  // dbg("serve CSS");
+  request->send(LittleFS, "/portal.css", "text/css");
 }
 
 void ConfigWebserver::serveInfo(AsyncWebServerRequest *request)
 {
-  dbg("serve info");
+  // dbg("serve info");
   request->send(LittleFS, "/info.html", String(), false, infoProcessor);
 }
 
 void ConfigWebserver::serveWifi(AsyncWebServerRequest *request)
 {
-  dbg("serve wifi");
+  // dbg("serve wifi");
   request->send(LittleFS, "/wifi.html", String(), false, wifiProcessor);
 }
 
 void ConfigWebserver::serveConfig(AsyncWebServerRequest *request)
 {
-  dbg("serve config");
+  // dbg("serve config");
   request->send(LittleFS, "/config.html", String(), false, configProcessor);
 }
 
@@ -286,8 +296,6 @@ void ConfigWebserver::handleWifiSave(AsyncWebServerRequest *request)
 
 void ConfigWebserver::handleLoadConfig(AsyncWebServerRequest *request)
 {
-  dbg("load config");
-
   if (request->hasParam("selected", true) )
   {
     const String newConfig = request->getParam("selected", true)->value();
@@ -302,12 +310,9 @@ void ConfigWebserver::handleLoadConfig(AsyncWebServerRequest *request)
 
 void ConfigWebserver::handleGetConfigFile(AsyncWebServerRequest *request)
 {
-  dbg("get config file");
-
   if (request->hasParam("name") )
   {
     const String name = request->getParam("name")->value();
-    dbg(name);
     request->send(200, "application/json", FileManager::openConfigFile(name).readString());
   } 
   else request->send(404, "text/plain", "Error: missing parameter");
@@ -315,12 +320,9 @@ void ConfigWebserver::handleGetConfigFile(AsyncWebServerRequest *request)
 
 void ConfigWebserver::handleFileDownload(AsyncWebServerRequest *request)
 {
-  dbg("download config");
-
   if (request->hasParam("selected", true) )
   {
     const String name = request->getParam("selected", true)->value();
-
     request->send(LittleFS, "/"+String(ARDUINO_BOARD)+"/"+name+".json", String(), true);
   }
   else request->send(404, "text/plain", "Error: missing parameter");
@@ -328,8 +330,6 @@ void ConfigWebserver::handleFileDownload(AsyncWebServerRequest *request)
 
 void ConfigWebserver::handleFileDelete(AsyncWebServerRequest *request)
 {
-  dbg("delete config");
-
   if (request->hasParam("selected", true) )
   {
     const String name = request->getParam("selected", true)->value();
@@ -346,7 +346,6 @@ void ConfigWebserver::handleFileDelete(AsyncWebServerRequest *request)
 
 void ConfigWebserver::handleFileUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final)
 {
-  dbg("UPLOAD");
   // dbg("Client:" + request->client()->remoteIP().toString() + " " + request->url());
 
   if (!index) {
@@ -362,16 +361,7 @@ void ConfigWebserver::handleFileUpload(AsyncWebServerRequest *request, String fi
   if (final) {
     dbg("Upload Complete: " + String(filename) + "(" + String(index + len)+" bytes)");
     request->_tempFile.close();
-    // FIXME WHY DOES NOT WORK ???
-    // request->redirect("/files");
-    // request->send(200, "text/plain", "File upload successfull !");
   }
-}
-
-void ConfigWebserver::serveCSS(AsyncWebServerRequest *request)
-{
-  dbg("serve CSS");
-  request->send(LittleFS, "/portal.css", "text/css");
 }
 
 void ConfigWebserver::stop()

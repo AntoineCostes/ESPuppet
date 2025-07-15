@@ -2,27 +2,22 @@
 
 ESP32 firmware for animatronics and connected stage props
 
+GETTING STARTED
+remove ESP32Async and RPAsyncTCP from ESPAsyncWebServer depedencies
+which ESP32 platform to use ?
+
 ROADMAP
-OK neopixel gamma
-OK OSC broadcast on boot
-OK fix crash if no littleFS => c'était le webserver et l'osc qui n'était pas instanciés
-OK liste des config files
-OK config portal html -> setup wifi + pick config file
-OK handle incorrect credentials
-
-FIXME filter ping messages, multiport yo
-FIXME handle if targetIP not valid
-FIXME redirection problem after file upload
-
-- list previous wifi credentials
 - color templates for wifidebug
 - Parameters -> automated loadConfig + no handleOSCCommand
 - FileManager singleton 
 - firmware version ?
 
+FIXME filter ping messages, multiport yo
+FIXME handle if targetIP not valid
+
 - ledModule advertise/notify -> wifi debug
 - ServoPWMShield separate class + servo start
-- button events in main.cpp
+- button events in main.cpp ? or behavior inside Module ?
 - pin management -> advertise config errors
 
 TO DIG
@@ -45,7 +40,3 @@ COSMETICS
 - char \* name
 - variadic reservePins
 - color instead of r, g, b in LedModule
-
-GETTING STARTED
-remove ESP32Async and RPAsyncTCP from ESPAsyncWebServer depedencies
-which ESP32 platform to use ?
