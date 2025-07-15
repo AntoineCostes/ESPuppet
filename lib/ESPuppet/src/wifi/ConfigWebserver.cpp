@@ -25,6 +25,21 @@ String generalProcessor(const String &var)
   return "[???]";
 }
 
+String wifiProcessor(const String &var)
+{
+  if (var == "CURRENT_SSID") return FileManager::currentSSID();
+  if (var == "SSID_LIST")
+  {
+    String options;
+    for (int i = 0; i < NUM_CREDENTIALS; i++) 
+      if (FileManager::getSSID(i) != "")
+        options +=  "<option value='"+FileManager::getSSID(i)+"'>"+FileManager::getSSID(i)+"</option>\n" ;
+    return options;
+
+  }
+  return "[???]";
+}
+
 String configProcessor(const String &var)
 {
   if (var == "CONFIG") return FileManager::getCurrentConfigName();
@@ -65,14 +80,7 @@ String infoProcessor(const String &var)
   if (var.equals("temp"))
     return (String)temperatureRead();
   if (var.equals("stassid"))
-  {
-    
-  Preferences prefs;
-  prefs.begin("wifi");
-  String ssid = prefs.getString("ssid", "");
-  prefs.end();
-  return ssid;
-  }
+    return FileManager::currentSSID();
   if (var.equals("staip"))
     return WiFi.localIP().toString();
   if (var.equals("stagw"))
@@ -114,6 +122,7 @@ void ConfigWebserver::start()
                       Serial.println("NOT FOUND, host: "+ request->host()+", url:"+request->url()); 
                       request->send(404, "text/plain", "Not found"); });
 
+  // pages
   server->on("/", HTTP_GET, std::bind(&ConfigWebserver::serveIndex, this, std::placeholders::_1));
   server->on("/portal.css", HTTP_GET, std::bind(&ConfigWebserver::serveCSS, this, std::placeholders::_1));
   server->on("/wifi", HTTP_GET, std::bind(&ConfigWebserver::serveWifi, this, std::placeholders::_1));
@@ -121,8 +130,12 @@ void ConfigWebserver::start()
   server->on("/reboot", HTTP_GET, std::bind(&ConfigWebserver::reboot, this, std::placeholders::_1));
   server->on("/config", HTTP_GET, std::bind(&ConfigWebserver::serveConfig, this, std::placeholders::_1));
 
+  // get data
   server->on("/configfile", HTTP_GET, std::bind(&ConfigWebserver::handleGetConfigFile, this, std::placeholders::_1));
 
+  // actions
+  server->on("/wifiset", HTTP_POST, std::bind(&ConfigWebserver::handleWifiSet, this, std::placeholders::_1));
+  server->on("/wifidelete", HTTP_POST, std::bind(&ConfigWebserver::handleWifiDelete, this, std::placeholders::_1));
   server->on("/wifisave", HTTP_POST, std::bind(&ConfigWebserver::handleWifiSave, this, std::placeholders::_1));
   server->on("/load", HTTP_POST, std::bind(&ConfigWebserver::handleLoadConfig, this, std::placeholders::_1));
   server->on("/download", HTTP_POST, std::bind(&ConfigWebserver::handleFileDownload, this, std::placeholders::_1));
@@ -219,7 +232,7 @@ void ConfigWebserver::serveInfo(AsyncWebServerRequest *request)
 void ConfigWebserver::serveWifi(AsyncWebServerRequest *request)
 {
   dbg("serve wifi");
-  request->send(LittleFS, "/wifi.html", String(), false, generalProcessor);
+  request->send(LittleFS, "/wifi.html", String(), false, wifiProcessor);
 }
 
 void ConfigWebserver::serveConfig(AsyncWebServerRequest *request)
@@ -235,6 +248,29 @@ void ConfigWebserver::reboot(AsyncWebServerRequest *request)
   request->send(LittleFS, "/reboot.html", String(), false, generalProcessor);
 }
 
+
+void ConfigWebserver::handleWifiSet(AsyncWebServerRequest *request)
+{
+  if (request->hasParam("selected", true) )
+  {
+    const String ssid = request->getParam("selected", true)->value();
+    if (FileManager::setWifiCredentials(ssid)) request->redirect("http://" + getIP().toString());
+    else request->send(404, "text/plain", "Error: unknown ssid !");
+  }
+  else request->send(404, "text/plain", "Error: missing parameter");
+}
+
+void ConfigWebserver::handleWifiDelete(AsyncWebServerRequest *request)
+{
+  if (request->hasParam("selected", true) )
+  {
+    const String ssid = request->getParam("selected", true)->value();
+    if (FileManager::deleteWifiCredentials(ssid)) request->redirect("http://" + getIP().toString());
+    else request->send(404, "text/plain", "Error: unknown ssid !");
+  }
+  else request->send(404, "text/plain", "Error: missing parameter");
+}
+
 void ConfigWebserver::handleWifiSave(AsyncWebServerRequest *request)
 {
   if (request->hasParam("ssid", true) && request->hasParam("pwd", true))
@@ -242,16 +278,10 @@ void ConfigWebserver::handleWifiSave(AsyncWebServerRequest *request)
     const String ssid = request->getParam("ssid", true)->value();
     const String pwd = request->getParam("pwd", true)->value();
 
-    Preferences prefs;
-    prefs.begin("wifi");
-    prefs.putString("ssid", ssid.c_str());
-    prefs.putString("pwd", pwd.c_str());
-    prefs.end();
-
-    dbg("new wifi credentials: " + ssid + " / " + pwd);
+    FileManager::registerWifiCredentials(ssid, pwd);
     request->redirect("http://" + getIP().toString());
   }
-  else request->send(404, "text/plain", "Not found");
+  else request->send(404, "text/plain", "Error: missing parameters");
 }
 
 void ConfigWebserver::handleLoadConfig(AsyncWebServerRequest *request)
@@ -267,7 +297,7 @@ void ConfigWebserver::handleLoadConfig(AsyncWebServerRequest *request)
     request->send(LittleFS, "/reboot.html", String(), false, generalProcessor);
 
   }
-  else request->send(404, "text/plain", "Not found");
+  else request->send(404, "text/plain", "Error: missing parameter");
 }
 
 void ConfigWebserver::handleGetConfigFile(AsyncWebServerRequest *request)
@@ -280,7 +310,7 @@ void ConfigWebserver::handleGetConfigFile(AsyncWebServerRequest *request)
     dbg(name);
     request->send(200, "application/json", FileManager::openConfigFile(name).readString());
   } 
-  else request->send(404, "text/plain", "Not found");
+  else request->send(404, "text/plain", "Error: missing parameter");
 }
 
 void ConfigWebserver::handleFileDownload(AsyncWebServerRequest *request)
@@ -293,7 +323,7 @@ void ConfigWebserver::handleFileDownload(AsyncWebServerRequest *request)
 
     request->send(LittleFS, "/"+String(ARDUINO_BOARD)+"/"+name+".json", String(), true);
   }
-  else request->send(404, "text/plain", "Not found");
+  else request->send(404, "text/plain", "Error: missing parameter");
 }
 
 void ConfigWebserver::handleFileDelete(AsyncWebServerRequest *request)
@@ -311,7 +341,7 @@ void ConfigWebserver::handleFileDelete(AsyncWebServerRequest *request)
     }
     else request->send(404, "text/plain", "Error: file was not found");
   }
-  else request->send(404, "text/plain", "Not found");
+  else request->send(404, "text/plain", "Error: missing parameter");
 }
 
 void ConfigWebserver::handleFileUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final)

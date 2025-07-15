@@ -149,12 +149,8 @@ void WifiModule::initSTA()
 
   if (WiFi.isConnected()) WiFi.disconnect();
 
-  Preferences prefs;
-  prefs.begin("wifi");
-
-  String ssid = prefs.getString("ssid", "");
-  String pwd = prefs.getString("pwd", "");
-  prefs.end();
+  String ssid = FileManager::currentSSID();
+  String pwd = FileManager::currentPwd();
 
   if (ssid == "")
   {

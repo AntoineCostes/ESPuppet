@@ -113,7 +113,7 @@ File FileManager::openConfigFile(String name)
     if (name == "") name = FileManager::getCurrentConfigName();
     else if (!FileManager::isValidConfigName(name))
     {
-        Serial.println("ERROR "+name+" is not a valid config name !");
+        Serial.println("[FM] ERROR "+name+" is not a valid config name !");
         return File();
     }
     return FileManager::openFile("/"+String(ARDUINO_BOARD)+"/"+name+".json");
@@ -145,4 +145,129 @@ std::vector<String> FileManager::getConfigNames()
         }
     }
     return fileNameList;
+}
+
+
+
+
+ int FileManager::indexOfCred(String ssid)
+ {
+    Preferences prefs;
+    prefs.begin("wifi_creds");
+    int index = -1;
+    for (int i = 0; i < NUM_CREDENTIALS; i++)
+    {
+        if (prefs.isKey( ("ssid-"+String(i)).c_str() ) && prefs.getString( ("ssid-"+String(i)).c_str() ).equals(ssid))
+        {
+            index = i;
+            break;
+        }
+    }
+    prefs.end();
+    return index;
+ }
+
+ bool FileManager::setWifiCredentials(String ssid)
+ {
+    int index = indexOfCred(ssid);
+    if (index < 0) return false;
+
+    Serial.println("[FM] set ssid "+String(index));
+    Preferences prefs;
+    prefs.begin("wifi_creds");
+    prefs.putInt("currentIndex", index);
+    prefs.end();
+    return true;
+ }
+
+ bool FileManager::deleteWifiCredentials(String ssid)
+ {
+    int index = indexOfCred(ssid);
+    if (index < 0) return false;
+
+    Serial.println("[FM] delete ssid: "+String(index));
+    Preferences prefs;
+    prefs.begin("wifi_creds");
+
+    for (int i = index; i < NUM_CREDENTIALS; i++)
+    {
+        // override with next one if it exists, otherwise erase it and break
+        if (prefs.isKey(("ssid-"+String(i+1)).c_str()) && prefs.isKey(("pwd-"+String(i+1)).c_str()))
+        {
+            // Serial.println("override "+String(i)+" with "+prefs.getString(("ssid-"+String(i+1)).c_str()));
+            prefs.putString(("ssid-"+String(i)).c_str(), prefs.getString(("ssid-"+String(i+1)).c_str()));
+            prefs.putString(("pwd-"+String(i)).c_str(), prefs.getString(("pwd-"+String(i+1)).c_str()));
+        } else
+        {
+            // Serial.println("erase "+String(i));
+            prefs.remove(("ssid-"+String(i)).c_str());
+            prefs.remove(("pwd-"+String(i)).c_str());
+            break;
+        }
+    }
+    prefs.end();
+    FileManager::printWifiCredentials();
+    return true;
+ }
+
+String FileManager::currentSSID()
+{
+    Preferences prefs;
+    prefs.begin("wifi_creds");
+    int i = prefs.getInt("currentIndex");
+    String ssid = prefs.getString(("ssid-"+String(i)).c_str(), "");
+    prefs.end();
+    return ssid;
+}
+
+String FileManager::currentPwd()
+{
+    Preferences prefs;
+    prefs.begin("wifi_creds");
+    int i = prefs.getInt("currentIndex");
+    String pwd = prefs.getString(("pwd-"+String(i)).c_str(), "");
+    prefs.end();
+    return pwd;
+}
+
+String FileManager::getSSID(int index)
+{
+    if (index < 0 || index > NUM_CREDENTIALS) return "";
+    Preferences prefs;
+    prefs.begin("wifi_creds");
+    String ssid = prefs.isKey(("ssid-"+String(index)).c_str())?prefs.getString(("ssid-"+String(index)).c_str()):"";
+    prefs.end();
+    return ssid;
+}
+
+void FileManager::printWifiCredentials()
+{
+    Serial.println("[FM] registered wifi credentials (current: " +currentSSID()+")");
+    Preferences prefs;
+    prefs.begin("wifi_creds");
+    for (int i = 0; i < NUM_CREDENTIALS ; i++)
+        if (prefs.isKey(("ssid-"+String(i)).c_str()) && prefs.isKey(("pwd-"+String(i)).c_str()))
+            Serial.println("\t"+String(i)+": "+prefs.getString(("ssid-"+String(i)).c_str())+" / "+prefs.getString(("pwd-"+String(i)).c_str()));
+    prefs.end();
+
+}
+void FileManager::registerWifiCredentials(String ssid, String pwd)
+{
+    Serial.println("[FM] new wifi credentials: " + ssid + " / " + pwd);
+    Preferences prefs;
+    prefs.begin("wifi_creds");
+    
+    int index = indexOfCred(ssid); // check if this ssid was already registered
+    if (index < 0) // if not, increment the last index
+    {
+        index = prefs.getInt("lastIndex", -1);
+        index++;
+        if (index == NUM_CREDENTIALS) index = 0;
+        prefs.putInt("lastIndex", index);
+    }
+    prefs.putString(("ssid-"+String(index)).c_str(), ssid.c_str());
+    prefs.putString(("pwd-"+String(index)).c_str(), pwd.c_str());
+    prefs.putInt("currentIndex", index);
+
+    prefs.end();
 }

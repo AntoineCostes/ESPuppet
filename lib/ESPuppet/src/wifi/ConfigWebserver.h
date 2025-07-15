@@ -23,6 +23,8 @@ protected:
     void serveInfo(AsyncWebServerRequest *request);
     void serveConfig(AsyncWebServerRequest *request);
 
+    void handleWifiSet(AsyncWebServerRequest *request);
+    void handleWifiDelete(AsyncWebServerRequest *request);
     void handleWifiSave(AsyncWebServerRequest *request);
 
     void handleGetConfigFile(AsyncWebServerRequest *request);

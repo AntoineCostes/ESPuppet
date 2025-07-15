@@ -14,17 +14,29 @@
 
 <body class='invert'>
     <div class='wrap'>
-        <form method='POST' action='wifisave'>
+        <h2>Current SSID: %CURRENT_SSID%</h2>
+<br />
+        <form method='POST' action='#'>
+            <select id='wifis' name="selected">
+                %SSID_LIST%
+            </select>
+            <input type="submit" value="Select" formaction="/wifiset">
+            <input type="submit" value="Delete" formaction="/wifidelete" class='D'>
+        </form>
+<br />
+<br />
+        <form method='POST' action='/wifisave'>
             <label for='s'>SSID</label>
             <input id='s' name="ssid" maxlength='32' autocorrect='off' autocapitalize='none' placeholder=''>
             <br />
             <label for='p'>Password</label>
-            <input id='p' name="pwd" maxlength='64' type='password' placeholder=''><input type='checkbox' id='showpass'
-                onclick='f()'>
+            <input id='p' name="pwd" maxlength='64' type='password' placeholder=''>
+            <input type='checkbox' id='showpass' onclick='f()'>
             <label for='showpass'>Show Password</label>
             <br /><br /><br />
-            <button type='submit'>Save</button>
-        </form><br />
+            <button type='submit'>Register credentials</button>
+        </form>
+
     </div>
 </body>
 

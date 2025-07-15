@@ -1,6 +1,8 @@
 #pragma once
 #include "util/Includes.h"
 
+
+#define NUM_CREDENTIALS 5
 class FileManager 
 {
     public:
@@ -19,4 +21,15 @@ class FileManager
         static File openConfigFile(String name = "");
         static void setNewConfig(String configName);
         static bool deleteConfigFile(String configName);
+        
+        static void printWifiCredentials();
+        static void registerWifiCredentials(String ssid, String pwd);
+        static bool setWifiCredentials(String ssid);
+        static bool deleteWifiCredentials(String ssid);
+        static String currentSSID();
+        static String currentPwd();
+        static String getSSID(int index);
+
+        protected:
+        static int indexOfCred(String ssid);
 };
