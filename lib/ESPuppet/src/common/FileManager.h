@@ -24,6 +24,7 @@ class FileManager
         
         static void printWifiCredentials();
         static void registerWifiCredentials(String ssid, String pwd);
+        static void clearWifiCredentials();
         static bool setWifiCredentials(String ssid);
         static bool deleteWifiCredentials(String ssid);
         static String currentSSID();

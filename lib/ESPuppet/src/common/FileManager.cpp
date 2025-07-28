@@ -251,6 +251,15 @@ void FileManager::printWifiCredentials()
     prefs.end();
 
 }
+
+void FileManager::clearWifiCredentials()
+{
+    Preferences prefs;
+    prefs.begin("wifi_creds");
+    prefs.clear();
+    prefs.end();
+}
+
 void FileManager::registerWifiCredentials(String ssid, String pwd)
 {
     Serial.println("[FM] new wifi credentials: " + ssid + " / " + pwd);

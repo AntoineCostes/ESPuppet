@@ -38,17 +38,12 @@ void ESPuppet::init()
       Serial.println("INIT OK");
       Serial.println("");
       Serial.println("");
-      
-      FileManager::printWifiCredentials();
-
-    // Preferences prefs;
-    // prefs.begin("wifi_creds");
-    // prefs.clear();
-    // prefs.end();
 
       // FileManager::registerWifiCredentials("under the sunshine", "bibimbap");
       // FileManager::registerWifiCredentials("akindofmagic", "H0udini25");
       // FileManager::registerWifiCredentials("LeNet", "connectemoi");
+      
+      FileManager::printWifiCredentials();
     } else 
     {
       Serial.println("no config file ! Please upload LittleFS image");
