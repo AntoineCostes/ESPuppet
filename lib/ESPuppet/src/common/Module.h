@@ -11,7 +11,7 @@
 class Module : public Component
 {
 public:
-    Module(const String &name, bool serialDebug = false);
+    Module(const String &name, bool serialDebug = true);
 
     virtual void init() = 0; // TODO make not pure virtual ?
     virtual void loadConfig(JsonObject const &config) = 0;

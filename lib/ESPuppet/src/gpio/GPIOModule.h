@@ -9,6 +9,8 @@ GPIOModule();
 
     void init() override;
     void update();
+    
+    void registerDigitalOutPins(std::set<int> pin);
 
     void loadConfig(JsonObject const &config) override;
     void handleOSCCommand(OSCMessage* command) override;
@@ -20,5 +22,4 @@ protected:
     std::vector<int> digOutPins;
     std::vector<bool> digOutValues;
     void registerDigitalOutPins(JsonArray const &pins);
-    void registerDigitalOutPins(std::set<int> pin);
 };

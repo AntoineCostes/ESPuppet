@@ -4,7 +4,7 @@
 class Component
 {
 public:
-    Component(const String &name, bool serialDebug = false, bool useInSequences = false);
+    Component(const String &name, bool serialDebug = true, bool useInSequences = false);
     String name;
     bool useInSequences;
 

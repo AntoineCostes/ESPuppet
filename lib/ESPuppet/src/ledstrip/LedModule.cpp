@@ -16,6 +16,7 @@ void LedModule::update()
 
 void LedModule::loadConfig(JsonObject const &config)
 {
+    if (config) Serial.println("");
     serialDebug = config["serialDebug"] | false;
 
     for (JsonPair kv : config)

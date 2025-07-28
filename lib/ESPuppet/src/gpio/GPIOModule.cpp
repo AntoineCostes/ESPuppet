@@ -14,6 +14,7 @@ void GPIOModule::update()
 
 void GPIOModule::loadConfig(JsonObject const &config)
 {
+    if (config) Serial.println("");
     serialDebug = config["serialDebug"] | false;
 
     if (config["dout"]["pins"])

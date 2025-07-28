@@ -28,7 +28,7 @@ File FileManager::openFile(String filePath, bool write)
     
     if (!write && !LittleFS.exists(filePath))  
     {
-        Serial.println("[FM]" +filePath + "does not exist !");
+        Serial.println("[FM]" +filePath + " does not exist !");
         return File();
     }
     return LittleFS.open(filePath.c_str(), write?"w":"r");
@@ -104,6 +104,7 @@ void FileManager::setNewConfig(String configName)
 bool FileManager::deleteConfigFile(String configName)
 {
     String path = "/"+String(ARDUINO_BOARD)+"/"+configName+".json";
+    // String path = "/config/"+configName+".json";
     if (LittleFS.exists(path) && LittleFS.remove(path)) return true;
     return false;
 }
@@ -117,6 +118,7 @@ File FileManager::openConfigFile(String name)
         return File();
     }
     return FileManager::openFile("/"+String(ARDUINO_BOARD)+"/"+name+".json");
+    // return FileManager::openFile("/config/"+name+".json");
 }
 
 bool FileManager::isValidConfigName(String name)
@@ -130,6 +132,7 @@ std::vector<String> FileManager::getConfigNames()
     std::vector<String> fileNameList;
     
     File root = LittleFS.open("/"+String(ARDUINO_BOARD), "r");
+    // File root = LittleFS.open("/config", "r");
 
     if (!root) Serial.println("[FM] Failed to open directory");
     else if (!root.isDirectory()) Serial.println("[FM] Not a directory");
@@ -242,6 +245,7 @@ String FileManager::getSSID(int index)
 
 void FileManager::printWifiCredentials()
 {
+    Serial.println("");
     Serial.println("[FM] registered wifi credentials (current: " +currentSSID()+")");
     Preferences prefs;
     prefs.begin("wifi_creds");

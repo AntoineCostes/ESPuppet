@@ -19,11 +19,12 @@ void WifiModule::init()
 
   WiFi.setAutoReconnect(true);
   WiFi.setSleep(false);
-  // WiFi.setTxPower(WIFI_POWER_19dBm); TODO parameter
+  // WiFi.setTxPower(WIFI_POWER_8_5dBm); TODO parameter
 }
 
 void WifiModule::loadConfig(JsonObject const &config)
 {
+    if (config) Serial.println("");
   serialDebug = config["serialDebug"] | serialDebug;
   connectionTimeoutMs = config["connectionTimeoutMs"] | connectionTimeoutMs;
   configPortalTimeoutMs = config["configPortalTimeoutMs"] | configPortalTimeoutMs;
@@ -123,7 +124,7 @@ void WifiModule::initAP()
 {
   String apName = "CONFIG " + FileManager::getCurrentConfigNiceName();
 
-  dbg("START AP: " + apName);
+  dbg("\nSTART AP: " + apName);
   configPortalStartTimeMs = millis();
   lastConnectTime = millis();
 
@@ -132,7 +133,14 @@ void WifiModule::initAP()
   WiFi.mode(WIFI_AP);
   WiFi.setSleep(false); // can improve ap stability
 
-  WiFi.softAP(apName.c_str());
+  if (!WiFi.softAP(apName.c_str()))
+  {
+    dbg("Houston, we have a problem !");
+    while(1)
+    {
+
+    }
+  }
 }
 
 void WifiModule::initSTA()
@@ -346,7 +354,9 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
   case ARDUINO_EVENT_WIFI_STA_GOT_IP6:
     dbg("Event: STA IPv6 is preferred");
     break;
-  default:
+
+  default: 
+    err("unknown Wifi event !");
     break;
   }
 }

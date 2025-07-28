@@ -19,6 +19,8 @@ void ESPuppet::init()
     Serial.println("");
     Serial.println("");
 
+    // FileManager::setNewConfig("toron");
+
     File config = FileManager::openConfigFile();
     if (config)
     {
@@ -35,19 +37,20 @@ void ESPuppet::init()
           servoModule.loadConfig(json["servo"].as<JsonObject>());
           gpioModule.loadConfig(json["gpio"].as<JsonObject>());
         }
+      // FileManager::registerWifiCredentials("under the sunshine", "bibimbap");
+      // FileManager::registerWifiCredentials("akindofmagic", "H0udini25");
+      // FileManager::registerWifiCredentials("LeNet", "connectemoi");
+      // FileManager::setWifiCredentials("akindofmagic");
+      FileManager::printWifiCredentials();
       Serial.println("INIT OK");
       Serial.println("");
       Serial.println("");
 
-      // FileManager::registerWifiCredentials("under the sunshine", "bibimbap");
-      // FileManager::registerWifiCredentials("akindofmagic", "H0udini25");
-      // FileManager::registerWifiCredentials("LeNet", "connectemoi");
-      
-      FileManager::printWifiCredentials();
     } else 
     {
       Serial.println("no config file ! Please upload LittleFS image");
-      // TODO advertise error with leds
+      if (String(ARDUINO_BOARD).equals("ESP32C3-SuperMini")) ledModule.registerLedStrip(4, 20, 0.2);
+      else if (String(ARDUINO_BOARD).equals("Seeed Studio XIAO ESP32C3")) ledModule.registerLedStrip(10, 20, 0.2);
       wifiModule.initAP();
     }
 }
@@ -71,7 +74,7 @@ void ESPuppet::gotOSCCommand(const Command &command)
 // TODO make ledModule Status + notify
 void ESPuppet::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
 {
-  Serial.println("WIFI EVENT "+String(event));
+  // Serial.println("\t WIFI EVENT "+String(event));
 
   switch (event)
   {
@@ -95,6 +98,7 @@ void ESPuppet::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
   case ARDUINO_EVENT_WIFI_AP_START:
     ledModule.setPattern(LedPattern::OSCILLATOR, 0, 100, 100, 1.0f, 0.2f);
     break;
+    
   case ARDUINO_EVENT_WIFI_AP_STACONNECTED:
   // ledModule.setPattern(LedPattern::SOLID, 100, 0, 0);
     // TODO notify client connected ?
