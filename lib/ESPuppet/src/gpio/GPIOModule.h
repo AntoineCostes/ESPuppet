@@ -15,6 +15,7 @@ GPIOModule();
     void loadConfig(JsonObject const &config) override;
     void handleOSCCommand(OSCMessage* command) override;
 
+    void setAnalogOut(int index, float value);
     void setDigitalOut(int index, bool value);
     void toggleDigitalOut(int index);
 

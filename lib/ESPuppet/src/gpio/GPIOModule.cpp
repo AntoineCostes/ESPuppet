@@ -65,6 +65,25 @@ void GPIOModule::setDigitalOut(int index, bool value)
     digitalWrite(digOutPins[index], digOutValues[index]);
 }
 
+
+void GPIOModule::setAnalogOut(int index, float value)
+{
+    if (index < 0 || index >= digOutPins.size())
+    {
+        err("invalid dout index: " + String(index) + " while it should be between 0 and " + String(digOutPins.size()));
+        return;
+    }
+    
+    if (value < 0 || value > 1)
+    {
+        err("invalid value: " + String(value) + " while it should be between 0 and 1");
+        return;
+    }
+    // digOutValues[index] = !value; // FIXME add inverse parameter
+    dbg("set aout #" + String(digOutPins[index]) + " to " + String(255*value));
+    analogWrite(digOutPins[index], 255*value);
+}
+
 void GPIOModule::handleOSCCommand(OSCMessage *command)
 {
     if (command->match("/gpio/dout"))
@@ -85,5 +104,12 @@ void GPIOModule::handleOSCCommand(OSCMessage *command)
                 setDigitalOut(command->getInt(0), command->getBoolean(1));
             }
         }
+    }
+    
+    if (command->match("/gpio/aout"))
+    {
+        if (command->size() == 2)
+            if (command->isInt(0) && command->isFloat(1))
+                setAnalogOut(command->getInt(0), command->getFloat(1));
     }
 }
