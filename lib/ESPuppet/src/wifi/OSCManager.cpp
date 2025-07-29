@@ -62,6 +62,7 @@ void OSCManager::update()
 
 void OSCManager::open(IPAddress broadcastIP, IPAddress gatewayIP)
 {
+  if (isOpen) close();
   dbg("open");
   udp.begin(listeningPort);
   udp.flush();
@@ -74,6 +75,7 @@ void OSCManager::open(IPAddress broadcastIP, IPAddress gatewayIP)
 
 void OSCManager::close()
 {
+  dbg("close");
   udp.flush();
   udp.stop();
   isOpen = false;
@@ -108,12 +110,11 @@ void OSCManager::sendMessage(OSCMessage &msg, bool broadcast)
     case WL_CONNECTED: // connected to STA
       if (broadcast)
       {
-         if (oscSendDebug) log("Broadcast message to " + broadcastIP.toString() + "@" + String(targetPort) + " : " + fullAddress);
+         if (oscSendDebug) log("Broadcast message to " + broadcastIP.toString() + "@" + String(targetPort) + " and gateway " + gatewayIP.toString() +" : " + fullAddress);
         udp.beginPacket(broadcastIP, targetPort);
         msg.send(udp);
         udp.endPacket();
         
-        if (oscSendDebug) log("Message also sent to gateway at " + gatewayIP.toString());
         udp.beginPacket(gatewayIP, targetPort);
         msg.send(udp);
         udp.endPacket();

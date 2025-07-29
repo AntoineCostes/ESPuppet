@@ -36,5 +36,6 @@ protected:
     void reboot(AsyncWebServerRequest *request);
     
     bool shouldReboot;
+    bool hasStarted;
 
 };

@@ -27,6 +27,7 @@ protected:
     long connectionTimeoutMs;
     long configPortalTimeoutMs;
     long configPortalStartTimeMs;
+    bool hasWebServer;
     
     int numFailedAttempts;
     long lastDisconnectTime;

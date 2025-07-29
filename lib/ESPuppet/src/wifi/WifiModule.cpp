@@ -1,6 +1,6 @@
 #include "WifiModule.h"
 
-WifiModule::WifiModule() : Module("wifi")
+WifiModule::WifiModule() : Module("wifi"), numFailedAttempts(0)
 {
 }
 
@@ -10,7 +10,7 @@ void WifiModule::init()
   serialDebug = true;
   connectionTimeoutMs = 5000;
   configPortalTimeoutMs = 5 * 60 * 1000;
-  configServer = new ConfigWebserver(true); // TODO change this according to config ?
+  configServer = new ConfigWebserver(true);
 
   lastConnectTime = millis();
   // lastDisconnectTime = millis();
@@ -28,14 +28,15 @@ void WifiModule::loadConfig(JsonObject const &config)
   serialDebug = config["serialDebug"] | serialDebug;
   connectionTimeoutMs = config["connectionTimeoutMs"] | connectionTimeoutMs;
   configPortalTimeoutMs = config["configPortalTimeoutMs"] | configPortalTimeoutMs;
+  hasWebServer = config["hasWebServer"] | true; // TODO webserverdebug ?
 
   if (config["osc"])
   {
     uint16_t listeningPort = config["osc"]["listeningPort"] | -1;
     uint16_t targetPort = config["osc"]["targetPort"] | -1;
-    String ip = config["osc"]["targetIP"];
-    IPAddress targetIP = IPAddress(192, 168, 0, 67);
-    bool broadcast = targetIP == IPAddress();
+    String ip = config["osc"]["targetIP"] | "";
+    IPAddress targetIP = IPAddress();
+    bool broadcast = !targetIP.fromString(ip);
     long oscPingTimeoutMs = config["osc"]["oscPingTimeoutMs"] | 3000;
     bool oscSendDebug = config["osc"]["oscSendDebug"] | false;
     bool oscReceiveDebug = config["osc"]["oscReceiveDebug"] | false;
@@ -43,8 +44,6 @@ void WifiModule::loadConfig(JsonObject const &config)
     osc = new OSCManager(listeningPort, targetPort, targetIP, broadcast, oscPingTimeoutMs, oscSendDebug, oscReceiveDebug);
     osc->addListener(std::bind(&WifiModule::gotOSCCommand, this, std::placeholders::_1));
   }
-
-  // bool serverDebug = config["webserver"]["serialDebug"] | false;
 
   initSTA();
 }
@@ -102,7 +101,7 @@ void WifiModule::update()
   case WL_CONNECTED:
     if (millis() % 5000 < 1 && WiFi.status() != WL_NO_SHIELD) dbg("STATUS: CONNECTED TO STA");
     ArduinoOTA.handle();
-    if (configServer) configServer->update();
+    if (hasWebServer) configServer->update();
     if (osc) osc->update();
     break;
 
@@ -228,6 +227,7 @@ void WifiModule::disconnect()
   dbg("\t === DISCONNECT ===");
   // lastDisconnectTime = millis();
   if (osc) osc->close();
+  if (hasWebServer) configServer->stop();
   ArduinoOTA.end();
   numFailedAttempts++;
 }
@@ -293,7 +293,7 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
       osc->open(WiFi.softAPBroadcastIP(), WiFi.softAPIP());
       osc->doBroadcast = true;
     }
-    if (configServer) configServer->start();
+    if (hasWebServer) configServer->start();
     numFailedAttempts = 0;
     break;
 
@@ -301,7 +301,7 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     dbg("Event: Obtained IP address: " + WiFi.localIP().toString());
     initZeroConf();
     if (osc) osc->open(WiFi.broadcastIP(), WiFi.gatewayIP());
-    if (configServer) configServer->start();
+    if (hasWebServer) configServer->start();
     numFailedAttempts = 0;
     break;
 

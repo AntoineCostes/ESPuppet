@@ -110,6 +110,11 @@ ConfigWebserver::ConfigWebserver(bool serialDebug) : Component("webserver", seri
 
 void ConfigWebserver::start()
 {
+  if (hasStarted)
+  {
+    dbg("already started");
+    return;
+  } 
   dnsServer = new DNSServer();
   dnsServer->setErrorReplyCode(DNSReplyCode::NoError);
   dnsServer->setTTL(6000); // default is 60, not sure what value is best
@@ -146,8 +151,7 @@ void ConfigWebserver::start()
   //   std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, 
   //       std::placeholders::_5, std::placeholders::_6));
   server->on("/upload", HTTP_POST, [](AsyncWebServerRequest *request) { request->redirect("/");}, 
-  std::bind(&ConfigWebserver::handleFileUpload, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5, std::placeholders::_6)
-);
+  std::bind(&ConfigWebserver::handleFileUpload, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5, std::placeholders::_6));
 
   //redirections for captive portal
   server->on("/success.txt", [](AsyncWebServerRequest *request)
@@ -219,6 +223,7 @@ void ConfigWebserver::start()
               request->redirect("http://" + WiFi.softAPIP().toString()); });
 
   server->begin();
+  hasStarted = true;
 }
 
 void ConfigWebserver::serveIndex(AsyncWebServerRequest *request)
@@ -366,9 +371,13 @@ void ConfigWebserver::handleFileUpload(AsyncWebServerRequest *request, String fi
 
 void ConfigWebserver::stop()
 {
-  log("STOP");
-  dnsServer->stop();
-  server->end();
+  if (hasStarted)
+  {
+    log("STOP");
+    dnsServer->stop();
+    server->end();
+    hasStarted = false;
+  } else log("not started");
 }
 
 void ConfigWebserver::update()
