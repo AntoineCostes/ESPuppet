@@ -22,6 +22,7 @@ String generalProcessor(const String &var)
   if (var == "CONFIG") return FileManager::getCurrentConfigName();
   if (var == "NICENAME") return FileManager::getCurrentConfigNiceName();
   if (var == "HOSTNAME") return FileManager::getCurrentConfigName()+".local";
+  if (var == "IP") return WiFi.localIP()==IPAddress(0, 0, 0, 0)? WiFi.softAPIP().toString() : WiFi.localIP().toString();
   return "[???]";
 }
 
@@ -47,7 +48,7 @@ String configProcessor(const String &var)
   {
     String options;
     std::vector<String> configs = FileManager::getConfigNames();
-    for (const String& name : configs) options +=  "<option value='"+name+"'>"+name+"</option>\n" ;
+    for (const String& name : configs) options +=  "<option value='"+name+"'"+  (FileManager::getCurrentConfigName().equals(name)?" selected='selected'":"") +">"+name+"</option>\n" ;
     return options;
   }
   return "[???]";

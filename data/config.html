@@ -28,7 +28,7 @@ function viewConfig() {
     <h2>Current config:  %CONFIG%</h2>
 
     <form method='POST' action="#">
-      <select id='configs' name="selected">
+      <select id='configs' name="selected" value="%CONFIG%">
         %CONFIG_OPTIONS%
       </select>
       <input type="submit" value="Load and reboot" formaction="/load">
