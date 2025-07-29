@@ -41,21 +41,28 @@ void OSCManager::update()
       if (oscReceiveDebug)
         log("got message: " + String(msg.getAddress()));
 
-      if (msg.match("/yo")) 
+      if (msg.match("/tame")) 
       {
-        if (msg.isInt(0)) log("NEW PORT");
-        if (msg.isInt(0)) targetPort = msg.getInt(0);
-        sendYo(); 
+        if (msg.isInt(0)) 
+        {
+          targetPort = msg.getInt(0);
+          log("NEW PORT : "+String(targetPort));
+        }
       }
-
-      // when receiving messages from new IP, makes this the new target
-      if (targetIP != udp.remoteIP())
+      else if (msg.match("/ping") || msg.match("/yo")) 
       {
-        targetIP = udp.remoteIP();
-        doBroadcast = false;
-        dbg("new target: " + String(targetPort) + "@" + targetIP.toString());
       }
-      else sendEvent(Command(&msg));
+      else
+      {
+        // when receiving messages from new IP, makes this the new target
+        if (targetIP != udp.remoteIP())
+        {
+          targetIP = udp.remoteIP();
+          doBroadcast = false;
+          dbg("new target: " + String(targetPort) + "@" + targetIP.toString());
+        }
+        sendEvent(Command(&msg));
+      }
     }
   }
 }
