@@ -19,7 +19,6 @@ void WifiModule::init()
 
   WiFi.setAutoReconnect(true);
   WiFi.setSleep(false);
-  // WiFi.setTxPower(WIFI_POWER_8_5dBm); TODO parameter
 }
 
 void WifiModule::loadConfig(JsonObject const &config)
@@ -55,7 +54,7 @@ void WifiModule::update()
     // I don't understand when it gets in WL_NO_SSID_AVAIL and when it gets in WL_DISCONNECTED,
     // it got to both in a row without environmental change (no router)
   case WL_NO_SSID_AVAIL:
-    if (millis() % 1000 < 1) dbg("STATUS: WL_NO_SSID_AVAIL");
+    if (millis() % 1000 < 1) dbg("STATUS: ssid not valid");
 
     if (millis() - lastConnectTime > connectionTimeoutMs)
     {
@@ -66,7 +65,7 @@ void WifiModule::update()
     break;
 
   case WL_DISCONNECTED:
-    if (millis() % 3000 < 1) dbg("STATUS: DISCONNECTED");
+    if (millis() % 3000 < 1) dbg("STATUS: disconnected");
     if (millis() - lastConnectTime > connectionTimeoutMs)
     {
       dbg("we could not connect for a while, try again");
@@ -76,7 +75,7 @@ void WifiModule::update()
     break;
 
   case WL_CONNECT_FAILED:
-    if (millis() % 1000 < 1) dbg("STATUS: FAILED TO CONNECT");
+    if (millis() % 1000 < 1) dbg("STATUS: failed to connect");
 
     if (millis() - lastConnectTime > connectionTimeoutMs)
     {
@@ -92,7 +91,7 @@ void WifiModule::update()
 
   case WL_NO_SHIELD: // 255
                      // AP running
-    if (millis() % 5000 < 1) dbg("STATUS: AP RUNNING");
+    if (millis() % 5000 < 1) dbg("STATUS: AP running");
     if (millis() - configPortalStartTimeMs > configPortalTimeoutMs)
     {
       log("PORTAL TIMEOUT EXPIRED - RESTART");
@@ -106,12 +105,12 @@ void WifiModule::update()
     break;
 
   case WL_IDLE_STATUS: // 0: connected but no IP yet
-    if (millis() % 1000 < 1) dbg("STATUS: IDLE - NO IP YET");
+    if (millis() % 1000 < 1) dbg("STATUS: waiting for ip");
     break;
 
 
   case WL_CONNECTION_LOST:
-    if (millis() % 1000 < 1) dbg("STATUS: CONNECTION LOST");
+    if (millis() % 1000 < 1) dbg("STATUS: connection lost");
     break;
 
   default:
@@ -140,6 +139,7 @@ void WifiModule::initAP()
 
     }
   }
+  WiFi.setTxPower(WIFI_POWER_8_5dBm);
 }
 
 void WifiModule::initSTA()
@@ -169,6 +169,7 @@ void WifiModule::initSTA()
     WiFi.mode(WIFI_STA);
     dbg("Connecting to " + ssid + " (" + pwd + ")...");
     WiFi.begin(ssid.c_str(), pwd.c_str());
+    WiFi.setTxPower(WIFI_POWER_8_5dBm);
   }
 }
 
