@@ -13,6 +13,14 @@ void FileManager::init()
     } 
     Serial.println("[FM] LittleFS initalized. Listing files:");
     FileManager::printFilesInDirectory("/", 1);
+
+    if (currentSSID().equals(""))
+    {
+        FileManager::registerWifiCredentials("under the sunshine", "bibimbap");
+        FileManager::registerWifiCredentials("akindofmagic", "H0udini25");
+        FileManager::registerWifiCredentials("LeNet", "connectemoi");
+        FileManager::setWifiCredentials("akindofmagic");
+    }
 }
 
 bool FileManager::exists(String filePath)

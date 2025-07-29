@@ -12,19 +12,18 @@ public:
     ESPuppet();
     ~ESPuppet() {}
 
-    void init();
+    void init(String config = "");
     void update();
 
-    void initWifi();
-
-    // FileManager fileModule;
-    WifiModule wifiModule;
-    GPIOModule gpioModule;
-    LedModule ledModule;
-    ServoModule servoModule;
+    WifiModule* wifiModule = new WifiModule();
+    GPIOModule* gpioModule = new GPIOModule();
+    LedModule* ledModule = new LedModule();
+    ServoModule* servoModule = new ServoModule();
 
 protected:
     void WiFiEvent(WiFiEvent_t event, arduino_event_info_t info);
     void gotOSCCommand(const Command &command);
+
+    std::vector<std::unique_ptr<Module>> modules;
 
 };

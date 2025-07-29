@@ -10,6 +10,8 @@ ROADMAP
 FIXME filter ping messages, multiport yo
 FIXME handle if targetIP not valid
 
+- local IP on webserver index + select current config 
+- odrive module + optionnal server (or debug wroom server)
 - ledModule advertise/notify -> wifi debug
 - ServoPWMShield separate class + servo start
 - button events in main.cpp ? or behavior inside Module ?

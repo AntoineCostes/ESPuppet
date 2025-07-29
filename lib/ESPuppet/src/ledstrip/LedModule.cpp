@@ -81,7 +81,7 @@ void LedModule::setPattern(uint8_t index,LedPattern pattern, uint8_t r, uint8_t 
         err("invalid ledstrip index: "+String(index)+ " while it should be between 0 and "+String(strips.size()));
         return;
     }
-    dbg("set pattern "+String(pattern) +" for strip #"+String(index)+" with param = "+String(parameter)+" and brightnss= "+String(brightness));
+    dbg("set pattern "+String(pattern) +" for strip #"+String(index)+" with param = "+String(parameter)+" and brightness= "+String(brightness));
     uint32_t color = ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;
     strips[index]->setPattern(pattern, color, parameter, brightness);
 }
