@@ -10,18 +10,18 @@ ROADMAP
 FIXME filter ping messages, multiport yo
 FIXME handle if targetIP not valid
 
-- local IP on webserver index + select current config 
-- odrive module + optionnal server (or debug wroom server)
+OK local IP on webserver index + select current config 
+OK firmware version ? => compiled date instead
+- odrive module + optional server (or debug wroom server)
 - ledModule advertise/notify -> wifi debug
 - ServoPWMShield separate class + servo start
 - button events in main.cpp ? or behavior inside Module ?
 - pin management -> advertise config errors
 - Parameters -> automated loadConfig + no handleOSCCommand: faut clarifier comment faire le callback
-- firmware version ? => compiled date instead
 
 
 TO DIG
-- wifi set power
+OK wifi set power
 - differences Preferences / LittleFS: memmory size ?
 - https://github.com/ayushsharma82/WebSerial
 - handle if mDNS failed ?

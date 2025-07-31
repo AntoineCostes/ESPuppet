@@ -27,6 +27,15 @@ void OSCManager::update()
   if (millis() > lastSentPingMs + oscPingTimeoutMs)
   {
     sendOSC("/ping");
+    
+    OSCMessage m("/ip");
+    m.add(WiFi.localIP()==IPAddress(0, 0, 0, 0)? WiFi.softAPIP().toString().c_str() : WiFi.localIP().toString().c_str());
+    sendMessage(m, doBroadcast);
+    
+    OSCMessage m2("/port");
+    m2.add((int32_t)listeningPort);
+    sendMessage(m2, doBroadcast);
+
     lastSentPingMs = millis();
   }
 
@@ -77,7 +86,7 @@ void OSCManager::open(IPAddress broadcastIP, IPAddress gatewayIP)
   this->gatewayIP = gatewayIP;
   lastSentPingMs = millis();
   isOpen = true;
-  sendYo();
+  // sendYo();
 }
 
 void OSCManager::close()
@@ -92,7 +101,7 @@ void OSCManager::sendYo()
 {
   OSCMessage m("/yo");
   m.add(WiFi.localIP().toString().c_str());
-  m.add((int32_t)listeningPort); // TODO broadcast on multiport ?
+  m.add((int32_t)listeningPort);
   sendMessage(m, true);
 }
 

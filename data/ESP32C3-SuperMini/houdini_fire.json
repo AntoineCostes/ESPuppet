@@ -6,11 +6,12 @@
         "osc":
         {
             "serialDebug":true,
-            "targetPort":12346,
+            "targetPort":12345,
             "listeningPort":12345,
             "oscReceiveDebug":true,
-            "oscSendDebug":false,
-            "oscPingTimeoutMs":1000
+            "oscSendDebug":true,
+            "oscPingTimeoutMs":1000,
+            "targetIP":"192.168.137.1"
         }
     },
     "gpio":

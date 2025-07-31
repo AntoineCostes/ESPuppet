@@ -139,7 +139,7 @@ void WifiModule::initAP()
 
     }
   }
-  WiFi.setTxPower(WIFI_POWER_8_5dBm);
+  WiFi.setTxPower(WIFI_POWER_19dBm);
 }
 
 void WifiModule::initSTA()
