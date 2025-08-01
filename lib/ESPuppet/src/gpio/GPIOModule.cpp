@@ -10,6 +10,8 @@ void GPIOModule::init()
 
 void GPIOModule::update()
 {
+    for (auto const &output : outputs)
+        output->update();
 }
 
 void GPIOModule::loadConfig(JsonObject const &config)
@@ -17,99 +19,99 @@ void GPIOModule::loadConfig(JsonObject const &config)
     if (config) Serial.println("");
     serialDebug = config["serialDebug"] | false;
 
-    if (config["dout"]["pins"])
-        registerDigitalOutPins(config["dout"]["pins"].as<JsonArray>());
-}
-
-// TODO start & inverse parameters
-void GPIOModule::registerDigitalOutPins(JsonArray const &pins)
-{
-    for (JsonVariant pin : pins)
-    {
-        if (Module::reservePin(pin))
+    if (config["outputs"].is<JsonObject>())
+        for (JsonPair kv : config["outputs"].as<JsonObject>())
         {
-            digOutPins.emplace_back(pin);
-            pinMode(pin, OUTPUT);
-            digOutValues.emplace_back(HIGH);
-            digitalWrite(pin, HIGH); // FIXME add inverse parameter
+            if (kv.value().is<JsonObject>())
+                registerOutput(String(kv.key().c_str()), config["outputs"][kv.key()]);
         }
-        else
-        {
-            String p = pin.as<String>();
-            err("cannot register digital out on pin #:" + p);
-        }
-    }
 }
 
-void GPIOModule::toggleDigitalOut(int index)
+void GPIOModule::registerOutput(String name, JsonObject const &config)
 {
-    if (index < 0 || index >= digOutPins.size())
-    {
-        err("invalid dout index: " + String(index) + " while it should be between 0 and " + String(digOutPins.size()));
-        return;
-    }
-    digOutValues[index] = !digOutValues[index]; // FIXME add inverse parameter
-    dbg("toggle dout #" + String(digOutPins[index]) + " to " + (digOutValues[index] ? "HIGH" : "LOW"));
-    digitalWrite(digOutPins[index], digOutValues[index]);
+    int pin = config["pin"] | -1;
+    bool inverse = config["inverse"] | false;
+    byte start = config["start"] | 0;
+
+    if (GPIO_IS_VALID_GPIO(pin))
+        registerOutput(name, pin, inverse, start);
+    else
+        err("cannot register output invalid pin");
 }
 
-void GPIOModule::setDigitalOut(int index, bool value)
+void GPIOModule::registerOutput(String name, int pin, bool inverse, byte start)
 {
-    if (index < 0 || index >= digOutPins.size())
+    if (Module::reservePin(pin))
     {
-        err("invalid dout index: " + String(index) + " while it should be between 0 and " + String(digOutPins.size()));
-        return;
+        dbg("Register output pin #"+ String(pin));
+        outputs.emplace_back(new Output(name, pin, start, inverse));
     }
-    digOutValues[index] = !value; // FIXME add inverse parameter
-    dbg("set dout #" + String(digOutPins[index]) + " to " + (digOutValues[index] ? "HIGH" : "LOW"));
-    digitalWrite(digOutPins[index], digOutValues[index]);
+    else
+        err("cannot register output on pin #:" + pin);
 }
 
-
-void GPIOModule::setAnalogOut(int index, float value)
+void GPIOModule::toggleOutput(int index)
 {
-    if (index < 0 || index >= digOutPins.size())
+    if (index < 0 || index >= outputs.size())
     {
-        err("invalid dout index: " + String(index) + " while it should be between 0 and " + String(digOutPins.size()));
+        err("invalid output index: " + String(index) + " while it should be between 0 and " + String(outputs.size()));
         return;
     }
-    
-    if (value < 0 || value > 1)
-    {
-        err("invalid value: " + String(value) + " while it should be between 0 and 1");
-        return;
-    }
-    // digOutValues[index] = !value; // FIXME add inverse parameter
-    dbg("set aout #" + String(digOutPins[index]) + " to " + String(255*value));
-    analogWrite(digOutPins[index], 255*value);
+    outputs[index]->toggle();
 }
+
+void GPIOModule::setOutput(int index, bool value)
+{
+    if (index < 0 || index >= outputs.size())
+    {
+        err("invalid output index: " + String(index) + " while it should be between 0 and " + String(outputs.size()));
+        return;
+    }
+    outputs[index]->set(value);
+}
+
+void GPIOModule::setOutputPWM(int index, byte value)
+{
+    if (index < 0 || index >= outputs.size())
+    {
+        err("invalid output index: " + String(index) + " while it should be between 0 and " + String(outputs.size()));
+        return;
+    }
+    outputs[index]->setPWM(value);
+}
+
+void GPIOModule::setOutputPeriod(int index, int value)
+{
+    if (index < 0 || index >= outputs.size())
+    {
+        err("invalid output index: " + String(index) + " while it should be between 0 and " + String(outputs.size()));
+        return;
+    }
+    outputs[index]->setTogglePeriodMs((uint16_t)value);
+} 
 
 void GPIOModule::handleOSCCommand(OSCMessage *command)
 {
-    if (command->match("/gpio/dout"))
+    if (command->match("/gpio/output"))
     {
-
         if (command->size() == 1 && command->isInt(0))
         {
-            toggleDigitalOut(command->getInt(0));
+            toggleOutput(command->getInt(0));
         }
         if (command->size() == 2)
         {
-            if (command->isInt(0) && command->isInt(1))
+            if (command->isInt(0) && command->isBoolean(1))
             {
-                setDigitalOut(command->getInt(0), command->getInt(1) > 0);
+                setOutput(command->getInt(0), command->getBoolean(1)); // boolean = on/off
             }
-            else if (command->isInt(0) && command->isBoolean(1))
+            else if (command->isInt(0) && command->isFloat(1))
             {
-                setDigitalOut(command->getInt(0), command->getBoolean(1));
+                setOutputPWM(command->getInt(0), (byte)(255*command->getFloat(1))); // float [0:1] = PWM
+            }
+            else if (command->isInt(0) && command->isInt(1))
+            {
+                setOutputPeriod(command->getInt(0), command->getInt(1)); // int = toggle period in ms
             }
         }
-    }
-    
-    if (command->match("/gpio/aout"))
-    {
-        if (command->size() == 2)
-            if (command->isInt(0) && command->isFloat(1))
-                setAnalogOut(command->getInt(0), command->getFloat(1));
     }
 }

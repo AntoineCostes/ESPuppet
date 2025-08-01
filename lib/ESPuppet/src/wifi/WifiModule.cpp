@@ -23,7 +23,7 @@ void WifiModule::init()
 
 void WifiModule::loadConfig(JsonObject const &config)
 {
-    if (config) Serial.println("");
+  if (config) Serial.println("");
   serialDebug = config["serialDebug"] | serialDebug;
   connectionTimeoutMs = config["connectionTimeoutMs"] | connectionTimeoutMs;
   configPortalTimeoutMs = config["configPortalTimeoutMs"] | configPortalTimeoutMs;

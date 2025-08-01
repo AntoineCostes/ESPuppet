@@ -2,7 +2,7 @@
     "wifi":
     {
         "serialDebug":true,
-        "boardName":"toron",
+        "boardName":"Toron",
         "osc":
         {
             "serialDebug":true,

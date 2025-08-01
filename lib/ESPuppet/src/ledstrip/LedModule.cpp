@@ -34,7 +34,7 @@ void LedModule::registerLedStrip(JsonObject const &config)
     bool wifiDebug = config["wifiDebug"] | false;
     bool grb = config["grb"] | true;
     
-    if (pin > 0 && numPixels > 0)
+    if (pin >= 0 && numPixels > 0)
         registerLedStrip(pin, numPixels, brightness, grb?NEO_GRB:NEO_RGB + NEO_KHZ800);
     else
         err("cannot register ledstrip, pin ("+ String(pin)+") & numPixels ("+String(numPixels)+") should be positive !");

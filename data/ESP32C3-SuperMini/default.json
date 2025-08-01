@@ -17,7 +17,7 @@
         "serialDebug":true,
         "led1":
         {
-            "pin":9,
+            "pin":8,
             "numPixels":4, 
             "brightness":0.1,
             "wifiDebug":true

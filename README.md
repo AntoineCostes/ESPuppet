@@ -7,11 +7,12 @@ remove ESP32Async and RPAsyncTCP from ESPAsyncWebServer depedencies
 which ESP32 platform to use ?
 
 ROADMAP
-FIXME filter ping messages, multiport yo
 FIXME handle if targetIP not valid
+FIXME servo default values
 
 OK local IP on webserver index + select current config 
 OK firmware version ? => compiled date instead
+
 - odrive module + optional server (or debug wroom server)
 - ledModule advertise/notify -> wifi debug
 - ServoPWMShield separate class + servo start
@@ -28,6 +29,7 @@ OK wifi set power
 - not sure if wifi host name is usefull for anything
 
 IDEAS
+- allowed pins for each module and boards ?
 - color templates for wifidebug (parameters)
 - lastUpdateMs in component ?
 - inputComponent génère des évènement, outputComponent est contrôlable par OSC ?
@@ -37,6 +39,7 @@ IDEAS
 - clarify serialDebug implementation
 
 COSMETICS
+- timer with callback
 - FileManager singleton 
 - char \* name
 - variadic reservePins

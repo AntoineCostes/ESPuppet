@@ -16,7 +16,7 @@
     "leds":
     {
         "serialDebug":true,
-        "toron":
+        "led":
         {
             "pin":4,
             "numPixels":250, 
@@ -27,9 +27,38 @@
     "gpio":
     {
         "serialDebug":true,
-        "dout":
+        "outputs":
         {
-            "pins":[5, 6, 7, 8, 9, 10]
+            "relay_1":
+            {
+                "pin":5,
+                "inverse":true
+            },
+            "relay_2":
+            {
+                "pin":6,
+                "inverse":true
+            },
+            "relay_3":
+            {
+                "pin":7,
+                "inverse":true
+            },
+            "relay_4":
+            {
+                "pin":8,
+                "inverse":true
+            },
+            "valve_3":
+            {
+                "pin":9,
+                "inverse":true
+            },
+            "valve_4":
+            {
+                "pin":10,
+                "inverse":true
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "util/Includes.h"
 #include "common/Module.h"
+#include "Output.h"
 
 class GPIOModule : public Module
 {
@@ -10,17 +11,16 @@ GPIOModule();
     void init() override;
     void update();
     
-    void registerDigitalOutPins(std::set<int> pin);
-
     void loadConfig(JsonObject const &config) override;
     void handleOSCCommand(OSCMessage* command) override;
 
-    void setAnalogOut(int index, float value);
-    void setDigitalOut(int index, bool value);
-    void toggleDigitalOut(int index);
+    void setOutputPWM(int index, byte value);
+    void setOutput(int index, bool value);
+    void setOutputPeriod(int index, int value);
+    void toggleOutput(int index);
 
 protected:
-    std::vector<int> digOutPins;
-    std::vector<bool> digOutValues;
-    void registerDigitalOutPins(JsonArray const &pins);
+    void registerOutput(String name, JsonObject const &config);
+    void registerOutput(String name, int pin, bool inverse, byte start);
+    std::vector<Output*> outputs;
 };
