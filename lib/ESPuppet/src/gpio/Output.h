@@ -1,5 +1,6 @@
 #pragma once
 #include "../common/Component.h"
+#include "../util/Timer.h"
 
 class Output : public Component
 {
@@ -17,4 +18,6 @@ protected:
     byte value;
     bool inverse;
     uint16_t periodMs;
+    Timer timer;
+    void timerEvent(const TimerEvent &e);
 };

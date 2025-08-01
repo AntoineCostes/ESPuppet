@@ -19,6 +19,9 @@ void GPIOModule::loadConfig(JsonObject const &config)
     if (config) Serial.println("");
     serialDebug = config["serialDebug"] | false;
 
+    // ceci pourrait être automatisé:
+    // register des components du type indiqué, avec leur nom et leurs parameters
+    // chaque parameter check son propre range
     if (config["outputs"].is<JsonObject>())
         for (JsonPair kv : config["outputs"].as<JsonObject>())
         {

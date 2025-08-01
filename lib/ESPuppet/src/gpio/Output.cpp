@@ -1,10 +1,13 @@
 #include "Output.h"
 
-Output::Output(String name, int pin, byte start, bool inverse):Component(name), pin(pin), inverse(inverse), periodMs(0)
+Output::Output(String name, int pin, byte start, bool inverse):Component(name), pin(pin), inverse(inverse), periodMs(0), timer(2000, true)
 {
     pinMode(pin, OUTPUT);
     setPWM(start);
+    
+    timer.addListener(std::bind(&Output::timerEvent, this, std::placeholders::_1));
 }
+
 
 void Output::setPWM(byte dutyCycle)
 {
@@ -24,11 +27,21 @@ void Output::toggle()
 
 void Output::setTogglePeriodMs(uint16_t period)
 {
-    periodMs = period;
+    if (period == 0) timer.stop();
+    else
+    {
+        timer.set(period, true);
+        timer.start();
+    }  
+}
+
+void Output::timerEvent(const TimerEvent &e)
+{
+    toggle();
+    Serial.println(millis());
 }
 
 void Output::update()
 {
-    if (periodMs > 0)
-        set( millis()%periodMs > periodMs / 2);
+    timer.update();
 }

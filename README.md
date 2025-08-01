@@ -13,6 +13,8 @@ FIXME servo default values
 OK local IP on webserver index + select current config 
 OK firmware version ? => compiled date instead
 
+- timer with callback
+- webserver console
 - odrive module + optional server (or debug wroom server)
 - ledModule advertise/notify -> wifi debug
 - ServoPWMShield separate class + servo start
@@ -39,7 +41,7 @@ IDEAS
 - clarify serialDebug implementation
 
 COSMETICS
-- timer with callback
+- use props with cast
 - FileManager singleton 
 - char \* name
 - variadic reservePins

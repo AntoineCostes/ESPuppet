@@ -20,5 +20,4 @@ void setup()
 void loop()
 {
   puppet.update();
-  delay(1);
 }

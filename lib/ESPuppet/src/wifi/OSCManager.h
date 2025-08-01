@@ -1,9 +1,22 @@
 #pragma once
 #include "util/Includes.h"
+#include "util/EventBroadcaster.h"
 #include "common/Component.h"
-#include "common/EventBroadcaster.h"
 #include "common/FileManager.h"
 
+class Command
+{
+public:
+    OSCMessage* command;
+    Command(OSCMessage* command) : command(command){
+      String address = String(command->getAddress()).substring(1);
+      int separatorIndex = address.indexOf('/');
+      targetModule = separatorIndex == -1 ? "root" : address.substring(0, separatorIndex); 
+      targetComponent = address.substring(separatorIndex + 1);
+    }
+    String targetModule;
+    String targetComponent;
+};
 
 class OSCManager : Component,
                    public EventBroadcaster<Command>
