@@ -1,10 +1,11 @@
 #include "ServoMotor.h"
 
-ServoMotor::ServoMotor(uint8_t pin,
+ServoMotor::ServoMotor(String name, 
+                       uint8_t pin,
                        float min,
                        float max,
                        bool inverse,
-                       Adafruit_MS_PWMServoDriver *pwm) : Component("servo_" + String(pin), true),
+                       Adafruit_MS_PWMServoDriver *pwm) : Component(name, true),
                                                           pin(pin),
                                                           min(min),
                                                           max(max),

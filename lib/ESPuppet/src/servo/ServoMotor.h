@@ -8,7 +8,7 @@
 class ServoMotor : public Component
 {
 public:
-    ServoMotor(uint8_t pin, float min, float max, bool inverse, Adafruit_MS_PWMServoDriver *pwm);
+    ServoMotor(String name, uint8_t pin, float min, float max, bool inverse, Adafruit_MS_PWMServoDriver *pwm);
     void update() override;
 
     // parameters
