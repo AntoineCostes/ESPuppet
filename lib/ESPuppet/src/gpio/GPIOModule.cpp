@@ -24,10 +24,8 @@ void GPIOModule::loadConfig(JsonObject const &config)
     // chaque parameter check son propre range
     if (config["outputs"].is<JsonObject>())
         for (JsonPair kv : config["outputs"].as<JsonObject>())
-        {
             if (kv.value().is<JsonObject>())
                 registerOutput(String(kv.key().c_str()), config["outputs"][kv.key()]);
-        }
 }
 
 void GPIOModule::registerOutput(String name, JsonObject const &config)
@@ -57,9 +55,10 @@ void GPIOModule::toggleOutput(int index)
 {
     if (index < 0 || index >= outputs.size())
     {
-        err("invalid output index: " + String(index) + " while it should be between 0 and " + String(outputs.size()));
+        err("invalid output index: " + String(index) + " while it should be between 0 and " + String(outputs.size() - 1));
         return;
     }
+    dbg("toggle "+outputs[index]->name);
     outputs[index]->toggle();
 }
 
@@ -67,9 +66,11 @@ void GPIOModule::setOutput(int index, bool value)
 {
     if (index < 0 || index >= outputs.size())
     {
-        err("invalid output index: " + String(index) + " while it should be between 0 and " + String(outputs.size()));
+        err("invalid output index: " + String(index) + " while it should be between 0 and " + String(outputs.size() - 1));
         return;
     }
+    if (value) dbg("set "+outputs[index]->name+" to high");
+    else  dbg("set "+outputs[index]->name+" to low");
     outputs[index]->set(value);
 }
 
@@ -77,9 +78,10 @@ void GPIOModule::setOutputPWM(int index, byte value)
 {
     if (index < 0 || index >= outputs.size())
     {
-        err("invalid output index: " + String(index) + " while it should be between 0 and " + String(outputs.size()));
+        err("invalid output index: " + String(index) + " while it should be between 0 and " + String(outputs.size() - 1));
         return;
     }
+    dbg("set "+outputs[index]->name+" to "+String(value));
     outputs[index]->setPWM(value);
 }
 
@@ -90,12 +92,13 @@ void GPIOModule::setOutputPeriod(int index, int value)
         err("invalid output index: " + String(index) + " while it should be between 0 and " + String(outputs.size()));
         return;
     }
+    dbg("set "+outputs[index]->name+" blink period to "+String(value));
     outputs[index]->setTogglePeriodMs((uint16_t)value);
 } 
 
 void GPIOModule::handleOSCCommand(OSCMessage *command)
 {
-    if (command->match("/gpio/output"))
+    if (command->fullMatch("/gpio/output"))
     {
         if (command->size() == 1 && command->isInt(0))
         {
@@ -103,18 +106,19 @@ void GPIOModule::handleOSCCommand(OSCMessage *command)
         }
         if (command->size() == 2)
         {
-            if (command->isInt(0) && command->isBoolean(1))
+            if (command->isInt(0) && command->isInt(1))
             {
-                setOutput(command->getInt(0), command->getBoolean(1)); // boolean = on/off
+                setOutput(command->getInt(0), command->getInt(1) > 0); // int = on/off
             }
             else if (command->isInt(0) && command->isFloat(1))
             {
                 setOutputPWM(command->getInt(0), (byte)(255*command->getFloat(1))); // float [0:1] = PWM
             }
-            else if (command->isInt(0) && command->isInt(1))
-            {
-                setOutputPeriod(command->getInt(0), command->getInt(1)); // int = toggle period in ms
-            }
         }
+    } else if (command->fullMatch("/gpio/output/period"))
+    {
+        if (command->size() == 2)
+            if (command->isInt(0) && command->isInt(1))
+                setOutputPeriod(command->getInt(0), command->getInt(1)); // int = toggle period in ms
     }
 }

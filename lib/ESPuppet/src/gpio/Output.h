@@ -17,7 +17,8 @@ protected:
     int pin;
     byte value;
     bool inverse;
+    bool analog;
     uint16_t periodMs;
-    Timer timer;
+    Timer blinkTimer;
     void timerEvent(const TimerEvent &e);
 };
