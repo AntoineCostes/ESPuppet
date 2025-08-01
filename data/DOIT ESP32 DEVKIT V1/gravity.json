@@ -1,0 +1,17 @@
+{
+    "wifi":
+    {
+        "serialDebug":true,
+        "boardName":"Gravity",
+        "osc":
+        {
+            "serialDebug":true,
+            "targetPort":12345,
+            "listeningPort":12345,
+            "oscReceiveDebug":true,
+            "oscSendDebug":true,
+            "oscPingTimeoutMs":1000,
+            "hasWebServer":false
+        }
+    }
+}

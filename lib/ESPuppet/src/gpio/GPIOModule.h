@@ -6,10 +6,10 @@
 class GPIOModule : public Module
 {
 public:
-GPIOModule();
+    GPIOModule();
 
     void init() override;
-    void update();
+    void update() override;
     
     void loadConfig(JsonObject const &config) override;
     void handleOSCCommand(OSCMessage* command) override;
