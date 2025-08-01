@@ -1,19 +1,17 @@
-#include "EventBroadcaster.h"
-
-class Timer;
-class TimerEvent
+class Timer
 {
-public:
-    TimerEvent(Timer * timer) : timer(timer) {}
-    Timer * timer;
-};
-
-class Timer : public EventBroadcaster<TimerEvent> {
 public: 
+    typedef std::function<void(void)> TimerCallback;
+    TimerCallback cb;
     Timer(long durationMs, bool loop = false) : isRunning(false), timeAtStart(0), intervalMs(durationMs), doLoop(loop)
     {}
 
     ~Timer() {}
+
+    void setCallback(TimerCallback callback)
+    {
+        cb = callback;
+    }
 
     bool isRunning;
     long timeAtStart;
@@ -43,7 +41,7 @@ public:
         if(millis() - timeAtStart >= intervalMs)
         {
             isRunning = false;
-            sendEvent(TimerEvent(this));
+            cb();
             if (doLoop) start();
         }
     }

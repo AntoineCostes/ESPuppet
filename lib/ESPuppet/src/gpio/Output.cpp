@@ -1,13 +1,13 @@
 #include "Output.h"
 
-Output::Output(String name, int pin, byte start, bool inverse):Component(name), pin(pin), inverse(inverse), periodMs(0), blinkTimer(2000, true)
+Output::Output(String name, int pin, byte start, bool inverse):Component(name), 
+pin(pin), inverse(inverse), periodMs(0), blinkTimer(2000, true)
 {
     pinMode(pin, OUTPUT);
     setPWM(start);
-    
-    blinkTimer.addListener(std::bind(&Output::timerEvent, this, std::placeholders::_1));
-}
 
+    blinkTimer.setCallback(std::bind(&Output::toggle, this));
+}
 
 void Output::setPWM(byte dutyCycle)
 {
@@ -48,11 +48,6 @@ void Output::setTogglePeriodMs(uint16_t period)
         blinkTimer.set(period/2, true);
         blinkTimer.start();
     }  
-}
-
-void Output::timerEvent(const TimerEvent &e)
-{
-    toggle();
 }
 
 void Output::update()

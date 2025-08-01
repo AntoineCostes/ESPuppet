@@ -20,5 +20,4 @@ protected:
     bool analog;
     uint16_t periodMs;
     Timer blinkTimer;
-    void timerEvent(const TimerEvent &e);
 };
