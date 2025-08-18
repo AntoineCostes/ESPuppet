@@ -30,6 +30,6 @@ protected:
     bool hasWebServer;
     
     int numFailedAttempts;
-    long lastDisconnectTime;
     long lastConnectTime;
+    bool onAir;
 };

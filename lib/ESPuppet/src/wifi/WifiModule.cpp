@@ -1,19 +1,17 @@
 #include "WifiModule.h"
 
-WifiModule::WifiModule() : Module("wifi"), numFailedAttempts(0)
+WifiModule::WifiModule() : Module("wifi", true), numFailedAttempts(0), onAir(false), osc(nullptr)
 {
 }
 
 void WifiModule::init()
 {
   // TODO declare parameters
-  serialDebug = true;
   connectionTimeoutMs = 5000;
   configPortalTimeoutMs = 5 * 60 * 1000;
   configServer = new ConfigWebserver(true);
-
+  hasWebServer = true;
   lastConnectTime = millis();
-  // lastDisconnectTime = millis();
 
   WiFi.onEvent(std::bind(&WifiModule::WiFiEvent, this, std::placeholders::_1, std::placeholders::_2));
 
@@ -27,7 +25,7 @@ void WifiModule::loadConfig(JsonObject const &config)
   serialDebug = config["serialDebug"] | serialDebug;
   connectionTimeoutMs = config["connectionTimeoutMs"] | connectionTimeoutMs;
   configPortalTimeoutMs = config["configPortalTimeoutMs"] | configPortalTimeoutMs;
-  hasWebServer = config["hasWebServer"] | true; // TODO webserverdebug ?
+  hasWebServer = config["hasWebServer"] | hasWebServer; // TODO webserverdebug ?
 
   if (config["osc"])
   {
@@ -97,11 +95,16 @@ void WifiModule::update()
       log("PORTAL TIMEOUT EXPIRED - RESTART");
       ESP.restart();
     }
+  
+    // I don't know status does not switch to WL_CONNECTED when AP is running
   case WL_CONNECTED:
     if (millis() % 5000 < 1 && WiFi.status() != WL_NO_SHIELD) dbg("STATUS: CONNECTED TO STA");
-    ArduinoOTA.handle();
-    if (hasWebServer) configServer->update();
-    if (osc) osc->update();
+    if (onAir)
+    {
+      ArduinoOTA.handle();
+      if (hasWebServer) configServer->update();
+      if (osc) osc->update();
+    }
     break;
 
   case WL_IDLE_STATUS: // 0: connected but no IP yet
@@ -130,16 +133,9 @@ void WifiModule::initAP()
 
   WiFi.mode(WIFI_AP);
   WiFi.setSleep(false); // can improve ap stability
+  WiFi.softAP(apName.c_str());
 
-  if (!WiFi.softAP(apName.c_str()))
-  {
-    dbg("Houston, we have a problem !");
-    while(1)
-    {
-
-    }
-  }
-  WiFi.setTxPower(WIFI_POWER_19dBm);
+  WiFi.setTxPower(WIFI_POWER_8_5dBm); // magic number
 }
 
 void WifiModule::initSTA()
@@ -175,7 +171,6 @@ void WifiModule::initSTA()
 
 void WifiModule::initZeroConf()
 {
-  dbg("init zeroConf");
   // WiFi.setHostname(FileManager::getCurrentConfigNiceName().c_str());
   ArduinoOTA.setHostname(FileManager::getCurrentConfigName().c_str());
 
@@ -226,7 +221,7 @@ void WifiModule::initZeroConf()
 void WifiModule::disconnect()
 {
   dbg("\t === DISCONNECT ===");
-  // lastDisconnectTime = millis();
+  onAir = false;
   if (osc) osc->close();
   if (hasWebServer) configServer->stop();
   ArduinoOTA.end();
@@ -288,7 +283,9 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
 
   case ARDUINO_EVENT_WIFI_AP_START:
     dbg("Event: WiFi access point started");
+    
     WiFi.softAPsetHostname(FileManager::getCurrentConfigNiceName().c_str());
+    initZeroConf();
     if (osc)
     {
       osc->open(WiFi.softAPBroadcastIP(), WiFi.softAPIP());
@@ -296,6 +293,7 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     }
     if (hasWebServer) configServer->start();
     numFailedAttempts = 0;
+    onAir = true;
     break;
 
   case ARDUINO_EVENT_WIFI_STA_GOT_IP:
@@ -303,6 +301,7 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     initZeroConf();
     if (osc) osc->open(WiFi.broadcastIP(), WiFi.gatewayIP());
     if (hasWebServer) configServer->start();
+    onAir = true;
     numFailedAttempts = 0;
     break;
 

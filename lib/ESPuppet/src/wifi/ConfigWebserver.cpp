@@ -386,6 +386,8 @@ void ConfigWebserver::stop()
 
 void ConfigWebserver::update()
 {
+  if (!hasStarted) return;
+  
   dnsServer->processNextRequest();
 
   if (shouldReboot) 
