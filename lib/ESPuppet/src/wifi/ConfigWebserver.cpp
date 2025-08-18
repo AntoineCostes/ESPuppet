@@ -29,6 +29,7 @@ String generalProcessor(const String &var)
 String wifiProcessor(const String &var)
 {
   if (var == "CURRENT_SSID") return FileManager::currentSSID();
+  if (var == "NICENAME") return FileManager::getCurrentConfigNiceName();
   if (var == "SSID_LIST")
   {
     String options;
@@ -51,11 +52,13 @@ String configProcessor(const String &var)
     for (const String& name : configs) options +=  "<option value='"+name+"'"+  (FileManager::getCurrentConfigName().equals(name)?" selected='selected'":"") +">"+name+"</option>\n" ;
     return options;
   }
+  if (var == "NICENAME") return FileManager::getCurrentConfigNiceName();
   return "[???]";
 }
 
 String infoProcessor(const String &var)
 {
+  if (var == "NICENAME") return FileManager::getCurrentConfigNiceName();
   if (var.equals("uptime"))
     return (String)(millis() / 1000 / 60) + " mn " + (String)((millis() / 1000) % 60) + "s";
   else if (var.equals("chipid"))

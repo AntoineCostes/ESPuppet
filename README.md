@@ -7,9 +7,6 @@ remove ESP32Async and RPAsyncTCP from ESPAsyncWebServer depedencies
 which ESP32 platform to use ?
 
 ROADMAP
-FIXME handle if targetIP not valid
-FIXME servo default values
-
 OK local IP on webserver index + select current config 
 OK firmware version ? => compiled date instead
 OK timer with callback
