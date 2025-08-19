@@ -1,5 +1,6 @@
 #pragma once
 #include "util/Includes.h"
+#include "../util/Timer.h"
 #include "common/Module.h"
 #include "OSCManager.h"
 #include "ConfigWebserver.h"
@@ -28,13 +29,13 @@ protected:
     bool hasWebServer;
     bool isAP();
 
-    long configPortalTimeoutMs;
-    long configPortalStartTimeMs;
-    
+    Timer portalTimeout;
+    void onAPForTooLong();
+    Timer disconnectedTimeout;
+    void disconnectedForTooLong();
+
     int connectionAttempts;
     int numDisconnections;
-    long disconnectedTimeoutMs;
-    long lastDisconnectionTimeMs;
     bool isConnecting;
     bool onAir;
 };

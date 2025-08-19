@@ -1,18 +1,21 @@
 #include "WifiModule.h"
 
-WifiModule::WifiModule() : Module("wifi", true), osc(nullptr), connectionAttempts(0), numDisconnections(0), onAir(false), isConnecting(false)
+WifiModule::WifiModule() : Module("wifi", true), 
+osc(nullptr), connectionAttempts(0), numDisconnections(0), 
+portalTimeout(5 * 6 * 1000), // 5 mn
+disconnectedTimeout(15*1000), // 15 sec
+onAir(false), isConnecting(false)
 {
 }
 
 void WifiModule::init()
 {
   // TODO declare parameters
-  configPortalTimeoutMs = 5 * 60 * 1000;
-  disconnectedTimeoutMs = 10 * 1000;
   configServer = new ConfigWebserver(true);
   hasWebServer = true;
-  configPortalStartTimeMs = millis();
-  lastDisconnectionTimeMs = millis();
+
+  portalTimeout.setCallback(std::bind(&WifiModule::onAPForTooLong, this));
+  disconnectedTimeout.setCallback(std::bind(&WifiModule::disconnectedForTooLong, this));
 
   WiFi.onEvent(std::bind(&WifiModule::WiFiEvent, this, std::placeholders::_1, std::placeholders::_2));
 
@@ -20,13 +23,29 @@ void WifiModule::init()
   WiFi.setSleep(false);
 }
 
+void WifiModule::disconnectedForTooLong()
+{
+  log("DISCONNECTION TIMEOUT EXPIRED - RESTART");
+  log("");
+  log("");
+  ESP.restart();
+}
+
+void WifiModule::onAPForTooLong()
+{
+  log("CONFIG PORTAL TIMEOUT EXPIRED - RESTART");
+  log("");
+  log("");
+  ESP.restart();
+}
+
 void WifiModule::loadConfig(JsonObject const &config)
 {
   if (config) Serial.println("");
   serialDebug = config["serialDebug"] | serialDebug;
-  configPortalTimeoutMs = config["configPortalTimeoutMs"] | configPortalTimeoutMs;
-  disconnectedTimeoutMs = config["disconnectedTimeoutMs"] | disconnectedTimeoutMs;
   hasWebServer = config["hasWebServer"] | hasWebServer; // TODO webserverdebug ?
+  if (config["configPortalTimeoutMs"]) portalTimeout.set(config["configPortalTimeoutMs"]);
+  if (config["disconnectedTimeoutMs"]) disconnectedTimeout.set(config["disconnectedTimeoutMs"]);
 
   if (config["osc"])
   {
@@ -53,13 +72,16 @@ void WifiModule::update()
   {
     // AP running
     case WL_NO_SHIELD: // 255
-      if (millis() - configPortalStartTimeMs > configPortalTimeoutMs)
-      {
-        log("PORTAL TIMEOUT EXPIRED - RESTART");
-        ESP.restart();
-      }
+      portalTimeout.update();
+
       // I don't know status does not switch to WL_CONNECTED when AP is running
     case WL_CONNECTED: // 3
+      if (disconnectedTimeout.isRunning) 
+      {
+         // FIXME why is it not stopped already ?
+        Serial.println("CONNECTED > STOP TIMEOUT");
+        disconnectedTimeout.stop();
+      }
       if (millis() % 5000 < 1)
       {
         if (WiFi.status() == WL_CONNECTED) dbg("- CONNECTED TO STA");
@@ -73,27 +95,19 @@ void WifiModule::update()
       }
       break;
 
+    case WL_NO_SSID_AVAIL: // 1
+      // Failed to connect
     case WL_CONNECT_FAILED: // 4
     case WL_DISCONNECTED: // 6
       if (millis() % 2000 < 1) dbg("- DISCONNECTED");
-      if (millis() - lastDisconnectionTimeMs > disconnectedTimeoutMs)
-      {
-        log("DISCONNECTED TIMEOUT EXPIRED - RESTART");
-        ESP.restart();
-      }
+      if (!disconnectedTimeout.isRunning) disconnectedTimeout.start(); // auto launch if disconnection event was not caught
+      disconnectedTimeout.update();
       break;
 
     case WL_IDLE_STATUS: // 0
       if (millis() % 2000 < 1)  dbg("- WAITING FOR IP");
-      if (millis() - lastDisconnectionTimeMs > disconnectedTimeoutMs)
-      {
-        log("NO IP TIMEOUT EXPIRED - RESTART");
-        ESP.restart();
-      }
-      break;
-      
-    case WL_NO_SSID_AVAIL: // 1
-      // Failed to connect
+      if (!disconnectedTimeout.isRunning) disconnectedTimeout.start(); // auto launch if disconnection event was not caught
+      disconnectedTimeout.update();
       break;
 
     default:
@@ -142,7 +156,6 @@ void WifiModule::initAP()
 
   String apName = "CONFIG " + FileManager::getCurrentConfigNiceName();
   dbg("\n=== START AP: " + apName);
-  configPortalStartTimeMs = millis();
   goOffAir();
 
   if (WiFi.isConnected())  WiFi.disconnect();
@@ -192,7 +205,7 @@ void WifiModule::initSTA()
 
 void WifiModule::initZeroConf()
 {
-  // WiFi.setHostname(FileManager::getCurrentConfigNiceName().c_str());
+  // this also sets the hostname for zeroconf
   ArduinoOTA.setHostname((FileManager::getCurrentConfigName() + (isAP()?"_AP":"")).c_str());
 
   ArduinoOTA.onStart([]()
@@ -256,6 +269,8 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA, FileManager::getCurrentConfigNiceName().c_str());
     connectionAttempts = 0;
     numDisconnections = 0;
+    portalTimeout.stop();
+    disconnectedTimeout.stop();
     break;
 
   case ARDUINO_EVENT_WIFI_STA_GOT_IP:
@@ -289,7 +304,7 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     case WIFI_REASON_BEACON_TIMEOUT: // 200 could not reproduce yet
     case WIFI_REASON_AUTH_FAIL: // 201 could not find network or wrong password
     // 51
-      if (info.wifi_sta_disconnected.reason == WIFI_REASON_NOT_AUTHED) err("=== NOT_AUTHED");
+      if (info.wifi_sta_disconnected.reason == WIFI_REASON_NOT_AUTHED) dbg("= Connection lost !");
       if (info.wifi_sta_disconnected.reason == WIFI_REASON_NOT_ASSOCED) dbg("= Connection lost !");
       if (info.wifi_sta_disconnected.reason == WIFI_REASON_4WAY_HANDSHAKE_TIMEOUT) err("=== HANDSHAKE_TIMEOUT");
       if (info.wifi_sta_disconnected.reason == WIFI_REASON_TIMEOUT) err("=== TIMEOUT");
@@ -297,6 +312,7 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
       if (info.wifi_sta_disconnected.reason == WIFI_REASON_AUTH_FAIL) dbg("= Could not connect");
       WiFi.disconnect();
       initSTA();
+      if (!disconnectedTimeout.isRunning)  disconnectedTimeout.start();
       break;
 
     default:
@@ -308,9 +324,8 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
       else
         dbg("STA_DISCONNECTED Event: unknown reason: " + String(info.wifi_sta_disconnected.reason));
         
-      lastDisconnectionTimeMs = millis();
       numDisconnections++;
-      if (numDisconnections > 3) initAP();
+      if (numDisconnections > 5) initAP(); // 5 attempts ~ 10 seconds
       break;
     }
     break;
@@ -320,6 +335,8 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     WiFi.softAPsetHostname(FileManager::getCurrentConfigNiceName().c_str());
     connectionAttempts = 0;
     numDisconnections = 0;
+    disconnectedTimeout.stop();
+    portalTimeout.start();
     goOnAir();
     break;
 
