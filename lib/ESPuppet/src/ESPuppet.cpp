@@ -45,7 +45,8 @@ void ESPuppet::init(String config)
         module.get()->loadConfig(json[module->name].as<JsonObject>());
 
     FileManager::printWifiCredentials();
-    Serial.println("INIT OK");
+    Serial.println("");
+    Serial.println("INIT OK: "+FileManager::getCurrentConfigNiceName());
     Serial.println("");
     Serial.println("");
   }

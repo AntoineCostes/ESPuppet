@@ -23,7 +23,7 @@ OSCManager::OSCManager(uint16_t listeningPort,
 void OSCManager::update()
 {
   if(!isOpen)  return;
-  
+
   if (millis() > lastSentPingMs + oscPingTimeoutMs)
   {
     sendOSC("/ping");
@@ -50,16 +50,27 @@ void OSCManager::update()
       if (oscReceiveDebug)
         log("got message: " + String(msg.getAddress()));
 
-      if (msg.match("/tame")) 
+      if (msg.match("/targetPort")) 
       {
         if (msg.isInt(0)) 
         {
           targetPort = msg.getInt(0);
-          log("NEW PORT : "+String(targetPort));
+          log("NEW TARGET PORT : "+String(targetPort));
         }
       }
-      else if (msg.match("/ping") || msg.match("/yo")) 
+      else if (msg.match("/ping")) 
       {
+      // discard ping broadcast from other devices
+      }
+      else if (msg.match("/yo")) 
+      {
+        if (targetIP != udp.remoteIP())
+        {
+          targetIP = udp.remoteIP();
+          doBroadcast = false;
+          dbg("new target: " + String(targetPort) + "@" + targetIP.toString());
+        } else 
+          dbg("yo but same ");
       }
       else
       {
@@ -86,7 +97,8 @@ void OSCManager::open(IPAddress broadcastIP, IPAddress gatewayIP)
   this->gatewayIP = gatewayIP;
   lastSentPingMs = millis();
   isOpen = true;
-  // sendYo();
+  if (doBroadcast) dbg("ready to broadcast to "+broadcastIP.toString());
+  else dbg("ready to send to "+targetIP.toString());
 }
 
 void OSCManager::close()
@@ -95,14 +107,6 @@ void OSCManager::close()
   udp.flush();
   udp.stop();
   isOpen = false;
-}
-
-void OSCManager::sendYo()
-{
-  OSCMessage m("/yo");
-  m.add(WiFi.localIP().toString().c_str());
-  m.add((int32_t)listeningPort);
-  sendMessage(m, true);
 }
 
 void OSCManager::sendOSC(String address)

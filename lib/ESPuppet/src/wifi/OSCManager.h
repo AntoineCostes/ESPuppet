@@ -33,7 +33,6 @@ public:
 
     void open(IPAddress broadcastIP, IPAddress gatewayIP);
     void close();
-    void sendYo();
 
     uint16_t listeningPort;
     uint16_t targetPort;

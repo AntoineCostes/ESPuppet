@@ -199,19 +199,19 @@ void ConfigWebserver::start()
   server->on("/redirect", [](AsyncWebServerRequest *request)
              { 
               // microsoft redirect
-              Serial.println("redrect");
+              Serial.println("redirect");
               request->redirect("http://" + WiFi.softAPIP().toString()); });
 
   server->on("/redirect/internal", [](AsyncWebServerRequest *request)
              { 
               // microsoft redirect
-              Serial.println("redrect internal");
+              Serial.println("redirect internal");
               request->redirect("http://" + WiFi.softAPIP().toString()); });
 
   server->on("/redirect/external", [](AsyncWebServerRequest *request)
              { 
               // microsoft redirect
-              Serial.println("redrect internal");
+              Serial.println("redirect internal");
               request->redirect("http://" + WiFi.softAPIP().toString()); });
 
   server->on("/hotspot-detect.html", [](AsyncWebServerRequest *request)
