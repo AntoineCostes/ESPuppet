@@ -1,6 +1,6 @@
 #include "GPIOModule.h"
 
-GPIOModule::GPIOModule() : Module("gpio")
+GPIOModule::GPIOModule() : Module("gpio", false)
 {
 }
 
@@ -17,7 +17,7 @@ void GPIOModule::update()
 void GPIOModule::loadConfig(JsonObject const &config)
 {
     if (config) Serial.println("");
-    serialDebug = config["serialDebug"] | false;
+    serialDebug = config["serialDebug"] | serialDebug;
 
     // ceci pourrait être automatisé:
     // register des components du type indiqué, avec leur nom et leurs parameters

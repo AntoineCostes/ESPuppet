@@ -65,7 +65,7 @@ void ServoModule::registerServo(String name, uint8_t pin, float min, float max, 
     {
         if (Module::reservePin(pin))
         {
-            dbg("Register servo on pin #" + String(pin));
+            log("Register servo on pin #" + String(pin));
             servos.emplace_back(new ServoMotor(name, pin, min, max, inverse, nullptr));
         }
         else

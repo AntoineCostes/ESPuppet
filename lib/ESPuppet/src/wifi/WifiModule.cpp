@@ -51,13 +51,14 @@ void WifiModule::loadConfig(JsonObject const &config)
   {
     uint16_t listeningPort = config["osc"]["listeningPort"] | -1;
     uint16_t targetPort = config["osc"]["targetPort"] | -1;
-    String ip = config["osc"]["targetIP"] | "";
+    String ip = config["osc"]["targetIP"] | ""; // FIXME
     IPAddress targetIP = IPAddress();
     bool broadcast = !targetIP.fromString(ip);
     long oscPingTimeoutMs = config["osc"]["oscPingTimeoutMs"] | 3000;
     bool oscSendDebug = config["osc"]["oscSendDebug"] | false;
     bool oscReceiveDebug = config["osc"]["oscReceiveDebug"] | false;
 
+    log("Register OSC manager");
     osc = new OSCManager(listeningPort, targetPort, targetIP, broadcast, oscPingTimeoutMs, oscSendDebug, oscReceiveDebug);
     osc->addListener(std::bind(&WifiModule::gotOSCCommand, this, std::placeholders::_1));
   }

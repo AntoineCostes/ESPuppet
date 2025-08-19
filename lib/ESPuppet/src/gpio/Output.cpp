@@ -28,7 +28,7 @@ void Output::set(bool val)
         pinMode(pin, OUTPUT);
         analog = false;
     }   
-    if (blinkTimer.isRunning)blinkTimer.stop(); 
+    if (blinkTimer.isRunning) blinkTimer.stop(); 
     
     if (inverse) val = !val;
     value = val?255:0;

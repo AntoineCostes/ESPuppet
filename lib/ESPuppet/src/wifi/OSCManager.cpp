@@ -68,7 +68,7 @@ void OSCManager::update()
         {
           targetIP = udp.remoteIP();
           doBroadcast = false;
-          dbg("new target: " + String(targetPort) + "@" + targetIP.toString());
+          dbg("new target: " + targetIP.toString()+ ":" + String(targetPort));
         } else 
           dbg("yo but same ");
       }
@@ -79,7 +79,7 @@ void OSCManager::update()
         {
           targetIP = udp.remoteIP();
           doBroadcast = false;
-          dbg("new target: " + String(targetPort) + "@" + targetIP.toString());
+          dbg("new target: " + targetIP.toString()+ ":" + String(targetPort));
         }
         sendEvent(Command(&msg));
       }
@@ -90,7 +90,7 @@ void OSCManager::update()
 void OSCManager::open(IPAddress broadcastIP, IPAddress gatewayIP)
 {
   if (isOpen) close();
-  dbg("open");
+  dbg("open port "+String(listeningPort));
   udp.begin(listeningPort);
   udp.flush();
   this->broadcastIP = broadcastIP;
@@ -130,7 +130,7 @@ void OSCManager::sendMessage(OSCMessage &msg, bool broadcast)
     case WL_CONNECTED: // connected to STA
       if (broadcast)
       {
-         if (oscSendDebug) log("Broadcast message to " + broadcastIP.toString() + "@" + String(targetPort) + " and gateway " + gatewayIP.toString() +" : " + fullAddress);
+         if (oscSendDebug) log("Broadcast message to " + broadcastIP.toString()+ "/" + gatewayIP.toString() + ":" + String(targetPort)  + " : " + fullAddress);
         udp.beginPacket(broadcastIP, targetPort);
         msg.send(udp);
         udp.endPacket();
@@ -142,7 +142,7 @@ void OSCManager::sendMessage(OSCMessage &msg, bool broadcast)
       }
       else
       {
-        if (oscSendDebug) log("Send message to " + targetIP.toString() + "@" + String(targetPort) + " : " + fullAddress);
+        if (oscSendDebug) log("Send message to " + targetIP.toString() + ":" + String(targetPort) + " : " + fullAddress);
         udp.beginPacket(targetIP, targetPort);
         msg.send(udp);
         udp.endPacket();

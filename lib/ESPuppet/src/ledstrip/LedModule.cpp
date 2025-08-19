@@ -44,7 +44,7 @@ void LedModule::registerLedStrip(int pin, int numPixels, float brightness, neoPi
 {
     if (Module::reservePin(pin))
     {
-        dbg("Register strip with "+String(numPixels)+ " leds on pin #"+ String(pin));
+        log("Register strip with "+String(numPixels)+ " leds on pin #"+ String(pin));
         strips.emplace_back(new LedStrip(pin, numPixels, brightness, type));
     }
     else

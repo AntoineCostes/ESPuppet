@@ -82,7 +82,9 @@ String FileManager::getCurrentConfigName()
 {
     Preferences prefs;
     prefs.begin("ESPuppet");
-    String configFileName = prefs.getString("config", "default"); // TODO test default config
+    String configFileName;
+    if (prefs.isKey("config")) configFileName= prefs.getString("config", "default"); // TODO test default config
+    else configFileName = "default";
     prefs.end();
     return configFileName;
 }
