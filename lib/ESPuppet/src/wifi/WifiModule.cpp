@@ -1,17 +1,18 @@
 #include "WifiModule.h"
 
-WifiModule::WifiModule() : Module("wifi", true), numFailedAttempts(0), onAir(false), osc(nullptr)
+WifiModule::WifiModule() : Module("wifi", true), osc(nullptr), connectionAttempts(0), numDisconnections(0), onAir(false), isConnecting(false)
 {
 }
 
 void WifiModule::init()
 {
   // TODO declare parameters
-  connectionTimeoutMs = 5000;
   configPortalTimeoutMs = 5 * 60 * 1000;
+  disconnectedTimeoutMs = 10 * 1000;
   configServer = new ConfigWebserver(true);
   hasWebServer = true;
-  lastConnectTime = millis();
+  configPortalStartTimeMs = millis();
+  lastDisconnectionTimeMs = millis();
 
   WiFi.onEvent(std::bind(&WifiModule::WiFiEvent, this, std::placeholders::_1, std::placeholders::_2));
 
@@ -23,8 +24,8 @@ void WifiModule::loadConfig(JsonObject const &config)
 {
   if (config) Serial.println("");
   serialDebug = config["serialDebug"] | serialDebug;
-  connectionTimeoutMs = config["connectionTimeoutMs"] | connectionTimeoutMs;
   configPortalTimeoutMs = config["configPortalTimeoutMs"] | configPortalTimeoutMs;
+  disconnectedTimeoutMs = config["disconnectedTimeoutMs"] | disconnectedTimeoutMs;
   hasWebServer = config["hasWebServer"] | hasWebServer; // TODO webserverdebug ?
 
   if (config["osc"])
@@ -45,89 +46,104 @@ void WifiModule::loadConfig(JsonObject const &config)
   initSTA();
 }
 
+
 void WifiModule::update()
 {
   switch (WiFi.status())
   {
-    // I don't understand when it gets in WL_NO_SSID_AVAIL and when it gets in WL_DISCONNECTED,
-    // it got to both in a row without environmental change (no router)
-  case WL_NO_SSID_AVAIL:
-    if (millis() % 1000 < 1) dbg("STATUS: ssid not valid");
+    // AP running
+    case WL_NO_SHIELD: // 255
+      if (millis() - configPortalStartTimeMs > configPortalTimeoutMs)
+      {
+        log("PORTAL TIMEOUT EXPIRED - RESTART");
+        ESP.restart();
+      }
+      // I don't know status does not switch to WL_CONNECTED when AP is running
+    case WL_CONNECTED: // 3
+      if (millis() % 5000 < 1)
+      {
+        if (WiFi.status() == WL_CONNECTED) dbg("- CONNECTED TO STA");
+        if (WiFi.status() == WL_NO_SHIELD) dbg("- AP RUNNING");
+      } 
+      if (onAir)
+      {
+        ArduinoOTA.handle();
+        if (hasWebServer) configServer->update();
+        if (osc) osc->update();
+      }
+      break;
 
-    if (millis() - lastConnectTime > connectionTimeoutMs)
-    {
-      dbg("we got disconnected for a while, disconnect and start AP");
-      disconnect();
-      initAP();
-    }
-    break;
+    case WL_CONNECT_FAILED: // 4
+    case WL_DISCONNECTED: // 6
+      if (millis() % 2000 < 1) dbg("- DISCONNECTED");
+      if (millis() - lastDisconnectionTimeMs > disconnectedTimeoutMs)
+      {
+        log("DISCONNECTED TIMEOUT EXPIRED - RESTART");
+        ESP.restart();
+      }
+      break;
 
-  case WL_DISCONNECTED:
-    if (millis() % 3000 < 1) dbg("STATUS: disconnected");
-    if (millis() - lastConnectTime > connectionTimeoutMs)
-    {
-      dbg("we could not connect for a while, try again");
-      disconnect();
-      initSTA();
-    }
-    break;
+    case WL_IDLE_STATUS: // 0
+      if (millis() % 2000 < 1)  dbg("- WAITING FOR IP");
+      if (millis() - lastDisconnectionTimeMs > disconnectedTimeoutMs)
+      {
+        log("NO IP TIMEOUT EXPIRED - RESTART");
+        ESP.restart();
+      }
+      break;
+      
+    case WL_NO_SSID_AVAIL: // 1
+      // Failed to connect
+      break;
 
-  case WL_CONNECT_FAILED:
-    if (millis() % 1000 < 1) dbg("STATUS: failed to connect");
-
-    if (millis() - lastConnectTime > connectionTimeoutMs)
-    {
-      // dbg("connection failed, disconnect and start AP");
-      // disconnect();
-      // initAP();
-      dbg("connection failed, try again");
-      disconnect();
-      delay(1000);
-      initSTA();
-    }
-    break;
-
-  case WL_NO_SHIELD: // 255
-                     // AP running
-    if (millis() % 5000 < 1) dbg("STATUS: AP running");
-    if (millis() - configPortalStartTimeMs > configPortalTimeoutMs)
-    {
-      log("PORTAL TIMEOUT EXPIRED - RESTART");
-      ESP.restart();
-    }
-  
-    // I don't know status does not switch to WL_CONNECTED when AP is running
-  case WL_CONNECTED:
-    if (millis() % 5000 < 1 && WiFi.status() != WL_NO_SHIELD) dbg("STATUS: CONNECTED TO STA");
-    if (onAir)
-    {
-      ArduinoOTA.handle();
-      if (hasWebServer) configServer->update();
-      if (osc) osc->update();
-    }
-    break;
-
-  case WL_IDLE_STATUS: // 0: connected but no IP yet
-    if (millis() % 1000 < 1) dbg("STATUS: waiting for ip");
-    break;
-
-
-  case WL_CONNECTION_LOST:
-    if (millis() % 1000 < 1) dbg("STATUS: connection lost");
-    break;
-
-  default:
-    break;
+    default:
+      if (millis() % 1000 < 1) err("- UNKWOWN STATUS: "+String(WiFi.status()));
+      break;
   }
+}
+
+void WifiModule::goOnAir()
+{
+  if (!onAir)
+  {
+    dbg("\t === ON AIR ===");
+    onAir = true;
+    initZeroConf();
+    if (osc)
+    {
+      if (isAP())
+      {
+        osc->open(WiFi.softAPBroadcastIP(), WiFi.softAPIP());
+        osc->doBroadcast = true;
+      } else
+        osc->open(WiFi.broadcastIP(), WiFi.gatewayIP());
+    }
+    if (hasWebServer) configServer->start();
+  }
+}
+
+void WifiModule::goOffAir()
+{
+  if (onAir)
+  {
+    dbg("\t === OFF AIR ===");
+    onAir = false;
+    if (osc) osc->close();
+    if (hasWebServer) configServer->stop();
+    ArduinoOTA.end();
+  } 
 }
 
 void WifiModule::initAP()
 {
-  String apName = "CONFIG " + FileManager::getCurrentConfigNiceName();
+  if (isConnecting) err("is already connecting, pass");
+  if (isConnecting) return;
+  isConnecting = true;
 
-  dbg("\nSTART AP: " + apName);
+  String apName = "CONFIG " + FileManager::getCurrentConfigNiceName();
+  dbg("\n=== START AP: " + apName);
   configPortalStartTimeMs = millis();
-  lastConnectTime = millis();
+  goOffAir();
 
   if (WiFi.isConnected())  WiFi.disconnect();
 
@@ -136,21 +152,25 @@ void WifiModule::initAP()
   WiFi.softAP(apName.c_str());
 
   WiFi.setTxPower(WIFI_POWER_8_5dBm); // magic number
+  isConnecting = false;
 }
 
 void WifiModule::initSTA()
 {
-    if (numFailedAttempts > 3) 
-    {
-      log("got disconneged too many times, start AP instead of STA");
-      initAP();
-      return;
-    }
+  connectionAttempts++;
+  if (connectionAttempts > 3) 
+  {
+    log("we tried 3 times already, start AP instead of STA");
+    initAP();
+    return;
+  } 
 
+  if (isConnecting) err("is already connecting, pass");
+  if (isConnecting) return;
+  isConnecting = true;
+
+  goOffAir();
   dbg("START STA");
-  lastConnectTime = millis();
-
-  if (WiFi.isConnected()) WiFi.disconnect();
 
   String ssid = FileManager::currentSSID();
   String pwd = FileManager::currentPwd();
@@ -167,12 +187,13 @@ void WifiModule::initSTA()
     WiFi.begin(ssid.c_str(), pwd.c_str());
     WiFi.setTxPower(WIFI_POWER_8_5dBm);
   }
+  isConnecting = false;
 }
 
 void WifiModule::initZeroConf()
 {
   // WiFi.setHostname(FileManager::getCurrentConfigNiceName().c_str());
-  ArduinoOTA.setHostname(FileManager::getCurrentConfigName().c_str());
+  ArduinoOTA.setHostname((FileManager::getCurrentConfigName() + (isAP()?"_AP":"")).c_str());
 
   ArduinoOTA.onStart([]()
                      {
@@ -209,23 +230,11 @@ void WifiModule::initZeroConf()
     else
     {
       err("OSC zeroconf services could not be added");
-      log(String(osc->listeningPort));
-      log(FileManager::getCurrentConfigName());
     }
   }
 
   if (MDNS.addService("_http", "_tcp", 80)) dbg("TCP service added sucessfully !");
   else err("TCP service could not be added");
-}
-
-void WifiModule::disconnect()
-{
-  dbg("\t === DISCONNECT ===");
-  onAir = false;
-  if (osc) osc->close();
-  if (hasWebServer) configServer->stop();
-  ArduinoOTA.end();
-  numFailedAttempts++;
 }
 
 void WifiModule::gotOSCCommand(const Command &command)
@@ -238,16 +247,27 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
   switch (event)
   {
   case ARDUINO_EVENT_WIFI_STA_START:
+    // when does that happen ?
     dbg("Event: Start connecting to router");
-  tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA, FileManager::getCurrentConfigNiceName().c_str());
     break;
 
   case ARDUINO_EVENT_WIFI_STA_CONNECTED:
     dbg("Event: Connected to router");
+    tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA, FileManager::getCurrentConfigNiceName().c_str());
+    connectionAttempts = 0;
+    numDisconnections = 0;
+    break;
+
+  case ARDUINO_EVENT_WIFI_STA_GOT_IP:
+    dbg("Event: Obtained IP address: " + WiFi.localIP().toString());
+    goOnAir();
+    break;
+
+  case ARDUINO_EVENT_WIFI_STA_STOP:
+    dbg("Event: WiFi clients stopped");
     break;
 
   case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
-    dbg("Event: Disconnected from WiFi access point with reason: " + String(info.wifi_sta_disconnected.reason));
     // For some reason when unable to connect this event is triggered
     // once with reason 0 then every second with reason 201 WIFI_REASON_NO_AP_FOUND
     // or every second with reason 15 WIFI_REASON_4WAY_HANDSHAKE_TIMEOUT
@@ -256,53 +276,57 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     {
       // could not connect to STA
     case WIFI_REASON_AUTH_EXPIRE: // 2
-      err("WIFI_REASON_AUTH_EXPIRE");
-      break;
-
-    case WIFI_REASON_4WAY_HANDSHAKE_TIMEOUT: // 15
-      err("handshake timeout expired. incorrect Wifi credentials ?");
-      break;
-
-    case WIFI_REASON_TIMEOUT: // 39
-      err("WIFI_REASON_TIMEOUT");
+    // may happen just before connecting to router
+      dbg("STA_DISCONNECTED Event: WIFI_REASON_AUTH_EXPIRE");
       break;
 
     case 0:
-      err("NO REASON, fuck you");
+      dbg("STA_DISCONNECTED Event: NO REASON, fuck you");
+    case WIFI_REASON_NOT_AUTHED: // 6 could not reproduce yet
+    case WIFI_REASON_NOT_ASSOCED: // 7 lost connection to STA
+    case WIFI_REASON_4WAY_HANDSHAKE_TIMEOUT: // 15 can happen with incorrect credentials
+    case WIFI_REASON_TIMEOUT: // 39 could not reproduce yet
+    case WIFI_REASON_BEACON_TIMEOUT: // 200 could not reproduce yet
+    case WIFI_REASON_AUTH_FAIL: // 201 could not find network or wrong password
+    // 51
+      if (info.wifi_sta_disconnected.reason == WIFI_REASON_NOT_AUTHED) err("=== NOT_AUTHED");
+      if (info.wifi_sta_disconnected.reason == WIFI_REASON_NOT_ASSOCED) dbg("= Connection lost !");
+      if (info.wifi_sta_disconnected.reason == WIFI_REASON_4WAY_HANDSHAKE_TIMEOUT) err("=== HANDSHAKE_TIMEOUT");
+      if (info.wifi_sta_disconnected.reason == WIFI_REASON_TIMEOUT) err("=== TIMEOUT");
+      if (info.wifi_sta_disconnected.reason == WIFI_REASON_BEACON_TIMEOUT) err("=== BEACON TIMEOUT");
+      if (info.wifi_sta_disconnected.reason == WIFI_REASON_AUTH_FAIL) dbg("= Could not connect");
+      WiFi.disconnect();
+      initSTA();
       break;
 
-    case WIFI_REASON_BEACON_TIMEOUT: // 200
-      err("beacon timeout. list router ?");
-      break;
-
-    case WIFI_REASON_NO_AP_FOUND: // 201
-      err("no AP found");
+    default:
+      if (info.wifi_sta_disconnected.reason == WIFI_REASON_NOT_AUTHORIZED_THIS_LOCATION) // 30
+        err("= location not authorized ");
+      else if (info.wifi_sta_disconnected.reason == WIFI_REASON_NO_AP_FOUND) // 201
+        // happens every 2sec when the SSID is not visible
+        dbg("= Failed to reach "+FileManager::currentSSID());
+      else
+        dbg("STA_DISCONNECTED Event: unknown reason: " + String(info.wifi_sta_disconnected.reason));
+        
+      lastDisconnectionTimeMs = millis();
+      numDisconnections++;
+      if (numDisconnections > 3) initAP();
       break;
     }
     break;
 
   case ARDUINO_EVENT_WIFI_AP_START:
     dbg("Event: WiFi access point started");
-    
     WiFi.softAPsetHostname(FileManager::getCurrentConfigNiceName().c_str());
-    initZeroConf();
-    if (osc)
-    {
-      osc->open(WiFi.softAPBroadcastIP(), WiFi.softAPIP());
-      osc->doBroadcast = true;
-    }
-    if (hasWebServer) configServer->start();
-    numFailedAttempts = 0;
-    onAir = true;
+    connectionAttempts = 0;
+    numDisconnections = 0;
+    goOnAir();
     break;
 
-  case ARDUINO_EVENT_WIFI_STA_GOT_IP:
-    dbg("Event: Obtained IP address: " + WiFi.localIP().toString());
-    initZeroConf();
-    if (osc) osc->open(WiFi.broadcastIP(), WiFi.gatewayIP());
-    if (hasWebServer) configServer->start();
-    onAir = true;
-    numFailedAttempts = 0;
+  case ARDUINO_EVENT_WIFI_AP_STOP:
+    // This actually never happens, we reboot to exit AP
+    dbg("Event: WiFi access point stopped");
+    goOffAir();
     break;
 
   case ARDUINO_EVENT_WIFI_READY:
@@ -311,14 +335,13 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
   case ARDUINO_EVENT_WIFI_SCAN_DONE:
     dbg("Event: Completed scan for access points");
     break;
-  case ARDUINO_EVENT_WIFI_STA_STOP:
-    dbg("Event: WiFi clients stopped");
-    break;
   case ARDUINO_EVENT_WIFI_STA_AUTHMODE_CHANGE:
     dbg("Event: Authentication mode of access point has changed");
     break;
   case ARDUINO_EVENT_WIFI_STA_LOST_IP:
-    dbg("Event: Lost IP address and IP address is reset to 0");
+    // this is not relevant if we are in AP mode
+    if (!isAP())
+      dbg("Event: Lost IP address and IP address is reset to 0");
     break;
   case ARDUINO_EVENT_WPS_ER_SUCCESS:
     dbg("Event: WiFi Protected Setup (WPS): succeeded in enrollee mode");
@@ -338,10 +361,6 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
   case ARDUINO_EVENT_WIFI_AP_STADISCONNECTED:
     dbg("Event: Client disconnected");
     break;
-
-  case ARDUINO_EVENT_WIFI_AP_STOP:
-    dbg("Event: WiFi access point  stopped");
-    break;
   case ARDUINO_EVENT_WIFI_AP_STAIPASSIGNED:
     dbg("Event: Assigned IP address to client");
     break;
@@ -359,4 +378,9 @@ void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     err("unknown Wifi event !");
     break;
   }
+}
+
+bool WifiModule::isAP()
+{
+  return WiFi.getMode() == WIFI_MODE_AP;
 }
