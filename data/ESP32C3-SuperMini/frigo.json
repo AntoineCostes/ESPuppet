@@ -13,12 +13,12 @@
             "oscPingTimeoutMs":1000
         }
     },
-    "leds":
+    "ledstrip":
     {
         "serialDebug":true,
         "led":
         {
-            "pin":4,
+            "pin":8,
             "numPixels":250, 
             "brightness":0.2,
             "wifiDebug":true
@@ -31,32 +31,32 @@
         {
             "relay_1":
             {
-                "pin":5,
+                "pin":0,
                 "inverse":true
             },
             "relay_2":
             {
-                "pin":6,
+                "pin":1,
                 "inverse":true
             },
             "relay_3":
             {
-                "pin":7,
+                "pin":2,
                 "inverse":true
             },
             "relay_4":
             {
-                "pin":8,
+                "pin":3,
                 "inverse":true
             },
             "valve_3":
             {
-                "pin":9,
+                "pin":20,
                 "inverse":true
             },
             "valve_4":
             {
-                "pin":10,
+                "pin":21,
                 "inverse":true
             }
         }

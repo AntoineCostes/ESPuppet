@@ -30,7 +30,8 @@ void ESPuppet::init(String config)
     Serial.println("no config file ! Please upload LittleFS image");
 
     // configure default neopixel for wifi debug
-    if (String(ARDUINO_BOARD).equals("ESP32C3-SuperMini")) ledModule->registerLedStrip(4, 20, 0.2);
+    // if (String(ARDUINO_BOARD).equals("ESP32C3-SuperMini")) ledModule->registerLedStrip(4, 20, 0.2);
+    if (String(ARDUINO_BOARD).equals("ESP32C3-SuperMini")) ledModule->registerLedStrip(8, 20, 0.6);
     else if (String(ARDUINO_BOARD).equals("Seeed Studio XIAO ESP32C3")) ledModule->registerLedStrip(10, 20, 0.2);
     
     wifiModule->initAP();
@@ -42,7 +43,7 @@ void ESPuppet::init(String config)
       Serial.println("failed to deserialize json config : " + String(error.c_str()));
     else
       for (auto const &module : modules)
-        module.get()->loadConfig(json[module->name].as<JsonObject>());
+        module.get()->loadConfig(json[module.get()->name].as<JsonObject>());
 
     FileManager::printWifiCredentials();
     Serial.println("");

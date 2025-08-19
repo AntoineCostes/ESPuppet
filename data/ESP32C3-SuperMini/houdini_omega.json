@@ -64,7 +64,7 @@
             }
         }
     },
-    "leds":
+    "ledstrip":
     {
         "serialDebug":true,
         "neon":

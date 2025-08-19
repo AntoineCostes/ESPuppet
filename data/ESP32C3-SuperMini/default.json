@@ -12,13 +12,13 @@
             "oscReceiveDebug":true
         }
     },
-    "leds":
+    "ledstrip":
     {
         "serialDebug":true,
         "led1":
         {
             "pin":8,
-            "numPixels":4, 
+            "numPixels":10, 
             "brightness":0.1,
             "wifiDebug":true
         }

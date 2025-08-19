@@ -2,16 +2,16 @@
     "wifi":
     {
         "serialDebug":true,
-        "boardName":"Houdini_alpha",
+        "boardName":"Houdini_fire",
         "osc":
         {
             "serialDebug":true,
-            "targetPort":12345,
+            "targetPort":12346,
             "listeningPort":12345,
             "oscReceiveDebug":true,
-            "oscSendDebug":false,
+            "oscSendDebug":true,
             "oscPingTimeoutMs":1000,
-            "targetIP":"192.168.137.1"
+            "targetIP":"192.168.0.108"
         }
     },
     "gpio":
@@ -19,54 +19,64 @@
         "serialDebug":true,
         "outputs":
         {
-            "arc":
-            {
-                "pin":5,
-                "inverse":true
-            },
-            "propane":
-            {
-                "pin":6,
-                "inverse":true
-            },
-            "valve_1":
-            {
-                "pin":7,
-                "inverse":true
-            },
-            "valve_2":
-            {
-                "pin":8,
-                "inverse":true
-            },
-            "valve_3":
-            {
-                "pin":9,
-                "inverse":true
-            },
-            "valve_4":
-            {
-                "pin":10,
-                "inverse":true
-            },
-            "pompe_1":
-            {
-                "pin":20,
-                "inverse":true
-            },
-            "pompe_2":
-            {
-                "pin":21,
-                "inverse":true
-            },
-            "mosfet":
+            "0":
             {
                 "pin":0,
                 "inverse":true
             },
-            "voyant":
+            "1":
             {
                 "pin":1,
+                "inverse":true
+            },
+            "2":
+            {
+                "pin":2,
+                "inverse":true
+            },
+            "3":
+            {
+                "pin":3,
+                "inverse":true
+            },
+            "5":
+            {
+                "pin":5,
+                "inverse":true
+            },
+            "6":
+            {
+                "pin":6,
+                "inverse":true
+            },
+            "7":
+            {
+                "pin":7,
+                "inverse":true
+            },
+            "8":
+            {
+                "pin":8,
+                "inverse":true
+            },
+            "9":
+            {
+                "pin":9,
+                "inverse":true
+            },
+            "10":
+            {
+                "pin":10,
+                "inverse":true
+            },
+            "20":
+            {
+                "pin":20,
+                "inverse":true
+            },
+            "21":
+            {
+                "pin":21,
                 "inverse":true
             }
         }
@@ -74,27 +84,13 @@
     "ledstrip":
     {
         "serialDebug":true,
-        "neon":
+        "debug":
         {
             "pin":4,
-            "numPixels":100, 
+            "numPixels":10, 
             "brightness":0.5,
-            "wifiDebug":false,
+            "wifiDebug":true,
             "grb":false
-        },
-        "face":
-        {
-            "pin":3,
-            "numPixels":50, 
-            "brightness":0.5,
-            "wifiDebug":true
-        },
-        "baie":
-        {
-            "pin":2,
-            "numPixels":100, 
-            "brightness":0.5,
-            "wifiDebug":false
         }
     }
 }
