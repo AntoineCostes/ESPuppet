@@ -24,6 +24,7 @@ void OSCManager::update()
 {
   if(!isOpen)  return;
 
+  // TODO silent send
   if (millis() > lastSentPingMs + oscPingTimeoutMs)
   {
     sendOSC("/ping");
@@ -58,9 +59,10 @@ void OSCManager::update()
           log("NEW TARGET PORT : "+String(targetPort));
         }
       }
-      else if (msg.match("/ping")) 
+      else if (msg.match("/houdini_light") || msg.match("/houdini_fire")) 
       {
-      // discard ping broadcast from other devices
+      // FIXME filter commands with board ID instead
+      // we should send message as /Dobby/board/...
       }
       else if (msg.match("/yo")) 
       {
