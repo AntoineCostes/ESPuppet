@@ -6,7 +6,7 @@ ESPuppet puppet;
 void setup()
 {
   Serial.begin(115200);
-  delay(2000);
+  delay(3000);
   Serial.println("====== ESPuppet ======");
   
 #ifdef LED_BUILTIN

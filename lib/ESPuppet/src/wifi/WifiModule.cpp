@@ -51,7 +51,7 @@ void WifiModule::loadConfig(JsonObject const &config)
   {
     uint16_t listeningPort = config["osc"]["listeningPort"] | -1;
     uint16_t targetPort = config["osc"]["targetPort"] | -1;
-    String ip = config["osc"]["targetIP"] | ""; // FIXME cause of udp could not send data ?
+    String ip = config["osc"]["targetIP"] | ""; 
     IPAddress targetIP = IPAddress();
     bool broadcast = !targetIP.fromString(ip);
     long oscPingTimeoutMs = config["osc"]["oscPingTimeoutMs"] | 3000;
@@ -62,8 +62,6 @@ void WifiModule::loadConfig(JsonObject const &config)
     osc = new OSCManager(listeningPort, targetPort, targetIP, broadcast, oscPingTimeoutMs, oscSendDebug, oscReceiveDebug);
     osc->addListener(std::bind(&WifiModule::gotOSCCommand, this, std::placeholders::_1));
   }
-
-  initSTA();
 }
 
 
@@ -99,6 +97,7 @@ void WifiModule::update()
     case WL_NO_SSID_AVAIL: // 1
       // Failed to connect
     case WL_CONNECT_FAILED: // 4
+    case WL_CONNECTION_LOST: // 5
     case WL_DISCONNECTED: // 6
       if (millis() % 2000 < 1) dbg("- DISCONNECTED");
       if (!disconnectedTimeout.isRunning) disconnectedTimeout.start(); // auto launch if disconnection event was not caught

@@ -60,6 +60,8 @@ void ESPuppet::init(String config)
     Serial.println("INIT OK: "+FileManager::getCurrentConfigNiceName());
     Serial.println("");
     Serial.println("");
+    
+    wifiModule->initSTA();
   }
 }
 
