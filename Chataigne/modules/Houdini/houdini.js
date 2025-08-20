@@ -112,16 +112,16 @@ function setExtra2(value)
   setRelayOmega(2, value);
 }
 
-function setPlasma(value)
-{
-  setRelayOmega(3, value);
-}
-
 function setLight(red, yellow, green)
 {
-  setRelayOmega(4, red);
-  setRelayOmega(5, yellow);
-  setRelayOmega(6, green);
+  setRelayOmega(3, green);
+  setRelayOmega(4, yellow);
+  setRelayOmega(5, red);
+}
+
+function setPlasma(value)
+{
+  setRelayOmega(6, value);
 }
 
 // motors

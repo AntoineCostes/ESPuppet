@@ -22,42 +22,42 @@
         {
             "arc":
             {
-                "pin":5,
+                "pin":21,
                 "inverse":true
             },
             "propane":
             {
-                "pin":6,
+                "pin":20,
                 "inverse":true
             },
             "valve_1":
             {
-                "pin":7,
+                "pin":10,
                 "inverse":true
             },
             "valve_2":
             {
-                "pin":8,
+                "pin":9,
                 "inverse":true
             },
             "valve_3":
             {
-                "pin":9,
+                "pin":8,
                 "inverse":true
             },
             "valve_4":
             {
-                "pin":10,
+                "pin":7,
                 "inverse":true
             },
             "pompe_1":
             {
-                "pin":20,
+                "pin":6,
                 "inverse":true
             },
             "pompe_2":
             {
-                "pin":21,
+                "pin":5,
                 "inverse":true
             },
             "mosfet":
