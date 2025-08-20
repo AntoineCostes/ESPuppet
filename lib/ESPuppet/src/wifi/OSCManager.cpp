@@ -14,8 +14,6 @@ OSCManager::OSCManager(uint16_t listeningPort,
                                                oscSendDebug(oscSendDebug),
                                                oscReceiveDebug(oscReceiveDebug),
                                                doBroadcast(broadcast),
-                                              //  broadcastIP(IPAddress()),
-                                              //  gatewayIP(IPAddress()),
                                                isOpen(false)
 {
 }
@@ -24,7 +22,6 @@ void OSCManager::update()
 {
   if(!isOpen)  return;
 
-  // TODO silent send
   if (millis() > lastSentPingMs + oscPingTimeoutMs)
   {
     sendOSC("/ping");
@@ -89,14 +86,12 @@ void OSCManager::update()
   }
 }
 
-void OSCManager::open()//IPAddress broadcastIP, IPAddress gatewayIP)
+void OSCManager::open()
 {
   if (isOpen) close();
   dbg("open port "+String(listeningPort));
   udp.begin(listeningPort);
   udp.flush();
-  // this->broadcastIP = broadcastIP;
-  // this->gatewayIP = gatewayIP;
   lastSentPingMs = millis();
   isOpen = true;
   if (doBroadcast) dbg("ready to broadcast to "+(WiFi.getMode() == WIFI_MODE_AP)?WiFi.softAPBroadcastIP().toString():WiFi.broadcastIP().toString());
@@ -140,7 +135,7 @@ void OSCManager::sendMessage(OSCMessage &msg, bool broadcast, bool silent)
         udp.beginPacket(WiFi.gatewayIP(), targetPort);
         msg.send(udp);
         int ok = udp.endPacket();
-        if (!ok) flush();
+        if (!ok) udpSendFailed();
         
       }
       else
@@ -149,7 +144,7 @@ void OSCManager::sendMessage(OSCMessage &msg, bool broadcast, bool silent)
         udp.beginPacket(targetIP, targetPort);
         msg.send(udp);
         int ok = udp.endPacket();
-        if (!ok) flush();
+        if (!ok) udpSendFailed();
       }
       break;
 
@@ -160,14 +155,14 @@ void OSCManager::sendMessage(OSCMessage &msg, bool broadcast, bool silent)
           udp.beginPacket(WiFi.softAPBroadcastIP(), targetPort);
           msg.send(udp);
         int ok = udp.endPacket();
-        if (!ok) flush();
+        if (!ok) udpSendFailed();
       } else
       {
         if (oscSendDebug && !silent) log("Send message to " + targetIP.toString() + "@" + String(targetPort) + " : " + fullAddress);
         udp.beginPacket(targetIP, targetPort);
         msg.send(udp);
         int ok = udp.endPacket();
-        if (!ok) flush();
+        if (!ok) udpSendFailed();
       }
       break;
 
@@ -177,10 +172,8 @@ void OSCManager::sendMessage(OSCMessage &msg, bool broadcast, bool silent)
   }
 }
 
-void OSCManager::flush()
+void OSCManager::udpSendFailed()
 {
-  dbg("FLUSH");
-  udp.flush();
-  udp.begin(listeningPort);
-  udp.flush();
+  dbg("TargetIP not valid : "+targetIP.toString());
+ 
 }

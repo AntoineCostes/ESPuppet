@@ -44,8 +44,8 @@ void GPIOModule::registerOutput(String name, int pin, bool inverse, byte start)
 {
     if (Module::reservePin(pin))
     {
-        dbg("Register output pin #"+ String(pin));
-        outputs.emplace_back(new Output(name, pin, start, inverse));
+        log("Register output "+name +" on pin #"+ String(pin));
+        outputs.emplace_back(new Output(name+"_"+String(pin), pin, start, inverse));
     }
     else
         err("cannot register output on pin #:" + pin);

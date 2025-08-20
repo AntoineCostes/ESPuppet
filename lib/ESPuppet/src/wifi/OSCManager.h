@@ -49,7 +49,7 @@ protected:
     void sendOSC(String address);
     // TODO make variadic function sendOSC(String address, OSCArgument args...)
     void sendMessage(OSCMessage &msg, bool broadcast, bool silent = false);
-    void flush();
+    void udpSendFailed();
 
     long oscPingTimeoutMs;
     bool oscSendDebug;

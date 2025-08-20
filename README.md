@@ -32,6 +32,7 @@ OK wifi set power
 - not sure if wifi host name is usefull for anything
 
 IDEAS
+- counter class
 - allowed pins for each module and boards ?
 - color templates for wifidebug (parameters)
 - lastUpdateMs in component ?
