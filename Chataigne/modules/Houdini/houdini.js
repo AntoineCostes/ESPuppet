@@ -15,7 +15,7 @@ function moduleParameterChanged(param)
     local.sendTo("houdini_omega.local", 12345, "/yo");
     local.send("/yo");
   }
-  if (param.name == "targetPort") local.send("/targetPort", local.parameters.oscInput.localPort.get());
+  if (param.name == "setPort") local.send("/targetPort", local.parameters.oscInput.localPort.get());
 }
 
 // VALUES
