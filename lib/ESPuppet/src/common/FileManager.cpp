@@ -13,14 +13,6 @@ void FileManager::init()
     } 
     Serial.println("[FM] LittleFS initalized. Listing files:");
     FileManager::printFilesInDirectory("/", 1);
-
-    if (currentSSID().equals(""))
-    {
-        FileManager::registerWifiCredentials("under the sunshine", "bibimbap");
-        FileManager::registerWifiCredentials("akindofmagic", "H0udini25");
-        FileManager::registerWifiCredentials("LeNet", "connectemoi");
-        FileManager::setWifiCredentials("akindofmagic");
-    }
 }
 
 bool FileManager::exists(String filePath)
@@ -83,8 +75,8 @@ String FileManager::getCurrentConfigName()
     Preferences prefs;
     prefs.begin("ESPuppet");
     String configFileName;
-    if (prefs.isKey("config")) configFileName= prefs.getString("config", "default"); // TODO test default config
-    else configFileName = "default";
+    if (prefs.isKey("config")) configFileName= prefs.getString("config");
+    else configFileName = "no_config";
     prefs.end();
     return configFileName;
 }
@@ -107,7 +99,8 @@ void FileManager::setNewConfig(String configName)
 {
     Preferences prefs;
     prefs.begin("ESPuppet");
-    prefs.putString("config", configName);
+    if (isValidConfigName(configName)) prefs.putString("config", configName);
+    else prefs.putString("config", "invalid_config");
     prefs.end();
 }
 
@@ -125,6 +118,7 @@ File FileManager::openConfigFile(String name)
     else if (!FileManager::isValidConfigName(name))
     {
         Serial.println("[FM] ERROR "+name+" is not a valid config name !");
+        // setNewConfig("no_config");
         return File();
     }
     return FileManager::openFile("/"+String(ARDUINO_BOARD)+"/"+name+".json");
@@ -133,11 +127,11 @@ File FileManager::openConfigFile(String name)
 
 bool FileManager::isValidConfigName(String name)
 {
-    std::vector<String> configs = FileManager::getConfigNames();
+    std::vector<String> configs = FileManager::getAvailableConfigNames();
     return std::find(configs.begin(), configs.end(), name) != configs.end();
 }
 
-std::vector<String> FileManager::getConfigNames()
+std::vector<String> FileManager::getAvailableConfigNames()
 {
     std::vector<String> fileNameList;
     

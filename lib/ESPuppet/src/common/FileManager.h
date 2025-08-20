@@ -13,7 +13,7 @@ class FileManager
         static File openFile(String fileName, bool write = false);
         static bool exists(String fileName);
 
-        static std::vector<String> getConfigNames();
+        static std::vector<String> getAvailableConfigNames();
         static String getCurrentConfigName();
         static String getCurrentConfigNiceName();
         static bool isValidConfigName(String name);

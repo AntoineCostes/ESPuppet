@@ -48,7 +48,7 @@ String configProcessor(const String &var)
   if (var == "CONFIG_OPTIONS")
   {
     String options;
-    std::vector<String> configs = FileManager::getConfigNames();
+    std::vector<String> configs = FileManager::getAvailableConfigNames();
     for (const String& name : configs) options +=  "<option value='"+name+"'"+  (FileManager::getCurrentConfigName().equals(name)?" selected='selected'":"") +">"+name+"</option>\n" ;
     return options;
   }
