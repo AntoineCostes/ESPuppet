@@ -9,7 +9,8 @@
             "serialDebug":true,
             "targetPort":12345,
             "listeningPort":12345,
-            "oscReceiveDebug":true
+            "oscReceiveDebug":true,
+            "oscSendDebug":true
         }
     },
     "ledstrip":

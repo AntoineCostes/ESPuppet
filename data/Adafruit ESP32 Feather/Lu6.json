@@ -13,7 +13,7 @@
             "oscSendDebug":false
         }
     },
-    "leds":
+    "ledstrip":
     {
         "serialDebug":true,
         "led1":

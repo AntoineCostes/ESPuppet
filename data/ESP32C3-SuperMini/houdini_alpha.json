@@ -2,16 +2,17 @@
     "wifi":
     {
         "serialDebug":true,
-        "boardName":"Houdini_alpha",
+        "disconnectedTimeoutMs":15000,
+        "configPortalTimeoutMs": 120000,
         "osc":
         {
             "serialDebug":true,
             "targetPort":12345,
             "listeningPort":12345,
             "oscReceiveDebug":true,
-            "oscSendDebug":false,
+            "oscSendDebug":true,
             "oscPingTimeoutMs":1000,
-            "targetIP":"192.168.137.1"
+            "targetIP":"192.168.0.108"
         }
     },
     "gpio":
@@ -62,12 +63,12 @@
             "mosfet":
             {
                 "pin":0,
-                "inverse":true
+                "inverse":false
             },
             "voyant":
             {
                 "pin":1,
-                "inverse":true
+                "inverse":false
             }
         }
     },

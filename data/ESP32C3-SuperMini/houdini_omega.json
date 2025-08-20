@@ -2,7 +2,8 @@
     "wifi":
     {
         "serialDebug":true,
-        "boardName":"Houdini_omega",
+        "disconnectedTimeoutMs":15000,
+        "configPortalTimeoutMs": 120000,
         "osc":
         {
             "serialDebug":true,
@@ -11,7 +12,7 @@
             "oscReceiveDebug":true,
             "oscSendDebug":false,
             "oscPingTimeoutMs":1000,
-            "targetIP":"192.168.137.1"
+            "targetIP":"192.168.0.108"
         }
     },
     "gpio":
@@ -22,44 +23,44 @@
             "UV":
             {
                 "pin":5,
-                "start":255,
+                "start":0,
                 "inverse":true
             },
             "extra_1":
             {
                 "pin":6,
-                "start":255,
+                "start":0,
                 "inverse":true
             },
             "extra_2":
             {
                 "pin":7,
-                "start":255,
+                "start":0,
                 "inverse":true
             },
 
             "plasma":
             {
                 "pin":21,
-                "start":255,
+                "start":0,
                 "inverse":true
             },
             "rouge":
             {
                 "pin":20,
-                "start":255,
+                "start":0,
                 "inverse":true
             },
             "jaune":
             {
                 "pin":10,
-                "start":255,
+                "start":0,
                 "inverse":true
             },
             "vert":
             {
                 "pin":9,
-                "start":255,
+                "start":0,
                 "inverse":true
             }
         }
@@ -67,13 +68,13 @@
     "ledstrip":
     {
         "serialDebug":true,
-        "neon":
+        "led":
         {
             "pin":8,
-            "numPixels":100, 
+            "numPixels":1, 
             "brightness":0.5,
             "wifiDebug":true,
-            "grb":false
+            "grb":true
         }
     },
     "servo":
