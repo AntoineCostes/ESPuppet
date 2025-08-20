@@ -11,12 +11,15 @@ OK local IP on webserver index + select current config
 OK firmware version ? => compiled date instead
 OK timer with callback
 
-- clean Modules: timers, fullMatch, check range
-- webserver console
-- odrive module + optional server (or debug wroom server)
 - ledModule advertise/notify -> wifi debug
-- ServoPWMShield separate class + servo start
+- no config => load default which starts AP
+- clean Modules: timers, fullMatch, check range
 - button events in main.cpp ? or behavior inside Module ?
+- webserver console
+- webserver wifiscan
+- targetIP in webserver => singleton master
+- odrive module + optional server (or debug wroom server)
+- ServoPWMShield separate class + servo start
 - pin management -> advertise config errors
 - Parameters -> automated loadConfig + no handleOSCCommand: faut clarifier comment faire le callback
 

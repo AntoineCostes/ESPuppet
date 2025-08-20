@@ -31,11 +31,11 @@ void OSCManager::update()
     
     OSCMessage m("/ip");
     m.add(WiFi.localIP()==IPAddress(0, 0, 0, 0)? WiFi.softAPIP().toString().c_str() : WiFi.localIP().toString().c_str());
-    sendMessage(m, doBroadcast);
+    sendMessage(m, doBroadcast, true);
     
     OSCMessage m2("/port");
     m2.add((int32_t)listeningPort);
-    sendMessage(m2, doBroadcast);
+    sendMessage(m2, doBroadcast, true);
 
     lastSentPingMs = millis();
   }
@@ -117,7 +117,7 @@ void OSCManager::sendOSC(String address)
   sendMessage(m, doBroadcast);
 }
 
-void OSCManager::sendMessage(OSCMessage &msg, bool broadcast)
+void OSCManager::sendMessage(OSCMessage &msg, bool broadcast, bool silent)
 {
   if (!isOpen)
   {
@@ -132,7 +132,7 @@ void OSCManager::sendMessage(OSCMessage &msg, bool broadcast)
     case WL_CONNECTED: // connected to STA
       if (broadcast)
       {
-         if (oscSendDebug) log("Broadcast message to " + WiFi.broadcastIP().toString()+ "/" + WiFi.gatewayIP().toString() + ":" + String(targetPort)  + " : " + fullAddress);
+         if (oscSendDebug && !silent) log("Broadcast message to " + WiFi.broadcastIP().toString()+ "/" + WiFi.gatewayIP().toString() + ":" + String(targetPort)  + " : " + fullAddress);
         udp.beginPacket(WiFi.broadcastIP(), targetPort);
         msg.send(udp);
         udp.endPacket();
@@ -145,7 +145,7 @@ void OSCManager::sendMessage(OSCMessage &msg, bool broadcast)
       }
       else
       {
-        if (oscSendDebug) log("Send message to " + targetIP.toString() + ":" + String(targetPort) + " : " + fullAddress);
+        if (oscSendDebug && !silent) log("Send message to " + targetIP.toString() + ":" + String(targetPort) + " : " + fullAddress);
         udp.beginPacket(targetIP, targetPort);
         msg.send(udp);
         int ok = udp.endPacket();
@@ -156,14 +156,14 @@ void OSCManager::sendMessage(OSCMessage &msg, bool broadcast)
     case WL_NO_SHIELD: // active hotspot
       if (broadcast)
       {
-         if (oscSendDebug) log("Broadcast message to " + WiFi.softAPBroadcastIP().toString() + "@" + String(targetPort) + " : " + fullAddress);
+         if (oscSendDebug && !silent) log("Broadcast message to " + WiFi.softAPBroadcastIP().toString() + "@" + String(targetPort) + " : " + fullAddress);
           udp.beginPacket(WiFi.softAPBroadcastIP(), targetPort);
           msg.send(udp);
         int ok = udp.endPacket();
         if (!ok) flush();
       } else
       {
-        if (oscSendDebug) log("Send message to " + targetIP.toString() + "@" + String(targetPort) + " : " + fullAddress);
+        if (oscSendDebug && !silent) log("Send message to " + targetIP.toString() + "@" + String(targetPort) + " : " + fullAddress);
         udp.beginPacket(targetIP, targetPort);
         msg.send(udp);
         int ok = udp.endPacket();
