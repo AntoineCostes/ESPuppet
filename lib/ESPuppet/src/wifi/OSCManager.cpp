@@ -14,8 +14,8 @@ OSCManager::OSCManager(uint16_t listeningPort,
                                                oscSendDebug(oscSendDebug),
                                                oscReceiveDebug(oscReceiveDebug),
                                                doBroadcast(broadcast),
-                                               broadcastIP(IPAddress()),
-                                               gatewayIP(IPAddress()),
+                                              //  broadcastIP(IPAddress()),
+                                              //  gatewayIP(IPAddress()),
                                                isOpen(false)
 {
 }
@@ -89,17 +89,17 @@ void OSCManager::update()
   }
 }
 
-void OSCManager::open(IPAddress broadcastIP, IPAddress gatewayIP)
+void OSCManager::open()//IPAddress broadcastIP, IPAddress gatewayIP)
 {
   if (isOpen) close();
   dbg("open port "+String(listeningPort));
   udp.begin(listeningPort);
   udp.flush();
-  this->broadcastIP = broadcastIP;
-  this->gatewayIP = gatewayIP;
+  // this->broadcastIP = broadcastIP;
+  // this->gatewayIP = gatewayIP;
   lastSentPingMs = millis();
   isOpen = true;
-  if (doBroadcast) dbg("ready to broadcast to "+broadcastIP.toString());
+  if (doBroadcast) dbg("ready to broadcast to "+(WiFi.getMode() == WIFI_MODE_AP)?WiFi.softAPBroadcastIP().toString():WiFi.broadcastIP().toString());
   else dbg("ready to send to "+targetIP.toString());
 }
 
@@ -132,14 +132,15 @@ void OSCManager::sendMessage(OSCMessage &msg, bool broadcast)
     case WL_CONNECTED: // connected to STA
       if (broadcast)
       {
-         if (oscSendDebug) log("Broadcast message to " + broadcastIP.toString()+ "/" + gatewayIP.toString() + ":" + String(targetPort)  + " : " + fullAddress);
-        udp.beginPacket(broadcastIP, targetPort);
+         if (oscSendDebug) log("Broadcast message to " + WiFi.broadcastIP().toString()+ "/" + WiFi.gatewayIP().toString() + ":" + String(targetPort)  + " : " + fullAddress);
+        udp.beginPacket(WiFi.broadcastIP(), targetPort);
         msg.send(udp);
         udp.endPacket();
         
-        udp.beginPacket(gatewayIP, targetPort);
+        udp.beginPacket(WiFi.gatewayIP(), targetPort);
         msg.send(udp);
-        udp.endPacket();
+        int ok = udp.endPacket();
+        if (!ok) flush();
         
       }
       else
@@ -147,23 +148,26 @@ void OSCManager::sendMessage(OSCMessage &msg, bool broadcast)
         if (oscSendDebug) log("Send message to " + targetIP.toString() + ":" + String(targetPort) + " : " + fullAddress);
         udp.beginPacket(targetIP, targetPort);
         msg.send(udp);
-        udp.endPacket();
+        int ok = udp.endPacket();
+        if (!ok) flush();
       }
       break;
 
     case WL_NO_SHIELD: // active hotspot
       if (broadcast)
       {
-         if (oscSendDebug) log("Broadcast message to " + broadcastIP.toString() + "@" + String(targetPort) + " : " + fullAddress);
-          udp.beginPacket(broadcastIP, targetPort);
+         if (oscSendDebug) log("Broadcast message to " + WiFi.softAPBroadcastIP().toString() + "@" + String(targetPort) + " : " + fullAddress);
+          udp.beginPacket(WiFi.softAPBroadcastIP(), targetPort);
           msg.send(udp);
-          udp.endPacket();
+        int ok = udp.endPacket();
+        if (!ok) flush();
       } else
       {
         if (oscSendDebug) log("Send message to " + targetIP.toString() + "@" + String(targetPort) + " : " + fullAddress);
         udp.beginPacket(targetIP, targetPort);
         msg.send(udp);
-        udp.endPacket();
+        int ok = udp.endPacket();
+        if (!ok) flush();
       }
       break;
 
@@ -171,4 +175,12 @@ void OSCManager::sendMessage(OSCMessage &msg, bool broadcast)
       dbg("Can't send OSC message, Wifi is not connected");
       break;
   }
+}
+
+void OSCManager::flush()
+{
+  dbg("FLUSH");
+  udp.flush();
+  udp.begin(listeningPort);
+  udp.flush();
 }

@@ -31,7 +31,7 @@ public:
                bool oscReceiveDebug);
     void update() override;
 
-    void open(IPAddress broadcastIP, IPAddress gatewayIP);
+    void open();//IPAddress broadcastIP, IPAddress gatewayIP);
     void close();
 
     uint16_t listeningPort;
@@ -43,12 +43,13 @@ public:
 
 protected:
     WiFiUDP udp;
-    IPAddress broadcastIP;
-    IPAddress gatewayIP;
+    // IPAddress broadcastIP;
+    // IPAddress gatewayIP;
 
     void sendOSC(String address);
     // TODO make variadic function sendOSC(String address, OSCArgument args...)
     void sendMessage(OSCMessage &msg, bool broadcast);
+    void flush();
 
     long oscPingTimeoutMs;
     bool oscSendDebug;

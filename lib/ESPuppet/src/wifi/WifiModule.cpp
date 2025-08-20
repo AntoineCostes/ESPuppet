@@ -51,7 +51,7 @@ void WifiModule::loadConfig(JsonObject const &config)
   {
     uint16_t listeningPort = config["osc"]["listeningPort"] | -1;
     uint16_t targetPort = config["osc"]["targetPort"] | -1;
-    String ip = config["osc"]["targetIP"] | ""; // FIXME
+    String ip = config["osc"]["targetIP"] | ""; // FIXME cause of udp could not send data ?
     IPAddress targetIP = IPAddress();
     bool broadcast = !targetIP.fromString(ip);
     long oscPingTimeoutMs = config["osc"]["oscPingTimeoutMs"] | 3000;
@@ -126,12 +126,8 @@ void WifiModule::goOnAir()
     initZeroConf();
     if (osc)
     {
-      if (isAP())
-      {
-        osc->open(WiFi.softAPBroadcastIP(), WiFi.softAPIP());
-        osc->doBroadcast = true;
-      } else
-        osc->open(WiFi.broadcastIP(), WiFi.gatewayIP());
+      osc->open();
+      if (isAP()) osc->doBroadcast = true;
     }
     if (hasWebServer) configServer->start();
   }
