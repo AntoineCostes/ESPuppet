@@ -2,7 +2,7 @@
 
 WifiModule::WifiModule() : Module("wifi", true), 
 osc(nullptr), connectionAttempts(0), numDisconnections(0), 
-portalTimeout(5 * 6 * 1000), // 5 mn
+portalTimeout(5 * 60 * 1000), // 5 mn
 disconnectedTimeout(15*1000), // 15 sec
 onAir(false), isConnecting(false)
 {
