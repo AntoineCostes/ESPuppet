@@ -17,7 +17,7 @@ enum LedPattern
 class LedStrip : public Component
 {
     public:
-        LedStrip(uint8_t pin, uint8_t numPixels, float brightness, neoPixelType type = NEO_GRB + NEO_KHZ800);   
+        LedStrip(uint8_t pin, uint8_t numPixels, float brightness, neoPixelType type = NEO_GRB + NEO_KHZ800, float masterBrightness = 1.0f);   
         void update() override;
         
         void clear();
@@ -34,6 +34,7 @@ class LedStrip : public Component
         Adafruit_NeoPixel strip;
         uint8_t numPixels;
         float brightness;
+        float masterBrightness;
         uint32_t patternColor;
         LedPattern pattern;
         float parameter;

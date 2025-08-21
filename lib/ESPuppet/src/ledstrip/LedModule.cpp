@@ -31,21 +31,22 @@ void LedModule::registerLedStrip(JsonObject const &config)
     int pin = config["pin"] | -1;
     int numPixels = config["numPixels"] | -1;
     float brightness = config["brightness"] | 0.5f;
+    float masterBrightness = config["masterBrightness"] | 1.0f;
     bool wifiDebug = config["wifiDebug"] | false;
     bool grb = config["grb"] | true;
     
     if (pin >= 0 && numPixels > 0)
-        registerLedStrip(pin, numPixels, brightness, grb?NEO_GRB:NEO_RGB + NEO_KHZ800);
+        registerLedStrip(pin, numPixels, brightness, grb?NEO_GRB:NEO_RGB + NEO_KHZ800, masterBrightness);
     else
         err("cannot register ledstrip, pin ("+ String(pin)+") & numPixels ("+String(numPixels)+") should be positive !");
 }
 
-void LedModule::registerLedStrip(int pin, int numPixels, float brightness, neoPixelType type)
+void LedModule::registerLedStrip(int pin, int numPixels, float brightness, neoPixelType type, float masterBrightness)
 {
     if (Module::reservePin(pin))
     {
         log("Register strip with "+String(numPixels)+ " leds on pin #"+ String(pin));
-        strips.emplace_back(new LedStrip(pin, numPixels, brightness, type));
+        strips.emplace_back(new LedStrip(pin, numPixels, brightness, type, masterBrightness));
     }
     else
         err("cannot register ledstrip, pin" + String(pin) + " is reserved");

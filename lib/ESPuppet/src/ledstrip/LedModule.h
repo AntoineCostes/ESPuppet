@@ -11,7 +11,7 @@ public:
     void init() override;
     void update() override;
 
-    void registerLedStrip(int pin, int numPixels, float brightness = 0.5f, neoPixelType type = NEO_GRB + NEO_KHZ800);
+    void registerLedStrip(int pin, int numPixels, float brightness = 0.5f, neoPixelType type = NEO_GRB + NEO_KHZ800, float masterBrightness = 1.0f);
 
     void loadConfig(JsonObject const &config) override;
     void handleOSCCommand(OSCMessage* command) override;

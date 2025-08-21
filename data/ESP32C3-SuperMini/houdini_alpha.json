@@ -88,6 +88,7 @@
             "pin":3,
             "numPixels":50, 
             "brightness":0.5,
+            "masterBrightness":1.0,
             "wifiDebug":true
         },
         "baie":
@@ -95,6 +96,7 @@
             "pin":2,
             "numPixels":100, 
             "brightness":0.5,
+            "masterBrightness":0.2,
             "wifiDebug":false
         }
     }

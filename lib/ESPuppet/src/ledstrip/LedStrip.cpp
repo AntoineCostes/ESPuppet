@@ -1,6 +1,6 @@
 #include "LedStrip.h"
 
-LedStrip::LedStrip(uint8_t pin, uint8_t numPixels, float brightness, neoPixelType type):
+LedStrip::LedStrip(uint8_t pin, uint8_t numPixels, float brightness, neoPixelType type, float masterBrightness):
     Component("led_" + String(pin)),
     strip(numPixels, pin, type),
     numPixels(numPixels),
@@ -13,6 +13,7 @@ LedStrip::LedStrip(uint8_t pin, uint8_t numPixels, float brightness, neoPixelTyp
     strip.begin();
     strip.setBrightness(255);
     this->brightness = min(1.0f, max(0.0f, brightness));
+    this->masterBrightness = min(1.0f, max(0.0f, masterBrightness));
     clear(); // TODO clear leds after numPixels ?
 }
 
@@ -28,13 +29,12 @@ void LedStrip::update()
             break;
             
         case BLINK:
-        value = 1000/parameter; 
+            value = 1000/parameter; // period = 1/freq
             if (millis()%value > value/2)  fill(patternColor);
             else clear();
             break;
 
         case OSCILLATOR:
-            // float wave = );
             fill(patternColor, 0.5*(1+cos(2.0f*3.14f*parameter*millis()/1000.0)));
             lastLedChangeMs = millis();
             break;
@@ -49,7 +49,7 @@ void LedStrip::update()
         case RAINBOW:
             // long firstPixelHue = (increment*256)%5*65536;
             value = (int)(increment*256*parameter);
-            strip.rainbow(value%(5*65536), 1, 255, brightness*255, true);
+            strip.rainbow(value%(5*65536), 1, 255, masterBrightness*brightness*255, true);
             strip.show();
             break;
         
@@ -90,9 +90,9 @@ void LedStrip::fill(uint8_t r, uint8_t g, uint8_t b)
 {
     // TODO checkrange ?
     strip.fill(strip.Color(
-        brightness*pgm_read_byte(&gamma8[r]), 
-        brightness*pgm_read_byte(&gamma8[g]), 
-        brightness*pgm_read_byte(&gamma8[b])
+        masterBrightness*brightness*pgm_read_byte(&gamma8[r]), 
+        masterBrightness*brightness*pgm_read_byte(&gamma8[g]), 
+        masterBrightness*brightness*pgm_read_byte(&gamma8[b])
         ));
     strip.show(); 
 }
