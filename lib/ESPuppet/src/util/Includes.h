@@ -20,6 +20,7 @@
 #include <WiFiUdp.h> 
 #include <OSCMessage.h>
 
+ #include "FastLED.h"
 #include <Adafruit_NeoPixel.h>
 #include <ESP32Servo.h>
 #include <Adafruit_MotorShield.h> 
