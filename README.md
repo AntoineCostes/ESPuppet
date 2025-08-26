@@ -7,10 +7,6 @@ remove ESP32Async and RPAsyncTCP from ESPAsyncWebServer depedencies
 which ESP32 platform to use ?
 
 ROADMAP
-OK local IP on webserver index + select current config 
-OK firmware version ? => compiled date instead
-OK timer with callback
-
 - ledModule advertise/notify -> wifi debug
 - no config => load default which starts AP
 - clean Modules: timers, fullMatch, check range

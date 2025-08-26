@@ -82,7 +82,7 @@ void ServoMotor::goTo(float relative)
     if (inverse)
         targetPosition = max + relative * (min - max);
 
-    dbg("go to " + String(targetPosition) + " ( PWM = " + String(PWM_MIN + (PWM_MAX - PWM_MIN) * targetPosition)+ "us)");
+    dbg("go to " + String(targetPosition) + " (" + String(PWM_MIN + (PWM_MAX - PWM_MIN) * targetPosition)+ " us)");
 
     if (pwm)
         pwm->setPWM(pin, 0, PWM_MIN + (PWM_MAX - PWM_MIN) * targetPosition);

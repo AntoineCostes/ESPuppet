@@ -43,7 +43,7 @@ public:
         if(millis() - timeAtStart >= intervalMs)
         {
             isRunning = false;
-            cb();
+            if (cb) cb();
             if (doLoop) start();
         }
     }

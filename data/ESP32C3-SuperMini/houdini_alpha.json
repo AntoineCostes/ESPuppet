@@ -20,34 +20,9 @@
         "serialDebug":true,
         "outputs":
         {
-            "arc":
+            "pompe_2":
             {
-                "pin":21,
-                "inverse":true
-            },
-            "propane":
-            {
-                "pin":20,
-                "inverse":true
-            },
-            "valve_1":
-            {
-                "pin":10,
-                "inverse":true
-            },
-            "valve_2":
-            {
-                "pin":9,
-                "inverse":true
-            },
-            "valve_3":
-            {
-                "pin":8,
-                "inverse":true
-            },
-            "valve_4":
-            {
-                "pin":7,
+                "pin":5,
                 "inverse":true
             },
             "pompe_1":
@@ -55,20 +30,35 @@
                 "pin":6,
                 "inverse":true
             },
-            "pompe_2":
+            "valve_4":
             {
-                "pin":5,
+                "pin":7,
                 "inverse":true
             },
-            "mosfet":
+            "valve_3":
+            {
+                "pin":9,
+                "inverse":true
+            },
+            "valve_2":
             {
                 "pin":0,
-                "inverse":false
+                "inverse":true
             },
-            "voyant":
+            "valve_1":
             {
-                "pin":1,
-                "inverse":false
+                "pin":10,
+                "inverse":true
+            },
+            "propane":
+            {
+                "pin":20,
+                "inverse":true
+            },
+            "arc":
+            {
+                "pin":21,
+                "inverse":true
             }
         }
     },
@@ -78,8 +68,9 @@
         "neon":
         {
             "pin":4,
-            "numPixels":100, 
+            "numPixels":150, 
             "brightness":0.5,
+            "masterBrightness":1.0,
             "wifiDebug":false,
             "grb":false
         },
@@ -98,6 +89,22 @@
             "brightness":0.5,
             "masterBrightness":0.2,
             "wifiDebug":false
+        },
+        "uvmetre":
+        {
+            "pin":1,
+            "numPixels":100, 
+            "brightness":0.5,
+            "masterBrightness":0.2,
+            "wifiDebug":false
+        },
+        "pcb":
+        {
+            "pin":8,
+            "numPixels":1, 
+            "brightness":0.5,
+            "grb":true,
+            "wifiDebug":true
         }
     }
 }
