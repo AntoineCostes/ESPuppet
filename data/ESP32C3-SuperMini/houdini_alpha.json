@@ -20,34 +20,9 @@
         "serialDebug":true,
         "outputs":
         {
-            "pompe_2":
+            "arc":
             {
-                "pin":5,
-                "inverse":true
-            },
-            "pompe_1":
-            {
-                "pin":6,
-                "inverse":true
-            },
-            "valve_4":
-            {
-                "pin":7,
-                "inverse":true
-            },
-            "valve_3":
-            {
-                "pin":9,
-                "inverse":true
-            },
-            "valve_2":
-            {
-                "pin":0,
-                "inverse":true
-            },
-            "valve_1":
-            {
-                "pin":10,
+                "pin":21,
                 "inverse":true
             },
             "propane":
@@ -55,9 +30,34 @@
                 "pin":20,
                 "inverse":true
             },
-            "arc":
+            "valve_1":
             {
-                "pin":21,
+                "pin":10,
+                "inverse":true
+            },
+            "valve_2":
+            {
+                "pin":9,
+                "inverse":true
+            },
+            "valve_3":
+            {
+                "pin":0,
+                "inverse":true
+            },
+            "valve_4":
+            {
+                "pin":7,
+                "inverse":true
+            },
+            "pompe_1":
+            {
+                "pin":6,
+                "inverse":true
+            },
+            "pompe_2":
+            {
+                "pin":5,
                 "inverse":true
             }
         }
@@ -85,15 +85,15 @@
         "baie":
         {
             "pin":2,
-            "numPixels":100, 
+            "numPixels":200, 
             "brightness":0.5,
             "masterBrightness":0.2,
             "wifiDebug":false
         },
-        "uvmetre":
+        "jauge":
         {
             "pin":1,
-            "numPixels":100, 
+            "numPixels":90, 
             "brightness":0.5,
             "masterBrightness":0.2,
             "wifiDebug":false

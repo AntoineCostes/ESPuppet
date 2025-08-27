@@ -56,20 +56,21 @@ void OSCManager::update()
           log("NEW TARGET PORT : "+String(targetPort));
         }
       }
-      else if (msg.match("/houdini_light") || msg.match("/houdini_fire")) 
+      else if (String(msg.getAddress()).endsWith("/ping") || String(msg.getAddress()).endsWith("/port") || String(msg.getAddress()).endsWith("/ip")) 
       {
       // FIXME filter commands with board ID instead
       // we should send message as /Dobby/board/...
       }
       else if (msg.match("/yo")) 
       {
+        // if (targetIP != udp.remoteIP())
+        // {
+        targetIP = udp.remoteIP();
+        doBroadcast = false;
         if (targetIP != udp.remoteIP())
-        {
-          targetIP = udp.remoteIP();
-          doBroadcast = false;
           dbg("new target: " + targetIP.toString()+ ":" + String(targetPort));
-        } else 
-          dbg("yo but same ");
+        else 
+          dbg("received yo");
       }
       else
       {

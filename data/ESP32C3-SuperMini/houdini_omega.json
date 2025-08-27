@@ -23,20 +23,17 @@
             "UV":
             {
                 "pin":5,
-                "start":0,
-                "inverse":true
+                "start":0
             },
-            "fan_1":
+            "fan":
             {
                 "pin":6,
-                "start":0,
-                "inverse":true
+                "start":0
             },
-            "fan_2":
+            "indicator":
             {
                 "pin":7,
-                "start":0,
-                "inverse":true
+                "start":255
             },
             "plasma":
             {
@@ -100,24 +97,21 @@
             "pin":2,
             "min":0.0, 
             "max":1.0,
-            "start":0.5,
-            "inverse":false
+            "start":0.5
         },
         "sable_2":
         {
             "pin":3,
             "min":0.0, 
             "max":1.0,
-            "start":0.5,
-            "inverse":false
+            "start":0.5
         },
         "sable_3":
         {
             "pin":4,
             "min":0.0, 
             "max":1.0,
-            "start":0.5,
-            "inverse":false
+            "start":0.5
         }
     }
 }

@@ -71,7 +71,7 @@
         "Source":
         {
           "type":"Enum",
-          "options":{"néons":0, "face":1, "baie":2, "all":3}
+          "options":{"néons":0, "face":1, "baie":2, "jauge":3, "all":4}
         },
         "Mode":
         {
@@ -141,9 +141,11 @@
       "menu":"Lumières",
       "parameters":
       {
-        "On/off":
+        "Intensité":
         {
-          "type":"Boolean",
+          "type":"Float",
+          "min":0,
+          "max":1,
           "default":1
         }
       }
@@ -161,7 +163,7 @@
         }
       }
     },
-    "Electrovalve":
+    "Electrovanne":
     {
       "callback":"setValve",
       "menu":"Electrovannes",
@@ -181,7 +183,7 @@
         }
       }
     },
-    "Electrovalves":
+    "Electrovannes":
     {
       "callback":"setValves",
       "menu":"Electrovannes",
@@ -235,10 +237,10 @@
         }
       }
     },
-    "Ventilateur 1":
+    "Ventilateurs":
     {
       "callback":"setFan1",
-      "menu":"Ventilateurs",
+      "menu":"Pompes",
       "parameters":
       {
         "Intensité":
@@ -246,32 +248,6 @@
           "type":"Float",
           "min":0,
           "max":1,
-          "default":1
-        }
-      }
-    },
-    "Extra 1":
-    {
-      "callback":"setExtra1",
-      "menu":"Extras",
-      "parameters":
-      {
-        "On/off":
-        {
-          "type":"Boolean",
-          "default":1
-        }
-      }
-    },
-    "Extra 2":
-    {
-      "callback":"setExtra2",
-      "menu":"Extras",
-      "parameters":
-      {
-        "On/off":
-        {
-          "type":"Boolean",
           "default":1
         }
       }

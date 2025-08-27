@@ -35,11 +35,12 @@ function oscEvent(address, args)
 // leds
 function setLeds(strip, mode, color, param, brightness)
 {
-  if (strip == 3) // all
+  if (strip == 4) // all
   {
     setLedAlpha(0, mode, color, param, brightness);
     setLedAlpha(1, mode, color, param, brightness);
     setLedAlpha(2, mode, color, param, brightness);
+    setLedAlpha(3, mode, color, param, brightness);
   } else
     setLedAlpha(strip, mode, color, param, brightness);
 }
@@ -73,7 +74,7 @@ function setValves(one, two, three, four)
 
 function setValve(index, value)
 {
-  setRelayAlpha(index+1, value);
+  setRelayAlpha(1+index, value);
 }
 
 function setPump1(value)
@@ -86,14 +87,10 @@ function setPump2(value)
   setRelayAlpha(7, value);
 }
 
-function setFan1(value)
-{
-  setMosfetAlpha(8, value);
-}
 
 function setIndicator(value)
 {
-  setRelayAlpha(9, value);
+  setRelayOmega(2, value);
 }
 
 // relays & dout OMEGA
@@ -102,14 +99,9 @@ function setUV(value)
   setRelayOmega(0, value);
 }
 
-function setExtra1(value)
+function setFan1(value)
 {
   setRelayOmega(1, value);
-}
-
-function setExtra2(value)
-{
-  setRelayOmega(2, value);
 }
 
 function setLight(red, yellow, green)

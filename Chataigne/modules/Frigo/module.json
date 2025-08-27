@@ -1,0 +1,163 @@
+{
+  "name":"Frigo",
+  "type":"OSC",
+  "path":"Les Incompressibles",
+
+  "version":"1.2",
+  "description":"Contrôle d'un frigo par OSC",
+
+
+  "hasInput":true,
+  "hasOutput":true,
+
+  "hideDefaultCommands":false,
+
+  "defaults":
+  {
+    "autoAdd":true,
+    "useHierarchy":true,
+    "OSC Input":
+    {
+      "localPort":12346
+    },
+
+		"OSC Outputs":
+		{
+			"OSC Output":
+      {
+        "local":false,
+        "remoteHost":"frigo.local",
+        "remotePort":12346
+      }
+    }
+  },
+
+  "parameters":
+  {
+    "Yo":
+    {
+      "type":"Trigger"
+    },
+    "Set port":
+    {
+      "type":"Trigger"
+    }
+  },
+  "hideDefaultParameters": ["useHierarchy",  "splitArguments", "autoFeedback", "autoAdd", "colorSendMode", "booleanSendMode", "clearValues", "pass_through", "oscInput/local", "oscOutputs/alpha/local", "oscOutputs/omega/local", "oscOutputs/alpha/listenToFeedback", "oscOutputs/omega/listenToFeedback"],
+
+  "scripts":
+  [
+    "frigo.js"
+  ],
+
+  "values":
+  {
+  },
+
+  "commands":
+  {
+    "Leds":
+    {
+      "callback":"setLeds",
+      "parameters":
+      {
+        "Mode":
+        {
+          "type":"Enum",
+          "options":{"solid":0, "blink":1, "glow":2, "chase":3, "rainbow":4, "random":5, "birandom":6, "gauge":7}
+        },
+        "Couleur":
+        {
+          "type":"Color",
+          "default":[0.5, 0.5, 0.5, 1]
+        },
+        "Paramètre":
+        {
+          "type":"Float",
+          "min":0,
+          "max":1,
+          "default":1
+        },
+        "Brightness":
+        {
+          "type":"Float",
+          "min":0,
+          "max":1,
+          "default":1
+        }
+      }
+    },
+    "Gyrophare":
+    {
+      "callback":"setGyrophare",
+      "parameters":
+      {
+        "On/off":
+        {
+          "type":"Boolean",
+          "default":1
+        }
+      }
+    },
+    "Relais 5V 2":
+    {
+      "callback":"set5V",
+      "parameters":
+      {
+        "On/off":
+        {
+          "type":"Boolean",
+          "default":1
+        }
+      }
+    },
+    "Sonnette":
+    {
+      "callback":"setSonnette",
+      "parameters":
+      {
+        "On/off":
+        {
+          "type":"Boolean",
+          "default":1
+        }
+      }
+    },
+    "Relais 12V 2":
+    {
+      "callback":"setRelay2",
+      "parameters":
+      {
+        "On/off":
+        {
+          "type":"Boolean",
+          "default":1
+        }
+      }
+    },
+    "Relais 12V 3":
+    {
+      "callback":"setRelay3",
+      "parameters":
+      {
+        "On/off":
+        {
+          "type":"Boolean",
+          "default":1
+        }
+      }
+    },
+    "Relais 12V 4":
+    {
+      "callback":"setRelay4",
+      "parameters":
+      {
+        "On/off":
+        {
+          "type":"Boolean",
+          "default":1
+        }
+      }
+    }
+  }
+}

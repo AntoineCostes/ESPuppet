@@ -2,25 +2,35 @@
     "wifi":
     {
         "serialDebug":true,
+        "disconnectedTimeoutMs":15000,
+        "configPortalTimeoutMs": 120000,
         "boardName":"Frigo",
         "osc":
         {
             "serialDebug":true,
-            "targetPort":12345,
-            "listeningPort":12345,
+            "targetPort":12346,
+            "listeningPort":12346,
             "oscReceiveDebug":true,
-            "oscSendDebug":true,
-            "oscPingTimeoutMs":1000
+            "oscSendDebug":false,
+            "oscPingTimeoutMs":1000,
+            "targetIP":"192.168.0.108"
         }
     },
     "ledstrip":
     {
         "serialDebug":true,
-        "led":
+        "lumière":
         {
-            "pin":8,
+            "pin":5,
             "numPixels":250, 
             "brightness":0.2,
+            "wifiDebug":true
+        },
+        "debug":
+        {
+            "pin":8,
+            "numPixels":1, 
+            "brightness":1.0,
             "wifiDebug":true
         }
     },
@@ -29,34 +39,34 @@
         "serialDebug":true,
         "outputs":
         {
-            "relay_1":
+            "gyrophare":
             {
-                "pin":0,
+                "pin":6,
                 "inverse":true
             },
-            "relay_2":
+            "extra_5V":
+            {
+                "pin":7,
+                "inverse":true
+            },
+            "sonnette":
             {
                 "pin":1,
                 "inverse":true
             },
-            "relay_3":
+            "canon_1":
             {
                 "pin":2,
                 "inverse":true
             },
-            "relay_4":
+            "canon_2":
             {
                 "pin":3,
                 "inverse":true
             },
-            "valve_3":
+            "canon_3":
             {
-                "pin":20,
-                "inverse":true
-            },
-            "valve_4":
-            {
-                "pin":21,
+                "pin":4,
                 "inverse":true
             }
         }
