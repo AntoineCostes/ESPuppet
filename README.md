@@ -7,6 +7,20 @@ remove ESP32Async and RPAsyncTCP from ESPAsyncWebServer depedencies
 which ESP32 platform to use ?
 
 ROADMAP
+OK /ESPuppet filter
+- birandom
+OK advertise endPacket
+- use targetModule & targetComponent
+    leds/strip/set
+    motors/servo/set
+    gpio/output/set
+    ou bien
+    leds/strip/0/set 
+    leds/strip/neon/set 
+    ?
+    mmh non c'est le premier argument qui est un int ou un String
+    comme ça c'est toujours le module qui filtre les arguments
+
 - ledModule advertise/notify -> wifi debug
 - no config => load default which starts AP
 - clean Modules: timers, fullMatch, check range

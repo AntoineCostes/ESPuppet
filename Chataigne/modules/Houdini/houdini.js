@@ -1,3 +1,5 @@
+var ALPHA = "houdini_alpha";
+var OMEGA = "houdini_omega";
 
 function init() {
 }
@@ -11,11 +13,15 @@ function moduleParameterChanged(param)
 {
   if (param.name == "yo") 
   {
-    local.sendTo("houdini_alpha.local", 12345, "/yo");
-    local.sendTo("houdini_omega.local", 12345, "/yo");
+    local.sendTo(ALPHA+".local", 12345, "/yo");
+    local.sendTo(OMEGA+".local", 12345, "/yo");
     local.send("/yo");
   }
-  if (param.name == "setPort") local.send("/targetPort", local.parameters.oscInput.localPort.get());
+  if (param.name == "setPort")
+    {
+      local.send("/"+ALPHA+"/targetPort", local.parameters.oscInput.localPort.get());
+      local.send("/"+OMEGA+"/targetPort", local.parameters.oscInput.localPort.get());
+    }
 }
 
 // VALUES
@@ -26,8 +32,8 @@ function moduleValueChanged(value) {
 function oscEvent(address, args)
 {
   // script.log("OSC Message received "+address+", "+args.length+" arguments");
-  if (address.matches("/houdini_alpha/ip") && args.length == 1) local.parameters.oscOutputs.alpha.remoteHost.set(args[0]);
-  if (address.matches("/houdini_omega/ip") && args.length == 1) local.parameters.oscOutputs.omega.remoteHost.set(args[0]);
+  if (address.matches("/"+ALPHA+"/ip") && args.length == 1) local.parameters.oscOutputs.alpha.remoteHost.set(args[0]);
+  if (address.matches("/"+OMEGA+"/ip") && args.length == 1) local.parameters.oscOutputs.omega.remoteHost.set(args[0]);
 }
 
 // COMMANDS
@@ -49,7 +55,7 @@ function setLedAlpha(index, mode, color, param, brightness)
 {
   local.sendTo(local.parameters.oscOutputs.alpha.remoteHost.get(), 
   local.parameters.oscOutputs.alpha.remotePort.get(),
-  "/ledstrip/set", index, mode, parseFloat(color[0]), color[1], color[2], param, brightness);
+  "/"+ALPHA+"/ledstrip/set", index, mode, parseFloat(color[0]), color[1], color[2], param, brightness);
 }
 
 
@@ -139,7 +145,7 @@ function setMosfetAlpha(index, val)
 {
   local.sendTo(local.parameters.oscOutputs.alpha.remoteHost.get(), 
   local.parameters.oscOutputs.alpha.remotePort.get(), 
-  "/gpio/output", index, val);
+  "/"+ALPHA+"/gpio/output", index, val);
 
 }
 
@@ -147,7 +153,7 @@ function setRelayAlpha(index, val)
 {
   local.sendTo(local.parameters.oscOutputs.alpha.remoteHost.get(), 
   local.parameters.oscOutputs.alpha.remotePort.get(), 
-  "/gpio/output", index, val);
+  "/"+ALPHA+"/gpio/output", index, val);
 }
 
 
@@ -156,12 +162,12 @@ function setRelayOmega(index, val)
 {
   local.sendTo(local.parameters.oscOutputs.omega.remoteHost.get(), 
   local.parameters.oscOutputs.omega.remotePort.get(), 
-  "/gpio/output", index, val);
+  "/"+OMEGA+"/gpio/output", index, val);
 }
 
 function setServoOmega(index, val)
 {
   local.sendTo(local.parameters.oscOutputs.omega.remoteHost.get(), 
   local.parameters.oscOutputs.omega.remotePort.get(), 
-  "/servo/set", index, val);
+  "/"+OMEGA+"/servo/set", index, val);
 }

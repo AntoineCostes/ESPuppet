@@ -12,16 +12,22 @@
             "oscSendDebug":true
         }
     },
-    "gpio":
+    "ledstrip":
     {
         "serialDebug":true,
-        "outputs":
+        "lumière":
         {
-            "test":
-            {
-                "pin":4,
-                "start":255
-            }
+            "pin":5,
+            "numPixels":20, 
+            "brightness":0.1,
+            "wifiDebug":true
+        },
+        "debug":
+        {
+            "pin":8,
+            "numPixels":1, 
+            "brightness":1.0,
+            "wifiDebug":true
         }
     }
 }

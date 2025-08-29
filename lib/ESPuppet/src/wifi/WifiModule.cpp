@@ -251,6 +251,18 @@ void WifiModule::gotOSCCommand(const Command &command)
   sendEvent(command);
 }
 
+void WifiModule::handleOSCCommand(OSCMessage *command)
+{
+    if (command->match("/osc/targetPort"))
+    {
+        if (command->isInt(0)) 
+        {
+          osc->targetPort = command->getInt(0);
+          log("NEW TARGET PORT : "+String(osc->targetPort));
+        }
+    }
+}
+
 void WifiModule::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
 {
   switch (event)

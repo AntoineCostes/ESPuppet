@@ -13,6 +13,7 @@ public:
     void init() override;
     void update() override;
     void loadConfig(JsonObject const &config) override;
+    void handleOSCCommand(OSCMessage* command) override;
 
     void initAP();
     void initSTA();

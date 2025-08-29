@@ -9,13 +9,22 @@ class Command
 public:
     OSCMessage* command;
     Command(OSCMessage* command) : command(command){
-      String address = String(command->getAddress()).substring(1);
-      int separatorIndex = address.indexOf('/');
-      targetModule = separatorIndex == -1 ? "root" : address.substring(0, separatorIndex); 
-      targetComponent = address.substring(separatorIndex + 1);
+        // FIXME don't use address elsewhere
+        // remove "/BOARD_NAME"
+        String address = String(command->getAddress()).substring(1+FileManager::getCurrentConfigName().length()); 
+        command->setAddress(address.c_str());
+        
+        int separatorIndex = address.indexOf('/', 1); // skip first /
+        targetModule = separatorIndex == -1 ? "root" : address.substring(1, separatorIndex); 
+        targetComponent = address.substring(separatorIndex + 1);
+
+        // Serial.println(targetModule);
+        // Serial.println(targetComponent);
+        // Serial.println(action);
     }
     String targetModule;
     String targetComponent;
+    // String action;
 };
 
 class OSCManager : Component,

@@ -48,39 +48,14 @@ void OSCManager::update()
       if (oscReceiveDebug)
         log("got message: " + String(msg.getAddress()));
 
-      if (msg.match("/targetPort")) 
+      // filter messages according to current config
+      if (msg.match(("/"+FileManager::getCurrentConfigName()).c_str())) 
       {
-        if (msg.isInt(0)) 
-        {
-          targetPort = msg.getInt(0);
-          log("NEW TARGET PORT : "+String(targetPort));
-        }
-      }
-      else if (String(msg.getAddress()).endsWith("/ping") || String(msg.getAddress()).endsWith("/port") || String(msg.getAddress()).endsWith("/ip")) 
-      {
-      // FIXME filter commands with board ID instead
-      // we should send message as /Dobby/board/...
-      }
-      else if (msg.match("/yo")) 
-      {
-        // if (targetIP != udp.remoteIP())
-        // {
+        // when receiving messages from a new remote, makes this the new target and stop broadcasting
+        if (targetIP != udp.remoteIP()) dbg("new target: " + udp.remoteIP().toString()+ ":" + String(targetPort));
         targetIP = udp.remoteIP();
         doBroadcast = false;
-        if (targetIP != udp.remoteIP())
-          dbg("new target: " + targetIP.toString()+ ":" + String(targetPort));
-        else 
-          dbg("received yo");
-      }
-      else
-      {
-        // when receiving messages from new IP, makes this the new target
-        if (targetIP != udp.remoteIP())
-        {
-          targetIP = udp.remoteIP();
-          doBroadcast = false;
-          dbg("new target: " + targetIP.toString()+ ":" + String(targetPort));
-        }
+
         sendEvent(Command(&msg));
       }
     }
@@ -120,7 +95,7 @@ void OSCManager::sendMessage(OSCMessage &msg, bool broadcast, bool silent)
     err("Can't send OSC message yet");
     return;
   }
-  String fullAddress = "/" + FileManager::getCurrentConfigName() + String(msg.getAddress());
+  String fullAddress = "/TOTO/" + FileManager::getCurrentConfigName() + String(msg.getAddress());
   msg.setAddress(fullAddress.c_str());
 
   switch (WiFi.status())
@@ -176,5 +151,5 @@ void OSCManager::sendMessage(OSCMessage &msg, bool broadcast, bool silent)
 void OSCManager::udpSendFailed()
 {
   dbg("TargetIP not valid : "+targetIP.toString());
- 
+  sendEvent(Command(new OSCMessage("UDP_FAILED")));
 }
