@@ -1,1 +1,1527 @@
-{"metaData": {"version": "1.9.25b13", "versionNumber": 67865}, "projectSettings": {"containers": {"dashboardSettings": {"parameters": [{"value": "", "controlAddress": "/showDashboardOnStartup", "enabled": false}]}, "customDefinitions": {}}}, "dashboardManager": {"viewOffset": [0, 0], "viewZoom": 1.0}, "parrots": {"viewOffset": [0, 0], "viewZoom": 1.0}, "layout": {"mainLayout": {"type": 1, "width": 1536, "height": 773, "direction": 2, "shifters": [{"type": 1, "width": 1536, "height": 773, "direction": 2, "shifters": [{"type": 1, "width": 1536, "height": 594, "direction": 1, "shifters": [{"type": 0, "width": 448, "height": 594, "currentContent": "Modules", "tabs": [{"name": "Modules"}]}, {"type": 0, "width": 627, "height": 594, "currentContent": "Logger", "tabs": [{"name": "State Machine"}, {"name": "Dashboard"}, {"name": "Module Router"}, {"name": "Morpher"}, {"name": "Logger"}]}, {"type": 0, "width": 447, "height": 594, "currentContent": "Inspector", "tabs": [{"name": "Inspector"}]}]}, {"type": 1, "width": 1536, "height": 173, "direction": 1, "shifters": [{"type": 0, "width": 178, "height": 173, "currentContent": "Sequences", "tabs": [{"name": "Sequences"}]}, {"type": 0, "width": 932, "height": 173, "currentContent": "Sequence Editor", "tabs": [{"name": "Sequence Editor"}]}, {"type": 0, "width": 414, "height": 173, "currentContent": "Help", "tabs": [{"name": "Help"}, {"name": "Warnings"}]}]}]}]}, "windows": null}, "modules": {"items": [{"parameters": [{"value": true, "controlAddress": "/logOutgoing"}], "niceName": "Houdini", "type": "Houdini", "scripts": {"editorIsCollapsed": true, "items": [{"parameters": [{"value": true, "controlAddress": "/enableLog"}], "niceName": "houdini", "type": "BaseItem", "scriptParams": {"hideInEditor": true}}], "viewOffset": [0, 0], "viewZoom": 1.0}, "params": {"parameters": [{"value": true, "controlAddress": "/autoAdd"}, {"value": true, "controlAddress": "/useHierarchy"}], "containers": {"oscInput": {"parameters": [{"value": 12345, "hexMode": false, "controlAddress": "/localPort"}]}, "oscOutputs": {"items": [{"parameters": [{"value": false, "controlAddress": "/local"}, {"value": "192.168.0.107", "controlAddress": "/remoteHost"}, {"value": 12345, "hexMode": false, "controlAddress": "/remotePort"}], "niceName": "Alpha", "editorIsCollapsed": true, "type": "BaseItem"}, {"parameters": [{"value": false, "controlAddress": "/local"}, {"value": "192.168.0.245", "controlAddress": "/remoteHost"}, {"value": 12345, "hexMode": false, "controlAddress": "/remotePort"}], "niceName": "Omega", "type": "BaseItem"}], "viewOffset": [0, 0], "viewZoom": 1.0}, "pass_through": {"hideInEditor": true}}}, "templates": {"items": [{"niceName": "yo", "editorIsCollapsed": true, "type": "CommandTemplate", "menuPath": "", "commandType": "Custom Message", "customValues": {"viewOffset": [0, 0], "viewZoom": 1.0}, "params": [{"parameters": [{"value": "/yo", "controlAddress": "/address"}, {"value": true, "minValue": 0, "maxValue": 1, "default": true, "controlAddress": "/editable", "type": "Boolean", "niceName": "Editable", "customizable": false, "removable": false, "description": "If enabled, the parameter will be editable when instantiating this template", "hideInEditor": false, "feedbackOnly": false}], "niceName": "Address"}]}, {"niceName": "gpio output", "editorIsCollapsed": true, "type": "CommandTemplate", "menuPath": "", "commandType": "Custom Message", "customValues": {"items": [{"parameters": [{"value": 5, "hexMode": false, "controlAddress": "/#1", "type": "Integer", "niceName": "#1", "customizable": true, "removable": false, "description": "Argument #1, type int", "hideInEditor": true, "feedbackOnly": false}], "niceName": "#1", "type": "Integer", "param": {"value": 5, "hexMode": false, "controlAddress": "/modules/houdini/templates/gpioOutput/arguments/#1/#1", "type": "Integer", "niceName": "#1", "customizable": true, "removable": false, "description": "Argument #1, type int", "hideInEditor": true, "feedbackOnly": false}}, {"parameters": [{"value": 1, "hexMode": false, "controlAddress": "/#2", "type": "Integer", "niceName": "#2", "customizable": true, "removable": false, "description": "Argument #2, type int", "hideInEditor": true, "feedbackOnly": false}], "niceName": "#2", "type": "Integer", "param": {"value": 1, "hexMode": false, "controlAddress": "/modules/houdini/templates/gpioOutput/arguments/#2/#2", "type": "Integer", "niceName": "#2", "customizable": true, "removable": false, "description": "Argument #2, type int", "hideInEditor": true, "feedbackOnly": false}}], "viewOffset": [0, 0], "viewZoom": 1.0}, "params": [{"parameters": [{"value": "/gpio/output", "controlAddress": "/address"}, {"value": true, "minValue": 0, "maxValue": 1, "default": true, "controlAddress": "/editable", "type": "Boolean", "niceName": "Editable", "customizable": false, "removable": false, "description": "If enabled, the parameter will be editable when instantiating this template", "hideInEditor": false, "feedbackOnly": false}], "niceName": "Address"}]}, {"niceName": "ledstrip", "editorIsCollapsed": true, "type": "CommandTemplate", "menuPath": "", "commandType": "Custom Message", "customValues": {"items": [{"parameters": [{"value": 1, "hexMode": false, "controlAddress": "/#1", "type": "Integer", "niceName": "#1", "customizable": true, "removable": false, "description": "Argument #1, type int", "hideInEditor": true, "feedbackOnly": false}], "niceName": "#1", "type": "Integer", "param": {"value": 1, "hexMode": false, "controlAddress": "/modules/houdini/templates/ledstrip/arguments/#1/#1", "type": "Integer", "niceName": "#1", "customizable": true, "removable": false, "description": "Argument #1, type int", "hideInEditor": true, "feedbackOnly": false}}, {"parameters": [{"value": 0, "hexMode": false, "controlAddress": "/#2", "type": "Integer", "niceName": "#2", "customizable": true, "removable": false, "description": "Argument #2, type int", "hideInEditor": true, "feedbackOnly": false}], "niceName": "#2", "type": "Integer", "param": {"value": 0, "hexMode": false, "controlAddress": "/modules/houdini/templates/ledstrip/arguments/#2/#2", "type": "Integer", "niceName": "#2", "customizable": true, "removable": false, "description": "Argument #2, type int", "hideInEditor": true, "feedbackOnly": false}}, {"parameters": [{"value": [0.220474511384964, 0.8307685852050781, 0.6343215703964233, 1.0], "controlAddress": "/#3", "type": "Color", "niceName": "#3", "customizable": true, "removable": false, "description": "Argument #3, type color", "hideInEditor": true, "feedbackOnly": false}], "niceName": "#3", "type": "Color", "param": {"value": [0.220474511384964, 0.8307685852050781, 0.6343215703964233, 1.0], "controlAddress": "/modules/houdini/templates/ledstrip/arguments/#3/#3", "type": "Color", "niceName": "#3", "customizable": true, "removable": false, "description": "Argument #3, type color", "hideInEditor": true, "feedbackOnly": false}}, {"parameters": [{"value": 0.5, "controlAddress": "/#4", "type": "Float", "niceName": "#4", "customizable": true, "removable": false, "description": "Argument #4, type float", "hideInEditor": true, "feedbackOnly": false}], "niceName": "#4", "type": "Float", "param": {"value": 0.5, "controlAddress": "/modules/houdini/templates/ledstrip/arguments/#4/#4", "type": "Float", "niceName": "#4", "customizable": true, "removable": false, "description": "Argument #4, type float", "hideInEditor": true, "feedbackOnly": false}}, {"parameters": [{"value": 0.5, "controlAddress": "/#5", "type": "Float", "niceName": "#5", "customizable": true, "removable": false, "description": "Argument #5, type float", "hideInEditor": true, "feedbackOnly": false}], "niceName": "#5", "type": "Float", "param": {"value": 0.5, "controlAddress": "/modules/houdini/templates/ledstrip/arguments/#5/#5", "type": "Float", "niceName": "#5", "customizable": true, "removable": false, "description": "Argument #5, type float", "hideInEditor": true, "feedbackOnly": false}}], "viewOffset": [0, 0], "viewZoom": 1.0}, "params": [{"parameters": [{"value": "/ledstrip/set", "controlAddress": "/address"}, {"value": true, "minValue": 0, "maxValue": 1, "default": true, "controlAddress": "/editable", "type": "Boolean", "niceName": "Editable", "customizable": false, "removable": false, "description": "If enabled, the parameter will be editable when instantiating this template", "hideInEditor": false, "feedbackOnly": false}], "niceName": "Address"}]}, {"niceName": "tricolore", "editorIsCollapsed": true, "type": "CommandTemplate", "menuPath": "Lumi\u00e8res", "commandType": "Feu Tricolore", "params": [{"parameters": [{"value": true, "controlAddress": "/rouge"}, {"value": true, "minValue": 0, "maxValue": 1, "default": true, "controlAddress": "/editable", "type": "Boolean", "niceName": "Editable", "customizable": false, "removable": false, "description": "If enabled, the parameter will be editable when instantiating this template", "hideInEditor": false, "feedbackOnly": false}], "niceName": "Rouge"}, {"parameters": [{"value": true, "controlAddress": "/jaune"}, {"value": true, "minValue": 0, "maxValue": 1, "default": true, "controlAddress": "/editable", "type": "Boolean", "niceName": "Editable", "customizable": false, "removable": false, "description": "If enabled, the parameter will be editable when instantiating this template", "hideInEditor": false, "feedbackOnly": false}], "niceName": "Jaune"}, {"parameters": [{"value": true, "controlAddress": "/vert"}, {"value": true, "minValue": 0, "maxValue": 1, "default": true, "controlAddress": "/editable", "type": "Boolean", "niceName": "Editable", "customizable": false, "removable": false, "description": "If enabled, the parameter will be editable when instantiating this template", "hideInEditor": false, "feedbackOnly": false}], "niceName": "Vert"}]}], "viewOffset": [0, 0], "viewZoom": 1.0}, "values": {"containers": {"houdini_alpha": {"parameters": [{"value": "192.168.0.107", "controlAddress": "/ip", "type": "String", "niceName": "ip", "customizable": true, "removable": true, "description": "", "hideInEditor": false, "feedbackOnly": false, "shortName": "ip"}, {"controlAddress": "/ping", "type": "Trigger", "niceName": "ping", "customizable": true, "removable": true, "description": "", "hideInEditor": false, "feedbackOnly": false, "shortName": "ping"}, {"value": 12345, "hexMode": false, "controlAddress": "/port", "type": "Integer", "niceName": "port", "customizable": true, "removable": true, "description": "", "hideInEditor": false, "feedbackOnly": false, "shortName": "port"}], "removable": true, "includeTriggers": true, "owned": true, "niceName": "houdini_alpha"}, "houdini_omega": {"parameters": [{"value": "192.168.0.245", "controlAddress": "/ip", "type": "String", "niceName": "ip", "customizable": true, "removable": true, "description": "", "hideInEditor": false, "feedbackOnly": false, "shortName": "ip"}, {"controlAddress": "/ping", "type": "Trigger", "niceName": "ping", "customizable": true, "removable": true, "description": "", "hideInEditor": false, "feedbackOnly": false, "shortName": "ping"}, {"value": 12345, "hexMode": false, "controlAddress": "/port", "type": "Integer", "niceName": "port", "customizable": true, "removable": true, "description": "", "hideInEditor": false, "feedbackOnly": false, "shortName": "port"}], "removable": true, "includeTriggers": true, "owned": true, "niceName": "houdini_omega"}}}}, {"niceName": "OSC", "type": "OSC", "scripts": {"viewOffset": [0, 0], "viewZoom": 1.0}, "params": {"containers": {"oscInput": {}, "oscOutputs": {"items": [{"parameters": [{"value": false, "controlAddress": "/local"}, {"value": "127.0.0.1", "controlAddress": "/remoteHost"}, {"value": 12000, "hexMode": false, "controlAddress": "/remotePort"}], "niceName": "OSC Output", "type": "BaseItem"}], "viewOffset": [0, 0], "viewZoom": 1.0}, "pass_through": {}}}, "templates": {"items": [{"niceName": "Custom Message", "type": "CommandTemplate", "menuPath": "", "commandType": "Custom Message", "customValues": {"viewOffset": [0, 0], "viewZoom": 1.0}, "params": [{"parameters": [{"value": "/yo", "controlAddress": "/address"}, {"value": true, "minValue": 0, "maxValue": 1, "default": true, "controlAddress": "/editable", "type": "Boolean", "niceName": "Editable", "customizable": false, "removable": false, "description": "If enabled, the parameter will be editable when instantiating this template", "hideInEditor": false, "feedbackOnly": false}], "niceName": "Address"}]}], "viewOffset": [0, 0], "viewZoom": 1.0}, "values": {"parameters": [{"controlAddress": "/_example", "type": "Trigger", "niceName": "/example", "customizable": true, "removable": true, "description": "", "hideInEditor": false, "feedbackOnly": false, "shortName": "_example"}]}}, {"parameters": [{"value": true, "controlAddress": "/logOutgoing"}], "niceName": "Frigo", "type": "Frigo", "scripts": {"items": [{"niceName": "frigo", "type": "BaseItem", "scriptParams": {"hideInEditor": true}}], "viewOffset": [0, 0], "viewZoom": 1.0}, "params": {"parameters": [{"value": true, "controlAddress": "/autoAdd"}, {"value": true, "controlAddress": "/useHierarchy"}], "containers": {"oscInput": {"parameters": [{"value": 12346, "hexMode": false, "controlAddress": "/localPort"}]}, "oscOutputs": {"items": [{"parameters": [{"value": false, "controlAddress": "/local"}, {"value": "192.168.0.189", "controlAddress": "/remoteHost"}, {"value": 12346, "hexMode": false, "controlAddress": "/remotePort"}], "niceName": "OSC Output", "type": "BaseItem"}], "viewOffset": [0, 0], "viewZoom": 1.0}, "pass_through": {"hideInEditor": true}}}, "templates": {"viewOffset": [0, 0], "viewZoom": 1.0}, "values": {"containers": {"frigo": {"parameters": [{"value": "192.168.0.189", "controlAddress": "/ip", "type": "String", "niceName": "ip", "customizable": true, "removable": true, "description": "", "hideInEditor": false, "feedbackOnly": false, "shortName": "ip"}, {"controlAddress": "/ping", "type": "Trigger", "niceName": "ping", "customizable": true, "removable": true, "description": "", "hideInEditor": false, "feedbackOnly": false, "shortName": "ping"}, {"value": 12346, "hexMode": false, "controlAddress": "/port", "type": "Integer", "niceName": "port", "customizable": true, "removable": true, "description": "", "hideInEditor": false, "feedbackOnly": false, "shortName": "port"}], "removable": true, "includeTriggers": true, "owned": true, "niceName": "frigo"}}}}], "viewOffset": [0, 0], "viewZoom": 1.0}, "customVariables": {"viewOffset": [0, 0], "viewZoom": 1.0}, "states": {"viewOffset": [0, 0], "viewZoom": 1.0, "transitions": {"hideInEditor": true, "viewOffset": [0, 0], "viewZoom": 1.0}, "comments": {"hideInEditor": true, "viewOffset": [0, 0], "viewZoom": 1.0}}, "sequences": {"items": [{"parameters": [{"value": 3.0, "controlAddress": "/totalTime"}, {"value": 5.0, "controlAddress": "/playSpeed"}, {"value": true, "controlAddress": "/loop"}, {"value": 3.0, "controlAddress": "/viewEndTime"}, {"value": "", "controlAddress": "/ltcSyncModule", "enabled": false}], "niceName": "Sequence", "type": "Sequence", "layers": {"hideInEditor": true, "items": [{"parameters": [{"value": 120.0, "controlAddress": "/listSize"}, {"value": 120, "hexMode": false, "controlAddress": "/uiHeight"}], "niceName": "Mapping", "containers": {"automation": {"parameters": [{"value": 3.0, "controlAddress": "/length"}, {"value": 2.900000095367432, "controlAddress": "/position"}, {"value": [0.0, 1.0], "controlAddress": "/viewValueRange"}, {"value": [0.0, 1.0], "controlAddress": "/range", "enabled": true}], "hideInEditor": true, "hideInRemoteControl": false, "items": [{"parameters": [{"value": 0.08999999612569809, "controlAddress": "/position"}, {"value": 0.01666665077209473, "controlAddress": "/value"}, {"value": "Bezier", "controlAddress": "/easingType"}], "niceName": "Key 1", "containers": {"easing": {"parameters": [{"value": [0.1080000102519989, 0.0], "controlAddress": "/anchor1"}, {"value": [-0.1080000102519989, 0.0], "controlAddress": "/anchor2"}]}}, "type": "Key"}, {"parameters": [{"value": 0.3279904723167419, "controlAddress": "/position"}, {"value": 0.9666666984558105, "controlAddress": "/value"}, {"value": "Bezier", "controlAddress": "/easingType"}], "niceName": "Key", "containers": {"easing": {"parameters": [{"value": [0.02399998717010021, 0.0], "controlAddress": "/anchor1"}, {"value": [-0.02399998717010021, 0.0], "controlAddress": "/anchor2"}]}}, "type": "Key"}, {"parameters": [{"value": 0.7883731722831726, "controlAddress": "/position"}, {"value": 0.05000001192092896, "controlAddress": "/value"}, {"value": "Bezier", "controlAddress": "/easingType"}], "niceName": "Key 2", "containers": {"easing": {"parameters": [{"value": [0.1980000287294388, 0.0], "controlAddress": "/anchor1"}, {"value": [-0.1980000287294388, 0.0], "controlAddress": "/anchor2"}]}}, "type": "Key"}, {"parameters": [{"value": 1.039282321929932, "controlAddress": "/position"}, {"value": 0.04166668653488159, "controlAddress": "/value"}, {"value": "Bezier", "controlAddress": "/easingType"}], "niceName": "Key 3", "containers": {"easing": {"parameters": [{"value": [0.01799998432397842, 0.0], "controlAddress": "/anchor1"}, {"value": [-0.01799998432397842, 0.0], "controlAddress": "/anchor2"}]}}, "type": "Key"}, {"parameters": [{"value": 1.293062210083008, "controlAddress": "/position"}, {"value": 1.0, "controlAddress": "/value"}, {"value": "Bezier", "controlAddress": "/easingType"}], "niceName": "Key 4", "containers": {"easing": {"parameters": [{"value": [0.04499999433755875, 0.0], "controlAddress": "/anchor1"}, {"value": [-0.04499999433755875, 0.0], "controlAddress": "/anchor2"}]}}, "type": "Key"}, {"parameters": [{"value": 1.816267967224121, "controlAddress": "/position"}, {"value": 0.07499998807907104, "controlAddress": "/value"}, {"value": "Bezier", "controlAddress": "/easingType"}], "niceName": "Key 5", "containers": {"easing": {"parameters": [{"value": [0.06373202800750732, 0.0], "controlAddress": "/anchor1"}, {"value": [-0.06373202800750732, 0.0], "controlAddress": "/anchor2"}]}}, "type": "Key"}, {"parameters": [{"value": 1.879999995231628, "controlAddress": "/position"}, {"value": 0.06666666269302368, "controlAddress": "/value"}, {"value": "Bezier", "controlAddress": "/easingType"}], "niceName": "Key 6", "containers": {"easing": {"parameters": [{"value": [0.06899997591972351, 0.0], "controlAddress": "/anchor1"}, {"value": [-0.06899997591972351, 0.0], "controlAddress": "/anchor2"}]}}, "type": "Key"}, {"parameters": [{"value": 2.217655420303345, "controlAddress": "/position"}, {"value": 1.0, "controlAddress": "/value"}, {"value": "Bezier", "controlAddress": "/easingType"}], "niceName": "Key 7", "containers": {"easing": {"parameters": [{"value": [0.03600003942847252, 0.0], "controlAddress": "/anchor1"}, {"value": [-0.03600003942847252, 0.0], "controlAddress": "/anchor2"}]}}, "type": "Key"}, {"parameters": [{"value": 2.904641151428223, "controlAddress": "/position"}, {"value": 0.04166662693023682, "controlAddress": "/value"}, {"value": "Bezier", "controlAddress": "/easingType"}], "niceName": "Key 8", "containers": {"easing": {}}, "type": "Key"}], "viewOffset": [0, 0], "viewZoom": 1.0}, "recorder": {"parameters": [{"value": "", "controlAddress": "/inputValue"}], "editorIsCollapsed": true}, "mapping": {"niceName": "Mapping", "type": "Mapping", "im": {"hideInEditor": true, "items": [{"parameters": [{"value": "", "controlAddress": "/inputValue"}], "niceName": "Input Value", "type": "Input Value"}], "viewOffset": [0, 0], "viewZoom": 1.0}, "params": {"parameters": [{"value": 50, "hexMode": false, "controlAddress": "/updateRate"}], "editorIsCollapsed": true}, "filters": {"viewOffset": [0, 0], "viewZoom": 1.0}, "outputs": {"items": [{"niceName": "MappingOutput", "type": "BaseItem", "commandModule": "houdini", "commandPath": "Moteurs", "commandType": "Sourcils", "command": {"parameters": [{"value": "les deux", "controlAddress": "/moteur"}], "paramLinks": {"position": {"linkType": 1, "mappingValueIndex": 0}}}}], "viewOffset": [0, 0], "viewZoom": 1.0}}}, "type": "Mapping"}], "viewOffset": [0, 0], "viewZoom": 1.0}, "cues": {"hideInEditor": true, "viewOffset": [0, 0], "viewZoom": 1.0}, "editing": true}], "viewOffset": [0, 0], "viewZoom": 1.0}, "routers": {"viewOffset": [0, 0], "viewZoom": 1.0}}
+{
+  "metaData": {
+    "version": "1.9.25b13",
+    "versionNumber": 67865
+  },
+  "projectSettings": {
+    "containers": {
+      "dashboardSettings": {
+        "parameters": [
+          {
+            "value": "",
+            "controlAddress": "/showDashboardOnStartup",
+            "enabled": false
+          }
+        ]
+      },
+      "customDefinitions": {
+      }
+    }
+  },
+  "dashboardManager": {
+    "viewOffset": [
+      0,
+      0
+    ],
+    "viewZoom": 1.0
+  },
+  "parrots": {
+    "viewOffset": [
+      0,
+      0
+    ],
+    "viewZoom": 1.0
+  },
+  "layout": {
+    "mainLayout": {
+      "type": 1,
+      "width": 1920,
+      "height": 989,
+      "direction": 2,
+      "shifters": [
+        {
+          "type": 1,
+          "width": 1920,
+          "height": 989,
+          "direction": 2,
+          "shifters": [
+            {
+              "type": 1,
+              "width": 1920,
+              "height": 702,
+              "direction": 1,
+              "shifters": [
+                {
+                  "type": 0,
+                  "width": 576,
+                  "height": 702,
+                  "currentContent": "Modules",
+                  "tabs": [
+                    {
+                      "name": "Modules"
+                    }
+                  ]
+                },
+                {
+                  "type": 0,
+                  "width": 755,
+                  "height": 702,
+                  "currentContent": "Logger",
+                  "tabs": [
+                    {
+                      "name": "State Machine"
+                    },
+                    {
+                      "name": "Dashboard"
+                    },
+                    {
+                      "name": "Module Router"
+                    },
+                    {
+                      "name": "Morpher"
+                    },
+                    {
+                      "name": "Logger"
+                    }
+                  ]
+                },
+                {
+                  "type": 0,
+                  "width": 575,
+                  "height": 702,
+                  "currentContent": "Inspector",
+                  "tabs": [
+                    {
+                      "name": "Inspector"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": 1,
+              "width": 1920,
+              "height": 281,
+              "direction": 1,
+              "shifters": [
+                {
+                  "type": 0,
+                  "width": 178,
+                  "height": 281,
+                  "currentContent": "Sequences",
+                  "tabs": [
+                    {
+                      "name": "Sequences"
+                    }
+                  ]
+                },
+                {
+                  "type": 0,
+                  "width": 1316,
+                  "height": 281,
+                  "currentContent": "Sequence Editor",
+                  "tabs": [
+                    {
+                      "name": "Sequence Editor"
+                    }
+                  ]
+                },
+                {
+                  "type": 0,
+                  "width": 414,
+                  "height": 281,
+                  "currentContent": "Help",
+                  "tabs": [
+                    {
+                      "name": "Help"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "windows": null
+  },
+  "modules": {
+    "items": [
+      {
+        "parameters": [
+          {
+            "value": true,
+            "controlAddress": "/logOutgoing"
+          }
+        ],
+        "niceName": "Houdini",
+        "type": "Houdini",
+        "scripts": {
+          "editorIsCollapsed": true,
+          "items": [
+            {
+              "parameters": [
+                {
+                  "value": true,
+                  "controlAddress": "/enableLog"
+                }
+              ],
+              "niceName": "houdini",
+              "type": "BaseItem",
+              "scriptParams": {
+                "hideInEditor": true
+              }
+            }
+          ],
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "params": {
+          "parameters": [
+            {
+              "value": true,
+              "controlAddress": "/autoAdd"
+            },
+            {
+              "value": true,
+              "controlAddress": "/useHierarchy"
+            }
+          ],
+          "containers": {
+            "oscInput": {
+              "parameters": [
+                {
+                  "value": 12345,
+                  "hexMode": false,
+                  "controlAddress": "/localPort"
+                }
+              ]
+            },
+            "oscOutputs": {
+              "items": [
+                {
+                  "parameters": [
+                    {
+                      "value": false,
+                      "controlAddress": "/local"
+                    },
+                    {
+                      "value": "192.168.0.107",
+                      "controlAddress": "/remoteHost"
+                    },
+                    {
+                      "value": 12345,
+                      "hexMode": false,
+                      "controlAddress": "/remotePort"
+                    }
+                  ],
+                  "niceName": "Alpha",
+                  "editorIsCollapsed": true,
+                  "type": "BaseItem"
+                },
+                {
+                  "parameters": [
+                    {
+                      "value": false,
+                      "controlAddress": "/local"
+                    },
+                    {
+                      "value": "192.168.0.245",
+                      "controlAddress": "/remoteHost"
+                    },
+                    {
+                      "value": 12345,
+                      "hexMode": false,
+                      "controlAddress": "/remotePort"
+                    }
+                  ],
+                  "niceName": "Omega",
+                  "type": "BaseItem"
+                }
+              ],
+              "viewOffset": [
+                0,
+                0
+              ],
+              "viewZoom": 1.0
+            },
+            "pass_through": {
+              "hideInEditor": true
+            }
+          }
+        },
+        "templates": {
+          "items": [
+            {
+              "niceName": "yo",
+              "editorIsCollapsed": true,
+              "type": "CommandTemplate",
+              "menuPath": "",
+              "commandType": "Custom Message",
+              "customValues": {
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "params": [
+                {
+                  "parameters": [
+                    {
+                      "value": "/yo",
+                      "controlAddress": "/address"
+                    },
+                    {
+                      "value": true,
+                      "minValue": 0,
+                      "maxValue": 1,
+                      "default": true,
+                      "controlAddress": "/editable",
+                      "type": "Boolean",
+                      "niceName": "Editable",
+                      "customizable": false,
+                      "removable": false,
+                      "description": "If enabled, the parameter will be editable when instantiating this template",
+                      "hideInEditor": false,
+                      "feedbackOnly": false
+                    }
+                  ],
+                  "niceName": "Address"
+                }
+              ]
+            },
+            {
+              "niceName": "gpio output",
+              "editorIsCollapsed": true,
+              "type": "CommandTemplate",
+              "menuPath": "",
+              "commandType": "Custom Message",
+              "customValues": {
+                "items": [
+                  {
+                    "parameters": [
+                      {
+                        "value": 5,
+                        "hexMode": false,
+                        "controlAddress": "/#1",
+                        "type": "Integer",
+                        "niceName": "#1",
+                        "customizable": true,
+                        "removable": false,
+                        "description": "Argument #1, type int",
+                        "hideInEditor": true,
+                        "feedbackOnly": false
+                      }
+                    ],
+                    "niceName": "#1",
+                    "type": "Integer",
+                    "param": {
+                      "value": 5,
+                      "hexMode": false,
+                      "controlAddress": "/modules/houdini/templates/gpioOutput/arguments/#1/#1",
+                      "type": "Integer",
+                      "niceName": "#1",
+                      "customizable": true,
+                      "removable": false,
+                      "description": "Argument #1, type int",
+                      "hideInEditor": true,
+                      "feedbackOnly": false
+                    }
+                  },
+                  {
+                    "parameters": [
+                      {
+                        "value": 1,
+                        "hexMode": false,
+                        "controlAddress": "/#2",
+                        "type": "Integer",
+                        "niceName": "#2",
+                        "customizable": true,
+                        "removable": false,
+                        "description": "Argument #2, type int",
+                        "hideInEditor": true,
+                        "feedbackOnly": false
+                      }
+                    ],
+                    "niceName": "#2",
+                    "type": "Integer",
+                    "param": {
+                      "value": 1,
+                      "hexMode": false,
+                      "controlAddress": "/modules/houdini/templates/gpioOutput/arguments/#2/#2",
+                      "type": "Integer",
+                      "niceName": "#2",
+                      "customizable": true,
+                      "removable": false,
+                      "description": "Argument #2, type int",
+                      "hideInEditor": true,
+                      "feedbackOnly": false
+                    }
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "params": [
+                {
+                  "parameters": [
+                    {
+                      "value": "/gpio/output",
+                      "controlAddress": "/address"
+                    },
+                    {
+                      "value": true,
+                      "minValue": 0,
+                      "maxValue": 1,
+                      "default": true,
+                      "controlAddress": "/editable",
+                      "type": "Boolean",
+                      "niceName": "Editable",
+                      "customizable": false,
+                      "removable": false,
+                      "description": "If enabled, the parameter will be editable when instantiating this template",
+                      "hideInEditor": false,
+                      "feedbackOnly": false
+                    }
+                  ],
+                  "niceName": "Address"
+                }
+              ]
+            },
+            {
+              "niceName": "ledstrip",
+              "editorIsCollapsed": true,
+              "type": "CommandTemplate",
+              "menuPath": "",
+              "commandType": "Custom Message",
+              "customValues": {
+                "items": [
+                  {
+                    "parameters": [
+                      {
+                        "value": 1,
+                        "hexMode": false,
+                        "controlAddress": "/#1",
+                        "type": "Integer",
+                        "niceName": "#1",
+                        "customizable": true,
+                        "removable": false,
+                        "description": "Argument #1, type int",
+                        "hideInEditor": true,
+                        "feedbackOnly": false
+                      }
+                    ],
+                    "niceName": "#1",
+                    "type": "Integer",
+                    "param": {
+                      "value": 1,
+                      "hexMode": false,
+                      "controlAddress": "/modules/houdini/templates/ledstrip/arguments/#1/#1",
+                      "type": "Integer",
+                      "niceName": "#1",
+                      "customizable": true,
+                      "removable": false,
+                      "description": "Argument #1, type int",
+                      "hideInEditor": true,
+                      "feedbackOnly": false
+                    }
+                  },
+                  {
+                    "parameters": [
+                      {
+                        "value": 0,
+                        "hexMode": false,
+                        "controlAddress": "/#2",
+                        "type": "Integer",
+                        "niceName": "#2",
+                        "customizable": true,
+                        "removable": false,
+                        "description": "Argument #2, type int",
+                        "hideInEditor": true,
+                        "feedbackOnly": false
+                      }
+                    ],
+                    "niceName": "#2",
+                    "type": "Integer",
+                    "param": {
+                      "value": 0,
+                      "hexMode": false,
+                      "controlAddress": "/modules/houdini/templates/ledstrip/arguments/#2/#2",
+                      "type": "Integer",
+                      "niceName": "#2",
+                      "customizable": true,
+                      "removable": false,
+                      "description": "Argument #2, type int",
+                      "hideInEditor": true,
+                      "feedbackOnly": false
+                    }
+                  },
+                  {
+                    "parameters": [
+                      {
+                        "value": [
+                          0.220474511384964,
+                          0.8307685852050781,
+                          0.6343215703964233,
+                          1.0
+                        ],
+                        "controlAddress": "/#3",
+                        "type": "Color",
+                        "niceName": "#3",
+                        "customizable": true,
+                        "removable": false,
+                        "description": "Argument #3, type color",
+                        "hideInEditor": true,
+                        "feedbackOnly": false
+                      }
+                    ],
+                    "niceName": "#3",
+                    "type": "Color",
+                    "param": {
+                      "value": [
+                        0.220474511384964,
+                        0.8307685852050781,
+                        0.6343215703964233,
+                        1.0
+                      ],
+                      "controlAddress": "/modules/houdini/templates/ledstrip/arguments/#3/#3",
+                      "type": "Color",
+                      "niceName": "#3",
+                      "customizable": true,
+                      "removable": false,
+                      "description": "Argument #3, type color",
+                      "hideInEditor": true,
+                      "feedbackOnly": false
+                    }
+                  },
+                  {
+                    "parameters": [
+                      {
+                        "value": 0.5,
+                        "controlAddress": "/#4",
+                        "type": "Float",
+                        "niceName": "#4",
+                        "customizable": true,
+                        "removable": false,
+                        "description": "Argument #4, type float",
+                        "hideInEditor": true,
+                        "feedbackOnly": false
+                      }
+                    ],
+                    "niceName": "#4",
+                    "type": "Float",
+                    "param": {
+                      "value": 0.5,
+                      "controlAddress": "/modules/houdini/templates/ledstrip/arguments/#4/#4",
+                      "type": "Float",
+                      "niceName": "#4",
+                      "customizable": true,
+                      "removable": false,
+                      "description": "Argument #4, type float",
+                      "hideInEditor": true,
+                      "feedbackOnly": false
+                    }
+                  },
+                  {
+                    "parameters": [
+                      {
+                        "value": 0.5,
+                        "controlAddress": "/#5",
+                        "type": "Float",
+                        "niceName": "#5",
+                        "customizable": true,
+                        "removable": false,
+                        "description": "Argument #5, type float",
+                        "hideInEditor": true,
+                        "feedbackOnly": false
+                      }
+                    ],
+                    "niceName": "#5",
+                    "type": "Float",
+                    "param": {
+                      "value": 0.5,
+                      "controlAddress": "/modules/houdini/templates/ledstrip/arguments/#5/#5",
+                      "type": "Float",
+                      "niceName": "#5",
+                      "customizable": true,
+                      "removable": false,
+                      "description": "Argument #5, type float",
+                      "hideInEditor": true,
+                      "feedbackOnly": false
+                    }
+                  }
+                ],
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "params": [
+                {
+                  "parameters": [
+                    {
+                      "value": "/ledstrip/set",
+                      "controlAddress": "/address"
+                    },
+                    {
+                      "value": true,
+                      "minValue": 0,
+                      "maxValue": 1,
+                      "default": true,
+                      "controlAddress": "/editable",
+                      "type": "Boolean",
+                      "niceName": "Editable",
+                      "customizable": false,
+                      "removable": false,
+                      "description": "If enabled, the parameter will be editable when instantiating this template",
+                      "hideInEditor": false,
+                      "feedbackOnly": false
+                    }
+                  ],
+                  "niceName": "Address"
+                }
+              ]
+            },
+            {
+              "niceName": "tricolore",
+              "editorIsCollapsed": true,
+              "type": "CommandTemplate",
+              "menuPath": "Lumi\u00e8res",
+              "commandType": "Feu Tricolore",
+              "params": [
+                {
+                  "parameters": [
+                    {
+                      "value": true,
+                      "controlAddress": "/rouge"
+                    },
+                    {
+                      "value": true,
+                      "minValue": 0,
+                      "maxValue": 1,
+                      "default": true,
+                      "controlAddress": "/editable",
+                      "type": "Boolean",
+                      "niceName": "Editable",
+                      "customizable": false,
+                      "removable": false,
+                      "description": "If enabled, the parameter will be editable when instantiating this template",
+                      "hideInEditor": false,
+                      "feedbackOnly": false
+                    }
+                  ],
+                  "niceName": "Rouge"
+                },
+                {
+                  "parameters": [
+                    {
+                      "value": true,
+                      "controlAddress": "/jaune"
+                    },
+                    {
+                      "value": true,
+                      "minValue": 0,
+                      "maxValue": 1,
+                      "default": true,
+                      "controlAddress": "/editable",
+                      "type": "Boolean",
+                      "niceName": "Editable",
+                      "customizable": false,
+                      "removable": false,
+                      "description": "If enabled, the parameter will be editable when instantiating this template",
+                      "hideInEditor": false,
+                      "feedbackOnly": false
+                    }
+                  ],
+                  "niceName": "Jaune"
+                },
+                {
+                  "parameters": [
+                    {
+                      "value": true,
+                      "controlAddress": "/vert"
+                    },
+                    {
+                      "value": true,
+                      "minValue": 0,
+                      "maxValue": 1,
+                      "default": true,
+                      "controlAddress": "/editable",
+                      "type": "Boolean",
+                      "niceName": "Editable",
+                      "customizable": false,
+                      "removable": false,
+                      "description": "If enabled, the parameter will be editable when instantiating this template",
+                      "hideInEditor": false,
+                      "feedbackOnly": false
+                    }
+                  ],
+                  "niceName": "Vert"
+                }
+              ]
+            }
+          ],
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "values": {
+          "containers": {
+            "houdini_alpha": {
+              "parameters": [
+                {
+                  "value": "192.168.0.107",
+                  "controlAddress": "/ip",
+                  "type": "String",
+                  "niceName": "ip",
+                  "customizable": true,
+                  "removable": true,
+                  "description": "",
+                  "hideInEditor": false,
+                  "feedbackOnly": false,
+                  "shortName": "ip"
+                },
+                {
+                  "controlAddress": "/ping",
+                  "type": "Trigger",
+                  "niceName": "ping",
+                  "customizable": true,
+                  "removable": true,
+                  "description": "",
+                  "hideInEditor": false,
+                  "feedbackOnly": false,
+                  "shortName": "ping"
+                },
+                {
+                  "value": 12345,
+                  "hexMode": false,
+                  "controlAddress": "/port",
+                  "type": "Integer",
+                  "niceName": "port",
+                  "customizable": true,
+                  "removable": true,
+                  "description": "",
+                  "hideInEditor": false,
+                  "feedbackOnly": false,
+                  "shortName": "port"
+                }
+              ],
+              "removable": true,
+              "includeTriggers": true,
+              "owned": true,
+              "niceName": "houdini_alpha"
+            },
+            "houdini_omega": {
+              "parameters": [
+                {
+                  "value": "192.168.0.245",
+                  "controlAddress": "/ip",
+                  "type": "String",
+                  "niceName": "ip",
+                  "customizable": true,
+                  "removable": true,
+                  "description": "",
+                  "hideInEditor": false,
+                  "feedbackOnly": false,
+                  "shortName": "ip"
+                },
+                {
+                  "controlAddress": "/ping",
+                  "type": "Trigger",
+                  "niceName": "ping",
+                  "customizable": true,
+                  "removable": true,
+                  "description": "",
+                  "hideInEditor": false,
+                  "feedbackOnly": false,
+                  "shortName": "ping"
+                },
+                {
+                  "value": 12345,
+                  "hexMode": false,
+                  "controlAddress": "/port",
+                  "type": "Integer",
+                  "niceName": "port",
+                  "customizable": true,
+                  "removable": true,
+                  "description": "",
+                  "hideInEditor": false,
+                  "feedbackOnly": false,
+                  "shortName": "port"
+                }
+              ],
+              "removable": true,
+              "includeTriggers": true,
+              "owned": true,
+              "niceName": "houdini_omega"
+            }
+          }
+        }
+      },
+      {
+        "niceName": "OSC",
+        "type": "OSC",
+        "scripts": {
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "params": {
+          "containers": {
+            "oscInput": {
+            },
+            "oscOutputs": {
+              "items": [
+                {
+                  "parameters": [
+                    {
+                      "value": false,
+                      "controlAddress": "/local"
+                    },
+                    {
+                      "value": "127.0.0.1",
+                      "controlAddress": "/remoteHost"
+                    },
+                    {
+                      "value": 12000,
+                      "hexMode": false,
+                      "controlAddress": "/remotePort"
+                    }
+                  ],
+                  "niceName": "OSC Output",
+                  "type": "BaseItem"
+                }
+              ],
+              "viewOffset": [
+                0,
+                0
+              ],
+              "viewZoom": 1.0
+            },
+            "pass_through": {
+            }
+          }
+        },
+        "templates": {
+          "items": [
+            {
+              "niceName": "Custom Message",
+              "type": "CommandTemplate",
+              "menuPath": "",
+              "commandType": "Custom Message",
+              "customValues": {
+                "viewOffset": [
+                  0,
+                  0
+                ],
+                "viewZoom": 1.0
+              },
+              "params": [
+                {
+                  "parameters": [
+                    {
+                      "value": "/yo",
+                      "controlAddress": "/address"
+                    },
+                    {
+                      "value": true,
+                      "minValue": 0,
+                      "maxValue": 1,
+                      "default": true,
+                      "controlAddress": "/editable",
+                      "type": "Boolean",
+                      "niceName": "Editable",
+                      "customizable": false,
+                      "removable": false,
+                      "description": "If enabled, the parameter will be editable when instantiating this template",
+                      "hideInEditor": false,
+                      "feedbackOnly": false
+                    }
+                  ],
+                  "niceName": "Address"
+                }
+              ]
+            }
+          ],
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "values": {
+          "parameters": [
+            {
+              "controlAddress": "/_example",
+              "type": "Trigger",
+              "niceName": "/example",
+              "customizable": true,
+              "removable": true,
+              "description": "",
+              "hideInEditor": false,
+              "feedbackOnly": false,
+              "shortName": "_example"
+            }
+          ]
+        }
+      },
+      {
+        "parameters": [
+          {
+            "value": true,
+            "controlAddress": "/logOutgoing"
+          }
+        ],
+        "niceName": "Frigo",
+        "type": "Frigo",
+        "scripts": {
+          "items": [
+            {
+              "niceName": "frigo",
+              "type": "BaseItem",
+              "scriptParams": {
+                "hideInEditor": true
+              }
+            }
+          ],
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "params": {
+          "parameters": [
+            {
+              "value": true,
+              "controlAddress": "/autoAdd"
+            },
+            {
+              "value": true,
+              "controlAddress": "/useHierarchy"
+            }
+          ],
+          "containers": {
+            "oscInput": {
+              "parameters": [
+                {
+                  "value": 12346,
+                  "hexMode": false,
+                  "controlAddress": "/localPort"
+                }
+              ]
+            },
+            "oscOutputs": {
+              "items": [
+                {
+                  "parameters": [
+                    {
+                      "value": false,
+                      "controlAddress": "/local"
+                    },
+                    {
+                      "value": "192.168.137.84",
+                      "controlAddress": "/remoteHost"
+                    },
+                    {
+                      "value": 12345,
+                      "hexMode": false,
+                      "controlAddress": "/remotePort"
+                    }
+                  ],
+                  "niceName": "OSC Output",
+                  "type": "BaseItem"
+                }
+              ],
+              "viewOffset": [
+                0,
+                0
+              ],
+              "viewZoom": 1.0
+            },
+            "pass_through": {
+              "hideInEditor": true
+            }
+          }
+        },
+        "templates": {
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "values": {
+        }
+      }
+    ],
+    "viewOffset": [
+      0,
+      0
+    ],
+    "viewZoom": 1.0
+  },
+  "customVariables": {
+    "viewOffset": [
+      0,
+      0
+    ],
+    "viewZoom": 1.0
+  },
+  "states": {
+    "viewOffset": [
+      0,
+      0
+    ],
+    "viewZoom": 1.0,
+    "transitions": {
+      "hideInEditor": true,
+      "viewOffset": [
+        0,
+        0
+      ],
+      "viewZoom": 1.0
+    },
+    "comments": {
+      "hideInEditor": true,
+      "viewOffset": [
+        0,
+        0
+      ],
+      "viewZoom": 1.0
+    }
+  },
+  "sequences": {
+    "items": [
+      {
+        "parameters": [
+          {
+            "value": 3.0,
+            "controlAddress": "/totalTime"
+          },
+          {
+            "value": 5.0,
+            "controlAddress": "/playSpeed"
+          },
+          {
+            "value": true,
+            "controlAddress": "/loop"
+          },
+          {
+            "value": 3.0,
+            "controlAddress": "/viewEndTime"
+          },
+          {
+            "value": "",
+            "controlAddress": "/ltcSyncModule",
+            "enabled": false
+          }
+        ],
+        "niceName": "Sequence",
+        "type": "Sequence",
+        "layers": {
+          "hideInEditor": true,
+          "items": [
+            {
+              "parameters": [
+                {
+                  "value": 120.0,
+                  "controlAddress": "/listSize"
+                },
+                {
+                  "value": 120,
+                  "hexMode": false,
+                  "controlAddress": "/uiHeight"
+                }
+              ],
+              "niceName": "Mapping",
+              "containers": {
+                "automation": {
+                  "parameters": [
+                    {
+                      "value": 3.0,
+                      "controlAddress": "/length"
+                    },
+                    {
+                      "value": 2.900000095367432,
+                      "controlAddress": "/position"
+                    },
+                    {
+                      "value": [
+                        0.0,
+                        1.0
+                      ],
+                      "controlAddress": "/viewValueRange"
+                    },
+                    {
+                      "value": [
+                        0.0,
+                        1.0
+                      ],
+                      "controlAddress": "/range",
+                      "enabled": true
+                    }
+                  ],
+                  "hideInEditor": true,
+                  "hideInRemoteControl": false,
+                  "items": [
+                    {
+                      "parameters": [
+                        {
+                          "value": 0.08999999612569809,
+                          "controlAddress": "/position"
+                        },
+                        {
+                          "value": 0.01666665077209473,
+                          "controlAddress": "/value"
+                        },
+                        {
+                          "value": "Bezier",
+                          "controlAddress": "/easingType"
+                        }
+                      ],
+                      "niceName": "Key 1",
+                      "containers": {
+                        "easing": {
+                          "parameters": [
+                            {
+                              "value": [
+                                0.1080000102519989,
+                                0.0
+                              ],
+                              "controlAddress": "/anchor1"
+                            },
+                            {
+                              "value": [
+                                -0.1080000102519989,
+                                0.0
+                              ],
+                              "controlAddress": "/anchor2"
+                            }
+                          ]
+                        }
+                      },
+                      "type": "Key"
+                    },
+                    {
+                      "parameters": [
+                        {
+                          "value": 0.3279904723167419,
+                          "controlAddress": "/position"
+                        },
+                        {
+                          "value": 0.9666666984558105,
+                          "controlAddress": "/value"
+                        },
+                        {
+                          "value": "Bezier",
+                          "controlAddress": "/easingType"
+                        }
+                      ],
+                      "niceName": "Key",
+                      "containers": {
+                        "easing": {
+                          "parameters": [
+                            {
+                              "value": [
+                                0.02399998717010021,
+                                0.0
+                              ],
+                              "controlAddress": "/anchor1"
+                            },
+                            {
+                              "value": [
+                                -0.02399998717010021,
+                                0.0
+                              ],
+                              "controlAddress": "/anchor2"
+                            }
+                          ]
+                        }
+                      },
+                      "type": "Key"
+                    },
+                    {
+                      "parameters": [
+                        {
+                          "value": 0.7883731722831726,
+                          "controlAddress": "/position"
+                        },
+                        {
+                          "value": 0.05000001192092896,
+                          "controlAddress": "/value"
+                        },
+                        {
+                          "value": "Bezier",
+                          "controlAddress": "/easingType"
+                        }
+                      ],
+                      "niceName": "Key 2",
+                      "containers": {
+                        "easing": {
+                          "parameters": [
+                            {
+                              "value": [
+                                0.1980000287294388,
+                                0.0
+                              ],
+                              "controlAddress": "/anchor1"
+                            },
+                            {
+                              "value": [
+                                -0.1980000287294388,
+                                0.0
+                              ],
+                              "controlAddress": "/anchor2"
+                            }
+                          ]
+                        }
+                      },
+                      "type": "Key"
+                    },
+                    {
+                      "parameters": [
+                        {
+                          "value": 1.039282321929932,
+                          "controlAddress": "/position"
+                        },
+                        {
+                          "value": 0.04166668653488159,
+                          "controlAddress": "/value"
+                        },
+                        {
+                          "value": "Bezier",
+                          "controlAddress": "/easingType"
+                        }
+                      ],
+                      "niceName": "Key 3",
+                      "containers": {
+                        "easing": {
+                          "parameters": [
+                            {
+                              "value": [
+                                0.01799998432397842,
+                                0.0
+                              ],
+                              "controlAddress": "/anchor1"
+                            },
+                            {
+                              "value": [
+                                -0.01799998432397842,
+                                0.0
+                              ],
+                              "controlAddress": "/anchor2"
+                            }
+                          ]
+                        }
+                      },
+                      "type": "Key"
+                    },
+                    {
+                      "parameters": [
+                        {
+                          "value": 1.293062210083008,
+                          "controlAddress": "/position"
+                        },
+                        {
+                          "value": 1.0,
+                          "controlAddress": "/value"
+                        },
+                        {
+                          "value": "Bezier",
+                          "controlAddress": "/easingType"
+                        }
+                      ],
+                      "niceName": "Key 4",
+                      "containers": {
+                        "easing": {
+                          "parameters": [
+                            {
+                              "value": [
+                                0.04499999433755875,
+                                0.0
+                              ],
+                              "controlAddress": "/anchor1"
+                            },
+                            {
+                              "value": [
+                                -0.04499999433755875,
+                                0.0
+                              ],
+                              "controlAddress": "/anchor2"
+                            }
+                          ]
+                        }
+                      },
+                      "type": "Key"
+                    },
+                    {
+                      "parameters": [
+                        {
+                          "value": 1.816267967224121,
+                          "controlAddress": "/position"
+                        },
+                        {
+                          "value": 0.07499998807907104,
+                          "controlAddress": "/value"
+                        },
+                        {
+                          "value": "Bezier",
+                          "controlAddress": "/easingType"
+                        }
+                      ],
+                      "niceName": "Key 5",
+                      "containers": {
+                        "easing": {
+                          "parameters": [
+                            {
+                              "value": [
+                                0.06373202800750732,
+                                0.0
+                              ],
+                              "controlAddress": "/anchor1"
+                            },
+                            {
+                              "value": [
+                                -0.06373202800750732,
+                                0.0
+                              ],
+                              "controlAddress": "/anchor2"
+                            }
+                          ]
+                        }
+                      },
+                      "type": "Key"
+                    },
+                    {
+                      "parameters": [
+                        {
+                          "value": 1.879999995231628,
+                          "controlAddress": "/position"
+                        },
+                        {
+                          "value": 0.06666666269302368,
+                          "controlAddress": "/value"
+                        },
+                        {
+                          "value": "Bezier",
+                          "controlAddress": "/easingType"
+                        }
+                      ],
+                      "niceName": "Key 6",
+                      "containers": {
+                        "easing": {
+                          "parameters": [
+                            {
+                              "value": [
+                                0.06899997591972351,
+                                0.0
+                              ],
+                              "controlAddress": "/anchor1"
+                            },
+                            {
+                              "value": [
+                                -0.06899997591972351,
+                                0.0
+                              ],
+                              "controlAddress": "/anchor2"
+                            }
+                          ]
+                        }
+                      },
+                      "type": "Key"
+                    },
+                    {
+                      "parameters": [
+                        {
+                          "value": 2.217655420303345,
+                          "controlAddress": "/position"
+                        },
+                        {
+                          "value": 1.0,
+                          "controlAddress": "/value"
+                        },
+                        {
+                          "value": "Bezier",
+                          "controlAddress": "/easingType"
+                        }
+                      ],
+                      "niceName": "Key 7",
+                      "containers": {
+                        "easing": {
+                          "parameters": [
+                            {
+                              "value": [
+                                0.03600003942847252,
+                                0.0
+                              ],
+                              "controlAddress": "/anchor1"
+                            },
+                            {
+                              "value": [
+                                -0.03600003942847252,
+                                0.0
+                              ],
+                              "controlAddress": "/anchor2"
+                            }
+                          ]
+                        }
+                      },
+                      "type": "Key"
+                    },
+                    {
+                      "parameters": [
+                        {
+                          "value": 2.904641151428223,
+                          "controlAddress": "/position"
+                        },
+                        {
+                          "value": 0.04166662693023682,
+                          "controlAddress": "/value"
+                        },
+                        {
+                          "value": "Bezier",
+                          "controlAddress": "/easingType"
+                        }
+                      ],
+                      "niceName": "Key 8",
+                      "containers": {
+                        "easing": {
+                        }
+                      },
+                      "type": "Key"
+                    }
+                  ],
+                  "viewOffset": [
+                    0,
+                    0
+                  ],
+                  "viewZoom": 1.0
+                },
+                "recorder": {
+                  "parameters": [
+                    {
+                      "value": "",
+                      "controlAddress": "/inputValue"
+                    }
+                  ],
+                  "editorIsCollapsed": true
+                },
+                "mapping": {
+                  "niceName": "Mapping",
+                  "type": "Mapping",
+                  "im": {
+                    "hideInEditor": true,
+                    "items": [
+                      {
+                        "parameters": [
+                          {
+                            "value": "",
+                            "controlAddress": "/inputValue"
+                          }
+                        ],
+                        "niceName": "Input Value",
+                        "type": "Input Value"
+                      }
+                    ],
+                    "viewOffset": [
+                      0,
+                      0
+                    ],
+                    "viewZoom": 1.0
+                  },
+                  "params": {
+                    "parameters": [
+                      {
+                        "value": 50,
+                        "hexMode": false,
+                        "controlAddress": "/updateRate"
+                      }
+                    ],
+                    "editorIsCollapsed": true
+                  },
+                  "filters": {
+                    "viewOffset": [
+                      0,
+                      0
+                    ],
+                    "viewZoom": 1.0
+                  },
+                  "outputs": {
+                    "items": [
+                      {
+                        "niceName": "MappingOutput",
+                        "type": "BaseItem",
+                        "commandModule": "houdini",
+                        "commandPath": "Moteurs",
+                        "commandType": "Sourcils",
+                        "command": {
+                          "parameters": [
+                            {
+                              "value": "les deux",
+                              "controlAddress": "/moteur"
+                            }
+                          ],
+                          "paramLinks": {
+                            "position": {
+                              "linkType": 1,
+                              "mappingValueIndex": 0
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "viewOffset": [
+                      0,
+                      0
+                    ],
+                    "viewZoom": 1.0
+                  }
+                }
+              },
+              "type": "Mapping"
+            }
+          ],
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "cues": {
+          "hideInEditor": true,
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "editing": true
+      }
+    ],
+    "viewOffset": [
+      0,
+      0
+    ],
+    "viewZoom": 1.0
+  },
+  "routers": {
+    "viewOffset": [
+      0,
+      0
+    ],
+    "viewZoom": 1.0
+  }
+}

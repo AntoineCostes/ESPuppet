@@ -69,29 +69,30 @@ void LedModule::clearAll()
         strip->clear();
 }
 
-void LedModule::setPattern(LedPattern pattern, uint8_t r, uint8_t g, uint8_t b, float parameter, float brightness)
+void LedModule::setPattern(LedPattern pattern, uint8_t r, uint8_t g, uint8_t b, float parameter, float speed, float brightness)
 {
     for (int i = 0; i < strips.size(); i++)
-        setPattern(i, pattern, r, g, b, parameter, brightness);
+        setPattern(i, pattern, r, g, b, parameter, speed, brightness);
 }
 
-void LedModule::setPattern(uint8_t index,LedPattern pattern, uint8_t r, uint8_t g, uint8_t b, float parameter, float brightness)
+void LedModule::setPattern(uint8_t index,LedPattern pattern, uint8_t r, uint8_t g, uint8_t b, float parameter, float speed, float brightness)
 {
     if (index < 0 || index >= strips.size())
     {
         err("invalid ledstrip index: "+String(index)+ " while it should be between 0 and "+String(strips.size()));
         return;
     }
-    dbg("set pattern "+String(pattern) +" for strip #"+String(index)+" with param = "+String(parameter)+" and brightness= "+String(brightness));
+    dbg("set pattern "+String(pattern) +" for strip #"+String(index)+" with param = "+String(parameter)+" speed = "+String(speed)+" brightness= "+String(brightness));
     uint32_t color = ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;
-    strips[index]->setPattern(pattern, color, parameter, brightness);
+    strips[index]->setPattern(pattern, color, parameter, speed, brightness);
 }
 
 void LedModule::handleOSCCommand(OSCMessage *command)
 {
     if (command->match("/ledstrip/set"))
     {
-        if (command->size() == 5 || command->size() == 6 || command->size() == 7) // index, mode, r, g, b, (parameter), (brightess)
+        // if (command->size() == 5 || command->size() == 6 || command->size() == 7 || command->size() == 8) // index, mode, r, g, b, (parameter, speed), (brightess)
+        if (command->size() == 8) // index, mode, r, g, b, parameter, speed, brightess
         {
             if (command->isInt(0) && command->getInt(0) >= 0)
             {
@@ -104,25 +105,27 @@ void LedModule::handleOSCCommand(OSCMessage *command)
                     if (command->size() >= 6 && command->isInt(5) && command->getInt(5) == 0) parameter = 0.0f;
                     // if (pattern == LedPattern::BLINK || pattern == LedPattern::OSCILLATOR) parameter *= 10.0f;
 
+                    float speed = 1.0f;
+                    if (command->size() >= 7 && command->isFloat(6)) speed = command->getFloat(6);
+                    if (command->size() >= 7 && command->isInt(6) && command->getInt(6) == 0) speed = 0.0f;
+
                     float brightness = 1.0f;
-                    if (command->size() >= 7 && command->isFloat(6)) brightness = command->getFloat(6);
-                    if (command->size() >= 7 && command->isInt(6) && command->getInt(6) == 0) brightness = 0.0f;
+                    if (command->size() >= 8 && command->isFloat(7)) brightness = command->getFloat(7);
+                    if (command->size() >= 8 && command->isInt(7) && command->getInt(7) == 0) brightness = 0.0f;
 
                     if (command->isInt(2) && command->isInt(3) && command->isInt(4))
                     {
                         uint8_t r = command->getInt(2);
                         uint8_t g = command->getInt(3);
                         uint8_t b = command->getInt(4);
-                        if (command->size() == 7) setPattern(index, pattern, r, g, b, parameter, brightness);
-                        else setPattern(index, pattern, r, g, b, parameter, brightness);
+                        setPattern(index, pattern, r, g, b, parameter, speed, brightness);
                     }
                     else if (command->isFloat(2) && command->isFloat(3) && command->isFloat(4))
                     {
                         uint8_t r = command->getFloat(2)*255;
                         uint8_t g = command->getFloat(3)*255;
                         uint8_t b = command->getFloat(4)*255;
-                        if (command->size() == 7) setPattern(index, pattern, r, g, b, parameter, brightness);
-                        else setPattern(index, pattern, r, g, b, parameter, brightness);
+                        setPattern(index, pattern, r, g, b, parameter, speed, brightness);
                     }
                     else if (command->isDouble(2)) dbg("DOUBLE");
                     else err("args 2, 3, 4 should be int or float");

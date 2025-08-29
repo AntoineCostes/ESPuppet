@@ -18,8 +18,8 @@ public:
     void clear(uint8_t index);
     void clearAll();
 
-    void setPattern(LedPattern pattern, uint8_t r, uint8_t g, uint8_t b, float parameter, float brightness);
-    void setPattern(uint8_t index,LedPattern pattern, uint8_t r, uint8_t g, uint8_t b, float parameter, float brightness);
+    void setPattern(LedPattern pattern, uint8_t r, uint8_t g, uint8_t b, float parameter, float speed, float brightness);
+    void setPattern(uint8_t index,LedPattern pattern, uint8_t r, uint8_t g, uint8_t b, float parameter, float speed, float brightness);
 
 protected:
     std::vector<LedStrip *> strips;

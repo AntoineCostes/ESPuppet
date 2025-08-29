@@ -7,15 +7,18 @@ LedStrip::LedStrip(uint8_t pin, uint8_t numPixels, float brightness, neoPixelTyp
     pattern(RAINBOW),
     patternColor(4278387100),
     parameter(1.0f),
+    speed(1.0f),
     increment(0),
-    refreshTimer(50, true), // 20Hz
-    randomTimer(1000)
+    refreshTimer(50, true) // 20Hz
 {
     strip.begin();
     strip.setBrightness(255);
     this->brightness = min(1.0f, max(0.0f, brightness));
     this->masterBrightness = min(1.0f, max(0.0f, masterBrightness));
     clear(); // TODO clear leds after numPixels ?
+
+    
+    for (int i=0; i<numPixels; i++) noise[i] = random(255);
 
     refreshTimer.setCallback(std::bind(&LedStrip::refresh, this));
     refreshTimer.start();
@@ -24,7 +27,117 @@ LedStrip::LedStrip(uint8_t pin, uint8_t numPixels, float brightness, neoPixelTyp
 void LedStrip::update()
 {
     refreshTimer.update();
-    randomTimer.update();
+    // randomTimer.update();
+}
+
+void LedStrip::clear()
+{
+    memset(pixels, 0, numPixels * sizeof(CRGB));
+    strip.clear();
+    strip.show();
+}
+
+
+void LedStrip::show()
+{
+    for (int i = 0; i < numPixels;i++) strip.setPixelColor(i, 
+        masterBrightness*brightness*Adafruit_NeoPixel::gamma8(pixels[i].r), 
+        masterBrightness*brightness*Adafruit_NeoPixel::gamma8(pixels[i].g), 
+        masterBrightness*brightness*Adafruit_NeoPixel::gamma8(pixels[i].b)
+        );
+    strip.show();
+}
+
+void LedStrip::fill(CRGB color, float multiplier)
+{
+    fill(CRGB(multiplier*color.red, multiplier*color.green, multiplier*color.blue));
+}
+
+void LedStrip::fill(CRGB color)
+{
+    for (int i = 0; i < numPixels;i++) pixels[i] = color;
+}
+
+void LedStrip::setPixel(uint8_t index, CRGB color)
+{
+    pixels[index] = color;
+}
+
+void LedStrip::setPixelWithHueShift(uint8_t index, CRGB color)
+{
+    CHSV hsv = rgb2hsv_approximate(color);
+    hsv.hue += 128;  
+    CRGB opposite = hsv;
+    setPixel(index, opposite);
+}
+
+void LedStrip::setBrightness(float value)
+{
+    // TODO checkrange
+    brightness = min(1.0f, max(0.0f, value));
+}
+
+void LedStrip::setPattern(LedPattern pattern, CRGB patternColor, float parameter, float speed, float brightness)
+{
+    setBrightness(brightness);
+    setPattern(pattern, patternColor, parameter, speed);
+}
+    
+void LedStrip::setPattern(LedPattern pattern, CRGB patternColor, float parameter, float speed)
+{
+    this->pattern = pattern;
+    this->patternColor = patternColor;
+    this->parameter =  min(1.0f, max(0.0f, parameter));;
+    this->speed = min(10.0f, max(0.0f, speed));
+
+    increment = 0;
+    switch (pattern)
+    {
+    case SOLID:
+        fill(patternColor);
+        show();
+        refreshTimer.stop();
+        break;
+        
+    case BLINK:
+        if (speed > 0.0f) 
+        {
+            int period = (int)1000.0/speed;
+            refreshTimer.set(period/2, true);
+            refreshTimer.start();
+        }
+    break;
+        
+    case OSCILLATOR:
+        refreshTimer.set(33, true); // 30Hz
+        refreshTimer.start();
+    break;
+        
+    case CHASE:
+        refreshTimer.set(33, true); // 30Hz
+        refreshTimer.start();
+    break;
+        
+    case RAINBOW:
+        refreshTimer.set(33, true); // 30Hz
+        refreshTimer.start();
+    break;
+        
+    case RANDOM:
+        refreshTimer.set(1000*speed, true);
+        refreshTimer.start();
+    break;
+        
+    case GAUGE:
+        clear();
+        for (int i = 0; i<parameter*numPixels; i++) setPixel(i, patternColor);
+        show();
+        refreshTimer.stop();
+    break;
+    
+    default:
+        break;
+    }
 }
 
 void LedStrip::refresh()
@@ -37,157 +150,38 @@ void LedStrip::refresh()
         break;
         
     case BLINK:
-        value = 1000/ (parameter*10); // period = 1/freq
-        if (millis()%value > value/2)  fill(patternColor);
-        else clear();
+        fill(increment%2==0?patternColor:0);
+        show();
         break;
 
     case OSCILLATOR:
-        fill(patternColor, 0.5*(1+cos(2.0f*3.14f*parameter*millis()/1000.0)));
+        fill(patternColor, 0.5*(1+cos(2.0f*3.14f*speed*millis()/1000.0)));
+        show();
         break;
         
     case CHASE:
-        strip.clear();
-        value = (int)(increment/ (10*parameter*10));
-        for (int c=value%3; c<strip.numPixels(); c += 3) setPixel(c, patternColor); 
-        strip.show();
+        value = (int)(increment *speed/10.0);
+        for (int c=0; c<numPixels; c += parameter*20) setPixel((c+value)%numPixels, patternColor); 
+        // fadeToBlackBy(pixels, numPixels, parameter*100);
+        fadeToBlackBy(pixels, numPixels, 100);
+        show();
     break;
     
     case RAINBOW:
-        value = (int)(increment*256*parameter*10); // firstPixelHue = (increment*256)%(5*65536);
-        strip.rainbow(value%(5*65536), 1, 255, masterBrightness*brightness*255, true);
+        value = -(int)(increment*256*speed*5); // firstPixelHue = (increment*256)%(5*65536);
+        strip.rainbow(value%(5*65536), 1, 255*parameter, masterBrightness*brightness*255, true);
         strip.show();
         break;
     
     case RANDOM:
-        if (!randomTimer.isRunning)
-        {
-            strip.clear();
-            uint8_t red = (patternColor>>16) & 255;
-            uint8_t green = (patternColor>>8) & 255;
-            uint8_t blue = patternColor & 255;
-            for (int i; i<strip.numPixels(); i++) 
-            {
-                float n = (float)inoise8(i, increment)/(float)255;
-                setPixel(i, (uint8_t)(red * n), 
-                            (uint8_t)(green * n), 
-                            (uint8_t)(blue * n)); 
-            }
-            strip.show();
-            
-            randomTimer.set((int)(parameter*1000));
-            randomTimer.start();
-        }
-        break;
-        
-    case BIRANDOM:
-        strip.show();
+        value = random(255); // seed
+        for (int i=0; i<numPixels; i++) noise[(i+value)%255]<(parameter*255)?setPixel(i, patternColor):setPixel(i, 0);
+        // for (int i; i<numPixels; i++) noise[(i+value)%255]<(parameter*255)?setPixel(i, patternColor):setPixelWithHueShift(i, patternColor);
+        show();
         break;
         
     case GAUGE:
-        strip.clear();
-        value = (int) ( parameter*strip.numPixels() );
-        for (int i; i<value; i++) setPixel(i, patternColor);
-        strip.show();
         break;
     }
 
-}
-
-void LedStrip::clear()
-{
-    strip.clear();
-    strip.show();
-}
-
-void LedStrip::fill(uint32_t color)
-{
-    uint8_t red = (color>>16) & 255;
-    uint8_t green = (color>>8) & 255;
-    uint8_t blue = color & 255;
-    fill(red, green, blue);
-}
-
-void LedStrip::fill(uint32_t color, float multiplier)
-{
-    uint8_t red = (color>>16) & 255;
-    uint8_t green = (color>>8) & 255;
-    uint8_t blue = color & 255;
-    fill(multiplier*red, multiplier*green, multiplier*blue);
-}
-
-void LedStrip::setPixel(uint8_t index, uint32_t color)
-{
-    uint8_t red = (color>>16) & 255;
-    uint8_t green = (color>>8) & 255;
-    uint8_t blue = color & 255;
-    setPixel(index, red, green, blue);
-}
-
-void LedStrip::setPixel(uint8_t index, uint8_t r, uint8_t g, uint8_t b)
-{
-    strip.setPixelColor(index, strip.Color(
-        masterBrightness*brightness*Adafruit_NeoPixel::gamma8(r), 
-        masterBrightness*brightness*Adafruit_NeoPixel::gamma8(g), 
-        masterBrightness*brightness*Adafruit_NeoPixel::gamma8(b)
-        ));
-}
-
-void LedStrip::fill(uint8_t r, uint8_t g, uint8_t b)
-{
-    // TODO checkrange ?
-    strip.fill(strip.Color(
-        masterBrightness*brightness*Adafruit_NeoPixel::gamma8(r), 
-        masterBrightness*brightness*Adafruit_NeoPixel::gamma8(g), 
-        masterBrightness*brightness*Adafruit_NeoPixel::gamma8(b)
-        ));
-    strip.show(); 
-}
-
-void LedStrip::setBrightness(float value)
-{
-    // TODO checkrange
-    brightness = min(1.0f, max(0.0f, value));
-}
-
-void LedStrip::setPattern(LedPattern pattern, uint32_t patternColor, float parameter, float brightness)
-{
-    setBrightness(brightness);
-    setPattern(pattern, patternColor, parameter);
-}
-    
-void LedStrip::setPattern(LedPattern pattern, uint32_t patternColor, float parameter)
-{
-    parameter = min(1.0f, max(0.0f, parameter));
-    increment = 0;
-    randomTimer.stop();
-    switch (pattern)
-    {
-    case SOLID:
-        fill(patternColor);
-        break;
-        
-    case BLINK:
-    break;
-        
-    case OSCILLATOR:
-    break;
-        
-    case CHASE:
-    break;
-        
-    case RAINBOW:
-    break;
-        
-    case RANDOM:
-        randomTimer = Timer((int)(parameter*1000));
-        randomTimer.start();
-    break;
-    
-    default:
-        break;
-    }
-    this->pattern = pattern;
-    this->patternColor = patternColor;
-    this->parameter = parameter;
 }

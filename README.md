@@ -9,6 +9,7 @@ which ESP32 platform to use ?
 ROADMAP
 OK /ESPuppet filter
 - birandom
+- optionnaly clear before applying effect ?
 OK advertise endPacket
 - use targetModule & targetComponent
     leds/strip/set

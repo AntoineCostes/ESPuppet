@@ -73,6 +73,13 @@ void ESPuppet::update()
 
 void ESPuppet::gotOSCCommand(const Command &command)
 {
+  if (command.command->match("UDP_FAILED"))
+  {
+    Serial.println("UDP PACKET ERROR");
+    ledModule->setPattern(LedPattern::SOLID, 100, 20, 0, 1.0f, 1.0f, 0.2f);
+    return;
+  }
+
   bool delivered = false;
   for (auto const &module : modules)
     if (command.targetModule.equals(module->name))
@@ -93,27 +100,27 @@ void ESPuppet::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
   switch (event)
   {
   case ARDUINO_EVENT_WIFI_STA_START:
-    ledModule->setPattern(LedPattern::OSCILLATOR, 0, 50, 100, 1.0f, 0.2f);
+    ledModule->setPattern(LedPattern::OSCILLATOR, 0, 50, 100, 1.0f, 1.0f, 0.2f);
     break;
   case ARDUINO_EVENT_WIFI_STA_STOP:
-    ledModule->setPattern(LedPattern::BLINK, 100, 0, 0, 1.0f, 0.2f);
+    ledModule->setPattern(LedPattern::BLINK, 100, 0, 0, 1.0f, 1.0f, 0.2f);
     break;
   case ARDUINO_EVENT_WIFI_STA_CONNECTED:
-    ledModule->setPattern(LedPattern::OSCILLATOR, 0, 50, 100, 2.0f, 0.2f);
+    ledModule->setPattern(LedPattern::OSCILLATOR, 0, 50, 100, 2.0f,1.0f,  0.2f);
     break;
   case ARDUINO_EVENT_WIFI_STA_GOT_IP:
-    ledModule->setPattern(LedPattern::SOLID, 0, 100, 0, 1.0f, 0.2f);
+    ledModule->setPattern(LedPattern::SOLID, 0, 100, 0, 1.0f, 1.0f, 0.2f);
     break;
   case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
-    ledModule->setPattern(LedPattern::SOLID, 100, 0, 0, 1.0f, 0.2f);
+    ledModule->setPattern(LedPattern::SOLID, 100, 0, 0, 1.0f, 1.0f, 0.2f);
     break;
 
   case ARDUINO_EVENT_WIFI_STA_AUTHMODE_CHANGE:
-    ledModule->setPattern(LedPattern::BLINK, 100, 0, 0, 1.0f, 0.2f);
+    ledModule->setPattern(LedPattern::BLINK, 100, 0, 0, 1.0f, 1.0f, 0.2f);
     break;
 
   case ARDUINO_EVENT_WIFI_AP_START:
-    ledModule->setPattern(LedPattern::OSCILLATOR, 0, 100, 100, 1.0f, 0.2f);
+    ledModule->setPattern(LedPattern::OSCILLATOR, 0, 100, 100, 1.0f, 1.0f, 0.2f);
     break;
 
   case ARDUINO_EVENT_WIFI_AP_STACONNECTED:
