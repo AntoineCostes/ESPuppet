@@ -20,18 +20,24 @@ void ODriveModule::loadConfig(JsonObject const &config)
     serialDebug = config["serialDebug"] | false;
     
     int uart = config["uart"]| -1;
-    int rx = config["rx"]| -1; // 16
-    int tx = config["tx"]| -1; // 17
-
-    if (uart >= 0 && rx >= 0 && tx >= 0)
+    int rx = config["rx"]| -1;
+    int tx = config["tx"]| -1; 
+    
+    if (uart >= 0)
         registerOdrive(uart, rx, tx);
 }
 
 void ODriveModule::registerOdrive(int uartIndex, int rx, int tx)
 {
     HardwareSerial uart(uartIndex);
-    uart.begin(BAUDRATE, SERIAL_8N1, rx, tx);
-    motors.emplace_back(new ODriveMotor("odrive"+String(uartIndex), uart, 0));
+    if (rx >= 0 && tx >= 0) uart.begin(BAUDRATE, SERIAL_8N1, rx, tx);
+    else uart.begin(BAUDRATE, SERIAL_8N1);
+    dbg(String(uartIndex));
+    dbg(String(rx));
+    dbg(String(tx));
+    while (!uart) ; 
+    dbg("UART Ready...");
+    motors.emplace_back(new ODriveMotor("odrive_"+String(uartIndex), uart, motors.size()));
     motors[motors.size()-1]->init();
 }
 

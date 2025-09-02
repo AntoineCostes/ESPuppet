@@ -12,7 +12,7 @@ void WifiModule::init()
 {
   // TODO declare parameters
   configServer = new ConfigWebserver(true);
-  hasWebServer = true;
+  hasWebServer = false;
 
   portalTimeout.setCallback(std::bind(&WifiModule::onAPForTooLong, this));
   disconnectedTimeout.setCallback(std::bind(&WifiModule::disconnectedForTooLong, this));
@@ -43,10 +43,15 @@ void WifiModule::loadConfig(JsonObject const &config)
 {
   if (config) Serial.println("");
   serialDebug = config["serialDebug"] | serialDebug;
-  hasWebServer = config["hasWebServer"] | hasWebServer; // TODO webserverdebug ?
   if (config["configPortalTimeoutMs"]) portalTimeout.set(config["configPortalTimeoutMs"]);
   if (config["disconnectedTimeoutMs"]) disconnectedTimeout.set(config["disconnectedTimeoutMs"]);
 
+  if (config["webserver"])
+  {
+    hasWebServer = true;
+    bool debug = config["webserver"]["serialDebug"];
+    // configServer->serialDebug = debug;
+  }
   if (config["osc"])
   {
     uint16_t listeningPort = config["osc"]["listeningPort"] | -1;

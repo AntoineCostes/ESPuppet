@@ -19,15 +19,17 @@ void ODriveMotor::init()
     {
         setState(ODriveAxisState::AXIS_STATE_CLOSED_LOOP_CONTROL);
         delay(100);
-        Serial.println("try hard");
+        dbg("state is not closed loop: "+String(state)+", I'll try harder");
         state = (ODriveAxisState)readString().toInt();
     }
+    dbg(String(state));
 }
 
 void ODriveMotor::clearErrors()
 {
-    Serial.println("CLEAR ERRORS");
+    dbg("CLEAR ERRORS");
     uart << F("sc\n");
+    hasError = false;
 }
 
 void ODriveMotor::setPosition(float position, float velocity_feedforward, float torque_feedforward)
@@ -35,18 +37,19 @@ void ODriveMotor::setPosition(float position, float velocity_feedforward, float 
     if (hasError)
     {
         init();
+        clearErrors();
         delay(10);
-        hasError = false;
     }
     if (controlMode != ODriveControlMode::CONTROL_MODE_POSITION_CONTROL)
     {
-        Serial.println("Set control mode: POS");
+        dbg("Set control mode: POS");
         setParameter("control_mode", ODriveControlMode::CONTROL_MODE_POSITION_CONTROL);
         setParameter("input_mode", ODriveInputMode::INPUT_MODE_PASSTHROUGH); 
         setParameter("vel_limit", 10.0f);
         
         controlMode = ODriveControlMode::CONTROL_MODE_POSITION_CONTROL;
     }
+    dbg("Set pos");
     uart << F("p ") << motorIndex  << F(" ") << position << F(" ") << velocity_feedforward << F(" ") << torque_feedforward << F("\n");
 }
 
@@ -60,12 +63,12 @@ void ODriveMotor::setVelocity(float velocity, float torque_feedforward)
     if (hasError)
     {
         init();
+        clearErrors();
         delay(10);
-        hasError = false;
     }
     if (controlMode != ODriveControlMode::CONTROL_MODE_VELOCITY_CONTROL)
     {
-        Serial.println("Set control mode: VEL");
+        dbg("Set control mode: VEL");
         setParameter("control_mode", ODriveControlMode::CONTROL_MODE_VELOCITY_CONTROL);
         setParameter("input_mode", ODriveInputMode::INPUT_MODE_PASSTHROUGH); 
         setParameter("vel_limit", 10.0f);
@@ -79,12 +82,12 @@ void ODriveMotor::setTorque(float torque)
     if (hasError)
     {
         init();
+        clearErrors();
         delay(10);
-        hasError = false;
     }
     if (controlMode != ODriveControlMode::CONTROL_MODE_TORQUE_CONTROL)
     {
-        Serial.println("Set control mode: TORQUE");
+        dbg("Set control mode: TORQUE");
         setParameter("control_mode", ODriveControlMode::CONTROL_MODE_TORQUE_CONTROL);
         setParameter("input_mode", ODriveInputMode::INPUT_MODE_PASSTHROUGH); 
         float torque_cst = 8.23 / 150;
@@ -122,12 +125,11 @@ float ODriveMotor::getVel()
 
 void ODriveMotor::update()
 {
-    // Serial.println("update");
-
     // Flush RX
-    if (uart.available()) Serial.println("FLUSH uart");
+    if (uart.available()) dbg("FLUSH uart");
     while (uart.available()) Serial.print( (char) uart.read() );
     
+    return;
 	uart << "r axis" << motorIndex << ".pos_estimate\n";
     position = readString().toFloat();
 
@@ -138,8 +140,8 @@ void ODriveMotor::update()
     ODriveAxisState newState = (ODriveAxisState)readString().toInt();
     if (newState != state)
     {
-        if (newState >= 17) Serial.println("unkown state");
-        else Serial.println("NEW STATE: "+stateNames[newState]);
+        if (newState >= 17) dbg("unkown state");
+        else dbg("NEW STATE: "+stateNames[newState]);
         state = newState;
     }
     
@@ -147,8 +149,8 @@ void ODriveMotor::update()
     ODriveError newError = (ODriveError)readString().toInt();
     if (newError != error)
     {
-        if (newError >= 24) Serial.println("unkown error");
-        else Serial.println("NEW ERROR: "+errorNames[newError]);
+        if (newError >= 24) dbg("unkown error");
+        else dbg("NEW ERROR: "+errorNames[newError]);
         error = newError;
         if (error > 0) hasError = true;
     }
@@ -157,8 +159,8 @@ void ODriveMotor::update()
     ODriveError newReason = (ODriveError)readString().toInt();
     if (newReason != reason)
     {
-        if (newReason >= 24) Serial.println("unkown reason");
-        Serial.println("NEW REASON: "+errorNames[newReason]);
+        if (newReason >= 24) dbg("unkown reason");
+        dbg("NEW REASON: "+errorNames[newReason]);
         reason = newReason;
     }
 }
@@ -176,7 +178,7 @@ String ODriveMotor::readString()
         readTime = millis() - startReadingTime;
             if (readTime >= timeout)
             {
-                Serial.println("ERROR timeout expired");
+                dbg("ERROR timeout expired");
                 return str;
             }
         }
@@ -185,7 +187,7 @@ String ODriveMotor::readString()
             break;
         str += c;
     }
-    Serial.println("got : "+str);
-    if (readTime>5) Serial.println("read time = "+String(readTime));
+    dbg("got : "+str);
+    if (readTime>5) dbg("read time = "+String(readTime));
     return str;
 }

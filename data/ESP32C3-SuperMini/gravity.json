@@ -11,14 +11,18 @@
             "oscReceiveDebug":true,
             "oscSendDebug":true,
             "oscPingTimeoutMs":1000
+        },
+        "webserver":
+        {
+            "serialDebug":true
         }
     },
     "odrive":
     {
         "serialDebug":true,
-        "uart":2,
-        "rx":16,
-        "tx":17
+        "uart":0,
+        "rx":20,
+        "tx":21
     },
     "ledstrip":
     {

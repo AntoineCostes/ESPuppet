@@ -5,6 +5,7 @@
 #include "ledstrip/LedModule.h"
 #include "servo/ServoModule.h"
 #include "gpio/GPIOModule.h"
+#include "odrive/ODriveModule.h"
 
 class ESPuppet
 {
@@ -19,6 +20,7 @@ public:
     GPIOModule* gpioModule = new GPIOModule();
     LedModule* ledModule = new LedModule();
     ServoModule* servoModule = new ServoModule();
+    ODriveModule* odriveModule = new ODriveModule();
 
 protected:
     void WiFiEvent(WiFiEvent_t event, arduino_event_info_t info);

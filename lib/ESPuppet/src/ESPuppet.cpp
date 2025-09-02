@@ -6,6 +6,7 @@ ESPuppet::ESPuppet()
   modules.emplace_back(ledModule);
   modules.emplace_back(servoModule);
   modules.emplace_back(gpioModule);
+  modules.emplace_back(odriveModule);
 }
 
 void ESPuppet::init(String config)
@@ -76,7 +77,7 @@ void ESPuppet::gotOSCCommand(const Command &command)
   if (command.command->match("UDP_FAILED"))
   {
     Serial.println("UDP PACKET ERROR");
-    ledModule->setPattern(LedPattern::SOLID, 100, 20, 0, 1.0f, 1.0f, 0.2f);
+    ledModule->setPattern(LedPattern::SOLID, 100, 50, 0, 1.0f, 1.0f, 0.2f);
     return;
   }
 

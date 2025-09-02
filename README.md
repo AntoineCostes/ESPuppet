@@ -9,7 +9,10 @@ which ESP32 platform to use ?
 ROADMAP
 OK /Dobbby filter
 OK advertise endPacket
+OK odrive module + optional server (or debug wroom server)
+- safe gravity: efuse, bad UART
 - ledModule advertise/notify -> wifi debug
+- setPattern with CRGB color
 - clean Modules: timers, fullMatch, check range
 - birandom
 - optionnaly clear before applying effect ?
@@ -29,7 +32,6 @@ OK advertise endPacket
 - webserver console
 - webserver wifiscan
 - targetIP in webserver => singleton master
-- odrive module + optional server (or debug wroom server)
 - ServoPWMShield separate class + servo start
 - pin management -> advertise config errors
 - Parameters -> automated loadConfig + no handleOSCCommand: faut clarifier comment faire le callback
