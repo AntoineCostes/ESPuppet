@@ -7,10 +7,12 @@ remove ESP32Async and RPAsyncTCP from ESPAsyncWebServer depedencies
 which ESP32 platform to use ?
 
 ROADMAP
-OK /ESPuppet filter
+OK /Dobbby filter
+OK advertise endPacket
+- ledModule advertise/notify -> wifi debug
+- clean Modules: timers, fullMatch, check range
 - birandom
 - optionnaly clear before applying effect ?
-OK advertise endPacket
 - use targetModule & targetComponent
     leds/strip/set
     motors/servo/set
@@ -22,9 +24,7 @@ OK advertise endPacket
     mmh non c'est le premier argument qui est un int ou un String
     comme ça c'est toujours le module qui filtre les arguments
 
-- ledModule advertise/notify -> wifi debug
 - no config => load default which starts AP
-- clean Modules: timers, fullMatch, check range
 - button events in main.cpp ? or behavior inside Module ?
 - webserver console
 - webserver wifiscan

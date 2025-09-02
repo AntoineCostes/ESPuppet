@@ -35,25 +35,25 @@
                 "pin":7,
                 "start":255
             },
-            "plasma":
+            "vert":
             {
                 "pin":21,
-                "start":0,
-                "inverse":true
-            },
-            "rouge":
-            {
-                "pin":20,
-                "start":0,
+                "start":255,
                 "inverse":true
             },
             "jaune":
+            {
+                "pin":20,
+                "start":255,
+                "inverse":true
+            },
+            "rouge":
             {
                 "pin":10,
                 "start":0,
                 "inverse":true
             },
-            "vert":
+            "plasma":
             {
                 "pin":9,
                 "start":0,
