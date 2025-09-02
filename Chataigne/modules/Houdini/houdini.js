@@ -32,30 +32,35 @@ function moduleValueChanged(value) {
 function oscEvent(address, args)
 {
   // script.log("OSC Message received "+address+", "+args.length+" arguments");
-  if (address.matches("/"+ALPHA+"/ip") && args.length == 1) local.parameters.oscOutputs.alpha.remoteHost.set(args[0]);
-  if (address.matches("/"+OMEGA+"/ip") && args.length == 1) local.parameters.oscOutputs.omega.remoteHost.set(args[0]);
+  if (address.matches("/Dobbby/"+ALPHA+"/ip") && args.length == 1) local.parameters.oscOutputs.alpha.remoteHost.set(args[0]);
+  if (address.matches("/Dobbby/"+OMEGA+"/ip") && args.length == 1) local.parameters.oscOutputs.omega.remoteHost.set(args[0]);
+  if (address.matches("/Dobbby/"+ALPHA+"/port") && args.length == 1) local.parameters.oscOutputs.alpha.remotePort.set(args[0]);
+  if (address.matches("/Dobbby/"+OMEGA+"/port") && args.length == 1) local.parameters.oscOutputs.omega.remotePort.set(args[0]);
+
+
 }
 
 // COMMANDS
 
 // leds
-function setLeds(strip, mode, color, param, brightness)
+function setLeds(strip, mode, color, param, speed, brightness)
 {
   if (strip == 4) // all
   {
-    setLedAlpha(0, mode, color, param, brightness);
-    setLedAlpha(1, mode, color, param, brightness);
-    setLedAlpha(2, mode, color, param, brightness);
-    setLedAlpha(3, mode, color, param, brightness);
+    setLedAlpha(0, mode, color, param, speed, brightness);
+    setLedAlpha(1, mode, color, param, speed, brightness);
+    setLedAlpha(2, mode, color, param, speed, brightness);
+    setLedAlpha(3, mode, color, param, speed, brightness);
   } else
-    setLedAlpha(strip, mode, color, param, brightness);
+    setLedAlpha(strip, mode, color, param, speed, brightness);
 }
 
-function setLedAlpha(index, mode, color, param, brightness)
+function setLedAlpha(index, mode, color, param, speed, brightness)
 {
   local.sendTo(local.parameters.oscOutputs.alpha.remoteHost.get(), 
   local.parameters.oscOutputs.alpha.remotePort.get(),
-  "/"+ALPHA+"/ledstrip/set", index, mode, parseFloat(color[0]), color[1], color[2], param, brightness);
+  "/"+ALPHA+"/ledstrip/set", index, mode, parseFloat(color[0]), color[1], color[2], param, speed, brightness);
+
 }
 
 

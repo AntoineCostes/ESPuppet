@@ -1,4 +1,4 @@
-var BOARD = "test";
+var BOARD = "frigo";
 
 function init() {
 }
@@ -25,8 +25,9 @@ function moduleValueChanged(value) {
 // OSC
 function oscEvent(address, args)
 {
-  // script.log("OSC Message received "+address+", "+args.length+" arguments");
-  if (address.matches("/"+BOARD+"/ip") && args.length == 1) local.parameters.oscOutputs.oscOutput.remoteHost.set(args[0]);
+  script.log("OSC Message received "+address+", "+args.length+" arguments");
+  if (address.matches("/Dobbby/"+BOARD+"/ip") && args.length == 1) local.parameters.oscOutputs.oscOutput.remoteHost.set(args[0]);
+  if (address.matches("/Dobbby/"+BOARD+"/port") && args.length == 1) local.parameters.oscOutputs.oscOutput.remotePort.set(args[0]);
 }
 
 // COMMANDS

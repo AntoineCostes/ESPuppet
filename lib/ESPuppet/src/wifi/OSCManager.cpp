@@ -95,7 +95,7 @@ void OSCManager::sendMessage(OSCMessage &msg, bool broadcast, bool silent)
     err("Can't send OSC message yet");
     return;
   }
-  String fullAddress = "/TOTO/" + FileManager::getCurrentConfigName() + String(msg.getAddress());
+  String fullAddress = "/Dobbby/" + FileManager::getCurrentConfigName() + String(msg.getAddress());
   msg.setAddress(fullAddress.c_str());
 
   switch (WiFi.status())

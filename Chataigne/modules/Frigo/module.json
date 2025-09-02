@@ -63,8 +63,10 @@
       {
         "Mode":
         {
-          "type":"Enum",
-          "options":{"solid":0, "blink":1, "glow":2, "chase":3, "rainbow":4, "random":5, "gauge":6}
+          "type":"Integer",
+          "min":0,
+          "max":10,
+          "default":0
         },
         "Couleur":
         {
